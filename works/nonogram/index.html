@@ -708,7 +708,7 @@
           colClues:range(cols).map(function(c){return clue(fb.map(function(r){return r[c]?1:0;}));})
         };
         var gmsg=document.getElementById('gen-msg');
-        gmsg.textContent='※答えは必ず存在します。';
+        gmsg.textContent='※列・行から見る解法のみでは完全に解けないノノグラムが生成されました。答えは必ず存在します。';
         show('gen-msg');
       }
       C.sRows=rows; C.sCols=cols;
