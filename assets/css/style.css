@@ -377,3 +377,130 @@ footer p {
   .log-entry { grid-template-columns: 1fr; gap: 0.2rem; }
   .page-header { padding: 2rem 5vw; }
 }
+
+.about-wrap {
+  padding: 3.5rem 6vw;
+  max-width: 860px;
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.profile-block { animation: fadeUp 0.7s 0.2s ease both; }
+
+.avatar {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 200px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.6rem;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 3.5rem;
+  color: var(--line);
+  user-select: none;
+}
+
+.profile-name {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.3rem;
+}
+
+.profile-name em { font-style: italic; color: var(--accent); }
+
+.profile-handle {
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 1.6rem;
+}
+
+.links { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.links a {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: color 0.2s;
+}
+
+.links a:hover { color: var(--accent); }
+
+.link-icon {
+  font-size: 0.9rem;
+  width: 1.2rem;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.about-text { animation: fadeUp 0.7s 0.3s ease both; }
+
+.about-text .intro {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.75;
+  color: var(--ink);
+  margin-bottom: 2.4rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.body-text {
+  font-size: 0.88rem;
+  line-height: 2;
+  color: var(--ink);
+  margin-bottom: 2rem;
+}
+
+.body-text p + p { margin-top: 1rem; }
+
+.interests-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.9rem;
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 0.3rem 0.8rem;
+  background: var(--paper);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.tag:hover { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 680px) {
+  .about-wrap { grid-template-columns: 1fr; gap: 2.5rem; padding: 2.5rem 5vw; }
+  .avatar { max-width: 120px; }
+}
