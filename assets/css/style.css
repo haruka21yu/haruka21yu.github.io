@@ -28,7 +28,6 @@ body::before {
   opacity: 0.4;
 }
 
-/* ---- HEADER ---- */
 header {
   padding: 4rem 6vw 2rem;
   border-bottom: 1px solid var(--line);
@@ -63,7 +62,6 @@ header {
   padding-bottom: 0.25rem;
 }
 
-/* ---- NAV ---- */
 nav {
   display: flex;
   gap: 2rem;
@@ -98,13 +96,11 @@ nav a:hover::after { width: 100%; }
 nav a.active { color: var(--ink); }
 nav a.active::after { width: 100%; }
 
-/* ---- MAIN ---- */
 main {
   padding: 4rem 6vw;
   max-width: 1100px;
 }
 
-/* ---- NOTE ---- */
 .note {
   background: var(--paper);
   border-left: 3px solid var(--accent);
@@ -133,7 +129,6 @@ main {
   text-transform: uppercase;
 }
 
-/* ---- SECTION HEADER ---- */
 .section-header {
   display: flex;
   align-items: center;
@@ -183,7 +178,6 @@ main {
 .see-more:hover { opacity: 1; gap: 0.7rem; }
 .see-more:hover::after { transform: translateX(3px); }
 
-/* ---- WORKS GRID ---- */
 .works-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -256,7 +250,6 @@ main {
   user-select: none;
 }
 
-/* ---- LOG ---- */
 .log {
   max-width: 640px;
   margin-bottom: 2rem;
@@ -295,7 +288,6 @@ main {
   text-underline-offset: 3px;
 }
 
-/* ---- PAGE HEADER (works/log pages) ---- */
 .page-header {
   padding: 3rem 6vw 2.5rem;
   border-bottom: 1px solid var(--line);
@@ -328,7 +320,6 @@ main {
   line-height: 1;
 }
 
-/* ---- WORKS PAGE ---- */
 .works-full {
   padding: 3.5rem 6vw;
   max-width: 1100px;
@@ -338,7 +329,6 @@ main {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
-/* ---- LOG PAGE ---- */
 .log-full {
   padding: 3.5rem 6vw;
   max-width: 720px;
@@ -352,7 +342,6 @@ main {
   font-size: 0.92rem;
 }
 
-/* ---- FOOTER ---- */
 footer {
   border-top: 1px solid var(--line);
   padding: 2.5rem 6vw;
@@ -376,13 +365,11 @@ footer p {
   color: var(--accent);
 }
 
-/* ---- ANIMATIONS ---- */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ---- RESPONSIVE ---- */
 @media (max-width: 600px) {
   header { padding: 2.5rem 5vw 1.5rem; }
   nav { gap: 1.2rem; padding: 1rem 5vw; }
