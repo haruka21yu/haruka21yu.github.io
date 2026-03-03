@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yu's website">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yu's website">
+  <meta property="og:locale" content="ja_JP">
+  <title>works — haruka21yu's website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/css/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yu's<br><em>website</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/" class="active">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      works
+    </p>
+    <h1>works</h1>
+  </div>
+  <div class="works-full">
+    <div class="works-grid">
+    <!-- card-numをカウントアップして -->
+      <a href="https://haruka21yu.github.io/works/nonogram/" class="card">
+        <div class="card-tag">GAME</div>
+        <h2 class="card-title">ノノグラム</h2>
+        <p class="card-desc">マスを塗りつぶすノノグラムというパズルゲーム的なもの。作って共有もできる。</p>
+        <span class="card-num">01</span>
+      </a>
+    </div>
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yu's website</span>
+  </footer>
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yu's website">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yu's website">
+  <meta property="og:locale" content="ja_JP">
+  <title>nonogram - works — haruka21yu's website</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+      font-size: 14px;
+      background: #111;
+      color: #bbb;
+      padding: 40px 24px 60px;
+      max-width: 960px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    h1 { font-size: 18px; font-weight: normal; color: #eee; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .subtitle { color: #444; font-size: 12px; margin-bottom: 32px; letter-spacing: 0.04em; }
+    
+    .tabs { display: flex; gap: 0; margin-bottom: 28px; border-bottom: 1px solid #222; }
+    .tab {
+      padding: 8px 20px; border: none; background: transparent; color: #555;
+      cursor: pointer; font-size: 13px; letter-spacing: 0.04em;
+      border-bottom: 2px solid transparent; position: relative; bottom: -1px;
+      transition: color .15s, border-color .15s;
+    }
+    .tab:hover { color: #999; }
+    .tab.active { color: #eee; border-bottom-color: #eee; }
+    
+    .page { display: none; }
+    .page.active { display: block; }
+    
+    .settings { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+    .settings label { font-size: 13px; color: #777; }
+    .settings input[type=number] {
+      width: 52px; padding: 4px 6px; border: 1px solid #2a2a2a; border-radius: 2px;
+      background: #1a1a1a; color: #ccc; font-size: 13px; text-align: center;
+    }
+    .settings input[type=number]:focus { outline: none; border-color: #555; }
+    
+    button {
+      padding: 5px 14px; font-size: 12px; cursor: pointer;
+      border: 1px solid #2e2e2e; border-radius: 2px;
+      background: #1a1a1a; color: #999; letter-spacing: 0.03em;
+      transition: background .12s, color .12s, border-color .12s;
+    }
+    button:hover { background: #222; color: #ddd; border-color: #444; }
+    button.primary { background: #e8e8e8; color: #111; border-color: #e8e8e8; }
+    button.primary:hover { background: #fff; color: #111; }
+    button.success { background: transparent; color: #7a9; border-color: #4a6a5a; }
+    button.success:hover { background: rgba(100,180,130,.1); border-color: #7a9; }
+    button.danger  { background: transparent; color: #a77; border-color: #5a3a3a; }
+    button.danger:hover  { background: rgba(180,100,100,.1); border-color: #a77; }
+    
+    .toolbar { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+    .tool {
+      padding: 5px 13px; font-size: 12px; cursor: pointer;
+      border: 1px solid #2e2e2e; border-radius: 2px;
+      background: #1a1a1a; color: #666;
+      transition: all .12s;
+    }
+    .tool:hover { color: #aaa; border-color: #444; }
+    .tool.on         { background: #ccc; color: #111; border-color: #ccc; }
+    .tool-mark.on    { background: transparent; color: #a77; border-color: #a77; }
+    .tool-erase.on   { background: #2a2a2a; color: #aaa; border-color: #444; }
+    
+    .puzzle-table { border-collapse: collapse; }
+    .puzzle-table td, .puzzle-table th { padding: 0; }
+    .td-corner { background: #181818; border-right: 2px solid #3a3a3a; border-bottom: 2px solid #3a3a3a; min-width: 10px; }
+    .td-col-hint {
+      background: #181818; border: 1px solid #222; border-bottom: 2px solid #3a3a3a;
+      width: 28px; vertical-align: bottom; text-align: center;
+      padding: 3px 0 3px; font-size: 11px; font-weight: bold; line-height: 1.5; color: #777;
+    }
+    .td-col-hint.done { color: #7a9; }
+    .td-col-hint.gsep { border-right: 2px solid #3a3a3a !important; }
+    .td-row-hint {
+      background: #181818; border: 1px solid #222; border-right: 2px solid #3a3a3a;
+      height: 28px; text-align: right; padding: 0 6px 0 8px;
+      font-size: 11px; font-weight: bold; white-space: nowrap; vertical-align: middle; color: #777;
+    }
+    .td-row-hint.done { color: #7a9; }
+    .td-row-hint.gsep { border-bottom: 2px solid #3a3a3a !important; }
+    .td-cell {
+      width: 28px; height: 28px; border: 1px solid #222;
+      cursor: pointer; text-align: center; vertical-align: middle;
+      background: #111; font-size: 14px; font-weight: bold; color: #a77;
+      user-select: none; transition: background .07s;
+    }
+    .td-cell:hover  { background: #191919; }
+    .td-cell.filled { background: #ccc; color: #ccc; }
+    .td-cell.marked { background: #111; color: #a77; }
+    .td-cell.csep   { border-right: 2px solid #3a3a3a !important; }
+    .td-cell.rsep   { border-bottom: 2px solid #3a3a3a !important; }
+    
+    .toggle-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #777; }
+    input[type=checkbox] { width: 14px; height: 14px; cursor: pointer; accent-color: #aaa; }
+    
+    .legend {
+      font-size: 12px; color: #555; margin-bottom: 14px;
+      background: #161616; padding: 10px 14px;
+      border: 1px solid #1e1e1e; border-radius: 2px; line-height: 2;
+    }
+    .legend strong { color: #888; font-weight: bold; }
+    
+    .msg { display: none; border-radius: 2px; padding: 10px 14px; margin-top: 10px; font-size: 12px; border: 1px solid; }
+    .msg.show { display: block; }
+    .msg-ok  { background: rgba(100,180,130,.07); border-color: #4a6a5a; color: #7a9; }
+    .msg-err { background: rgba(180,100,100,.07); border-color: #6a4a4a; color: #a77; }
+    
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      padding: 4px 12px; font-size: 12px; cursor: pointer;
+      border: 1px solid #2e2e2e; border-radius: 2px;
+      background: #1a1a1a; color: #666; transition: all .12s;
+    }
+    .pill:hover { color: #aaa; border-color: #444; }
+    .pill.active { background: #ddd; color: #111; border-color: #ddd; }
+    
+    .share-box {
+      display: none; margin-top: 14px; background: #161616;
+      border: 1px solid #1e1e1e; border-radius: 2px; padding: 12px 14px;
+    }
+    .share-box.show { display: block; }
+    .share-box p { font-size: 12px; color: #555; margin-bottom: 8px; }
+    .share-url {
+      width: 100%; padding: 5px 8px; font-size: 12px;
+      border: 1px solid #2a2a2a; border-radius: 2px;
+      background: #111; color: #888; word-break: break-all;
+    }
+    
+    .section-note { font-size: 12px; color: #4a4a4a; margin: 4px 0 12px; }
+    hr { border: none; border-top: 1px solid #1e1e1e; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yu's<br><em>website</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/" class="active">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      <a href="https://haruka21yu.github.io/works/">works</a>
+      <span>/</span>
+      nonogram
+    </p>
+    <h1>nonogram</h1>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-create"       onclick="showTab('create')">ノノグラムを作る</div>
+    <div class="tab"        id="tab-solve-select" onclick="showTab('solve-select')">ノノグラムを解く</div>
+  </div>
+  
+  <div class="page active" id="page-create">
+  
+    <div class="legend">
+      <strong>ヒント数字の読み方：</strong>
+      グリッドの<strong>上</strong>の数字 → その<strong>列</strong>を上から順に見た「連続して塗られるマスの数」の塊<br>
+      グリッドの<strong>左</strong>の数字 → その<strong>行</strong>を左から順に見た「連続して塗られるマスの数」の塊<br>
+      例：「3 1」なら、3マスの塊・1マスの塊の順（間に1マス以上の空白が必要）
+    </div>
+  
+    <div class="settings">
+      <label>横のマス数: <input type="number" id="c-cols" value="10" min="2" max="25"></label>
+      <label>縦のマス数: <input type="number" id="c-rows" value="10" min="2" max="25"></label>
+      <button onclick="applySize()">適用</button>
+      <button class="danger" onclick="clearGrid()">全部消す</button>
+    </div>
+    <div class="settings">
+      <button class="success" onclick="goSolveOwn()">このノノグラムを解く →</button>
+      <button onclick="showShare()">共有URLを作る</button>
+    </div>
+  
+    <p class="section-note">マスをクリック・ドラッグして塗りつぶしてください。ヒント数字は自動で更新されます。</p>
+  
+    <div id="create-grid"></div>
+  
+    <div class="share-box" id="share-box">
+      <p>以下のURLを共有すると、このノノグラムを解く画面を直接開けます。</p>
+      <input class="share-url" id="share-url" type="text" readonly onclick="this.select()">
+      <div style="margin-top:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <button onclick="copyShareUrl()">コピー</button>
+        <span id="copy-ok" style="font-size:12px;color:#7a9;display:none;">コピーしました</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="page" id="page-solve-select">
+    <p style="margin-bottom:14px;color:#666;font-size:13px;">どのノノグラムを解きますか？</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+  
+      <div style="border:1px solid #222;border-radius:2px;padding:16px 20px;min-width:210px;cursor:pointer;" onclick="goSolveOwn()">
+        <div style="font-size:14px;color:#ccc;margin-bottom:6px;">✏️ 自分で作ったノノグラム</div>
+        <div style="font-size:12px;color:#555;">「ノノグラムを作る」タブで作ったものを解きます。</div>
+        <div id="own-status" style="font-size:11px;color:#444;margin-top:6px;"></div>
+      </div>
+  
+      <div style="border:1px solid #222;border-radius:2px;padding:16px 20px;min-width:260px;">
+        <div style="font-size:14px;color:#ccc;margin-bottom:6px;">🎲 自動生成ノノグラム</div>
+        <div style="font-size:12px;color:#555;margin-bottom:10px;">必ず解けるノノグラムを自動で作ります。</div>
+  
+        <div style="font-size:12px;color:#555;margin-bottom:4px;">サイズ：</div>
+        <div class="pill-group" style="margin-bottom:10px;">
+          <div class="pill active" data-r="5"  data-c="5"  onclick="pickSize(this)">5×5</div>
+          <div class="pill"        data-r="8"  data-c="8"  onclick="pickSize(this)">8×8</div>
+          <div class="pill"        data-r="10" data-c="10" onclick="pickSize(this)">10×10</div>
+          <div class="pill"        data-r="15" data-c="15" onclick="pickSize(this)">15×15</div>
+        </div>
+  
+        <div style="font-size:12px;color:#555;margin-bottom:4px;">難易度：</div>
+        <div class="pill-group" style="margin-bottom:12px;">
+          <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">やさしい</div>
+          <div class="pill"        data-diff="normal" onclick="pickDiff(this)">ふつう</div>
+          <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
+        </div>
+        <div id="diff-note" style="font-size:11px;color:#444;margin-bottom:10px;"></div>
+  
+        <button class="primary" onclick="goSolveRandom()">生成して解く</button>
+        <div id="gen-msg" class="msg msg-err" style="margin-top:8px;"></div>
+      </div>
+  
+    </div>
+  </div>
+  
+  <div class="page" id="page-solve">
+  
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span id="solve-label" style="font-size:12px;color:#555;"></span>
+      <button onclick="showTab('solve-select')">← 選択に戻る</button>
+    </div>
+  
+    <div class="toolbar">
+      <span style="font-size:12px;color:#555;letter-spacing:0.04em;">ツール：</span>
+      <button class="tool on"         id="tool-fill"  onclick="setTool('fill')">⬛ 塗りつぶす</button>
+      <button class="tool tool-mark"  id="tool-mark"  onclick="setTool('mark')">✕ ×印をつける</button>
+      <button class="tool tool-erase" id="tool-erase" onclick="setTool('erase')">◻ 消す</button>
+    </div>
+  
+    <div style="margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+      <label class="toggle-row">
+        <input type="checkbox" id="hint-toggle" onchange="setHintCheck(this.checked)">
+        完成した行・列を緑色で表示
+      </label>
+      <button onclick="resetSolve()">🔄 最初からやり直す</button>
+      <button class="primary" onclick="checkSolve()">✅ 答え合わせ</button>
+    </div>
+  
+    <div id="solve-error" class="msg msg-err">まだ完成していません。ヒントをよく確認してみてください。</div>
+    <div id="solve-grid"></div>
+  
+    <div id="complete-msg" class="msg msg-ok">
+      🎉 完成！ノノグラムを解き終わりました。<br>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="resetSolve()">もう一度</button>
+        <button class="primary" id="btn-new-rand" onclick="goSolveRandom()">新しいランダムノノグラム</button>
+        <button onclick="showTab('solve-select')">選択に戻る</button>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yu's website</span>
+  </footer>
+  
+  <script>
+    var C = {
+      cRows:10, cCols:10, cGrid:[],
+      sRows:0,  sCols:0,
+      rowClues:[], colClues:[],
+      sGrid:[],
+      tool:'fill', hintCheck:false,
+      mouseDown:false, dragMode:null, dragInCreate:false,
+      rR:5, rC:5, diff:'easy',
+    };
+    
+    window.addEventListener('mouseup',   function(){ C.mouseDown=false; C.dragMode=null; });
+    window.addEventListener('mouseleave',function(){ C.mouseDown=false; C.dragMode=null; });
+    
+    var DIFF_NOTE = {
+      easy:   'やさしい：塗るマスが多め。比較的シンプルに解けます。',
+      normal: 'ふつう：塗るマスは中程度。少し考える場面があります。',
+      hard:   'むずかしい：塗るマスが少なめで疎ら。複雑なヒントになります。'
+    };
+    function pickDiff(btn){
+      document.querySelectorAll('[data-diff]').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      C.diff = btn.dataset.diff;
+      document.getElementById('diff-note').textContent = DIFF_NOTE[C.diff];
+    }
+    function pickSize(btn){
+      document.querySelectorAll('[data-r]').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      C.rR=parseInt(btn.dataset.r); C.rC=parseInt(btn.dataset.c);
+    }
+    
+    function showTab(id){
+      ['create','solve-select','solve'].forEach(function(t){
+        document.getElementById('page-'+t).classList.toggle('active', t===id);
+        var tab=document.getElementById('tab-'+t);
+        if(tab) tab.classList.toggle('active', t===id);
+      });
+      if(id==='solve-select') refreshOwnStatus();
+    }
+    
+    function applySize(){
+      C.cRows=clamp(parseInt(document.getElementById('c-rows').value)||10,2,25);
+      C.cCols=clamp(parseInt(document.getElementById('c-cols').value)||10,2,25);
+      document.getElementById('c-rows').value=C.cRows;
+      document.getElementById('c-cols').value=C.cCols;
+      C.cGrid=mk2d(C.cRows,C.cCols,false);
+      hide('share-box');
+      renderCreate();
+    }
+    function clearGrid(){
+      C.cGrid=mk2d(C.cRows,C.cCols,false);
+      hide('share-box');
+      renderCreate();
+    }
+    function renderCreate(){
+      var rowC=C.cGrid.map(function(row){return clue(row.map(function(v){return v?1:0;}));});
+      var colC=range(C.cCols).map(function(c){return clue(C.cGrid.map(function(r){return r[c]?1:0;}));});
+      var el=document.getElementById('create-grid');
+      el.innerHTML='';
+      el.appendChild(buildTable(
+        C.cRows,C.cCols,rowC,colC,
+        function(r,c){return C.cGrid[r][c]?'filled':'';},
+        function(r,c){return 'cc-'+r+'-'+c;},
+        function(r){return 'crh-'+r;},
+        function(c){return 'cch-'+c;},
+        false,
+        function(td,r,c){
+          td.addEventListener('mousedown',function(e){
+            e.preventDefault();
+            C.mouseDown=true; C.dragInCreate=true;
+            C.dragMode=C.cGrid[r][c]?'unfill':'fill';
+            doCreate(r,c);
+          });
+          td.addEventListener('mouseover',function(){
+            if(!C.mouseDown||!C.dragInCreate) return;
+            doCreate(r,c);
+          });
+        }
+      ));
+    }
+    function doCreate(r,c){
+      var nv=(C.dragMode==='fill');
+      if(C.cGrid[r][c]===nv) return;
+      C.cGrid[r][c]=nv;
+      var td=document.getElementById('cc-'+r+'-'+c);
+      if(td){ updateCellCls(td, nv?'filled':''); td.textContent='';}
+      var rc2=clue(C.cGrid[r].map(function(v){return v?1:0;}));
+      var rh=document.getElementById('crh-'+r);
+      if(rh){rh.textContent=rc2.length?rc2.join(' '):'0'; rh.className='td-row-hint'+((r+1)%5===0&&r<C.cRows-1?' gsep':'');}
+      var cc2=clue(C.cGrid.map(function(row){return row[c]?1:0;}));
+      var ch=document.getElementById('cch-'+c);
+      if(ch){ch.innerHTML=cc2.length?cc2.join('<br>'):'0'; ch.className='td-col-hint'+((c+1)%5===0&&c<C.cCols-1?' gsep':'');}
+    }
+    
+    function encodeGrid(grid, rows, cols){
+      var bits=[];
+      for(var r=0;r<rows;r++) for(var c=0;c<cols;c++) bits.push(grid[r][c]?1:0);
+      while(bits.length%6!==0) bits.push(0);
+      var b64chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-';
+      var s='';
+      for(var i=0;i<bits.length;i+=6){
+        var v=bits[i]*32+bits[i+1]*16+bits[i+2]*8+bits[i+3]*4+bits[i+4]*2+bits[i+5];
+        s+=b64chars[v];
+      }
+      return rows+'x'+cols+'x'+s;
+    }
+    
+    function decodeGrid(str){
+      var parts=str.split('x');
+      if(parts.length<3) return null;
+      var rows=parseInt(parts[0]), cols=parseInt(parts[1]), enc=parts[2];
+      if(!rows||!cols||rows<2||rows>25||cols<2||cols>25) return null;
+      var b64chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-';
+      var bits=[];
+      for(var i=0;i<enc.length;i++){
+        var v=b64chars.indexOf(enc[i]);
+        if(v<0) return null;
+        for(var b=5;b>=0;b--) bits.push((v>>b)&1);
+      }
+      var grid=mk2d(rows,cols,false);
+      var idx=0;
+      for(var r=0;r<rows;r++) for(var c=0;c<cols;c++){
+        grid[r][c]=bits[idx++]===1;
+      }
+      return {rows:rows, cols:cols, grid:grid};
+    }
+    
+    function showShare(){
+      var url=buildShareUrl();
+      document.getElementById('share-url').value=url;
+      show('share-box');
+    }
+    function buildShareUrl(){
+      var enc=encodeGrid(C.cGrid, C.cRows, C.cCols);
+      var base=window.location.href.split('?')[0];
+      return base+'?d='+enc;
+    }
+    function copyShareUrl(){
+      var el=document.getElementById('share-url');
+      el.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      var ok=document.getElementById('copy-ok');
+      ok.style.display='inline';
+      setTimeout(function(){ok.style.display='none';},2000);
+    }
+    
+    function refreshOwnStatus(){
+      var el=document.getElementById('own-status');
+      if(!el) return;
+      if(!C.cGrid.length){el.textContent='（まだ作成されていません）';return;}
+      var n=C.cGrid.reduce(function(s,row){return s+row.filter(Boolean).length;},0);
+      el.textContent=n?C.cRows+'×'+C.cCols+'／'+n+'マス塗り済み':'（まだ何も塗られていません）';
+    }
+    
+    function goSolveOwn(){
+      if(!C.cGrid.length||!C.cGrid.reduce(function(s,r){return s+r.filter(Boolean).length;},0)){
+        alert('先に「ノノグラムを作る」タブでマスを塗ってください。');
+        showTab('create');
+        if(!C.cGrid.length) applySize();
+        return;
+      }
+      C.sRows=C.cRows; C.sCols=C.cCols;
+      C.rowClues=C.cGrid.map(function(row){return clue(row.map(function(v){return v?1:0;}));});
+      C.colClues=range(C.cCols).map(function(c){return clue(C.cGrid.map(function(r){return r[c]?1:0;}));});
+      C.sGrid=mk2d(C.sRows,C.sCols,'');
+      document.getElementById('solve-label').textContent='自分で作ったノノグラム（'+C.sRows+'×'+C.sCols+'）';
+      document.getElementById('btn-new-rand').style.display='none';
+      startSolve();
+    }
+    
+    var FILL_RATE = { easy: 0.60, normal: 0.45, hard: 0.28 };
+    
+    function goSolveRandom(){
+      hide('gen-msg');
+      var rows=C.rR, cols=C.rC;
+      var result=null, tries=0, maxTries=300;
+      while(!result && tries<maxTries){
+        tries++;
+        var candidate = (C.diff==='easy') ? genCandidateEasy(rows,cols) : genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
+        var rowC=candidate.map(function(row){return clue(row.map(function(v){return v?1:0;}));});
+        var colC=range(cols).map(function(c){return clue(candidate.map(function(r){return r[c]?1:0;}));});
+        if(C.diff==='easy' && !hasEnoughEasyLines(rows,cols,rowC,colC)) continue;
+        var solved=lineSolve(rows,cols,rowC,colC);
+        if(solved){ result={rowClues:rowC,colClues:colC}; }
+      }
+      if(!result){
+        var fb=(C.diff==='easy')?genCandidateEasy(rows,cols):genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
+        result={
+          rowClues:fb.map(function(row){return clue(row.map(function(v){return v?1:0;}));}),
+          colClues:range(cols).map(function(c){return clue(fb.map(function(r){return r[c]?1:0;}));})
+        };
+        var gmsg=document.getElementById('gen-msg');
+        gmsg.textContent='※ライン解法のみでは完全に解けないノノグラムが生成されました。答えは必ず存在します。';
+        show('gen-msg');
+      }
+      C.sRows=rows; C.sCols=cols;
+      C.rowClues=result.rowClues; C.colClues=result.colClues;
+      C.sGrid=mk2d(C.sRows,C.sCols,'');
+      document.getElementById('solve-label').textContent='自動生成ノノグラム（'+rows+'×'+cols+'・'+diffLabel()+'）';
+      document.getElementById('btn-new-rand').style.display='';
+      startSolve();
+    }
+    
+    function diffLabel(){ return {easy:'やさしい',normal:'ふつう',hard:'むずかしい'}[C.diff]||C.diff; }
+    
+    function genCandidate(rows,cols,rate){
+      var g=mk2d(rows,cols,false);
+      for(var r=0;r<rows;r++) for(var c=0;c<cols;c++) g[r][c]=(Math.random()<rate);
+      for(var r2=0;r2<rows;r2++) if(!g[r2].some(Boolean)) g[r2][Math.floor(Math.random()*cols)]=true;
+      for(var c2=0;c2<cols;c2++) if(!g.some(function(row){return row[c2];})) g[Math.floor(Math.random()*rows)][c2]=true;
+      return g;
+    }
+    
+    function genCandidateEasy(rows,cols){
+      var g=mk2d(rows,cols,false);
+      for(var r=0;r<rows;r++){
+        g[r] = genEasyLine(cols);
+      }
+      for(var r2=0;r2<rows;r2++) if(!g[r2].some(Boolean)) g[r2]=genEasyLine(cols);
+      for(var c2=0;c2<cols;c2++) if(!g.some(function(row){return row[c2];})) g[Math.floor(Math.random()*rows)][c2]=true;
+      return g;
+    }
+    
+    function genEasyLine(len){
+      var roll = Math.random();
+      if(roll < 0.40){
+        var patterns = buildEasyPatterns(len);
+        if(patterns.length===0) return Array.from({length:len},function(){return Math.random()<0.55;});
+        var pat = patterns[Math.floor(Math.random()*patterns.length)];
+        return patternToLine(len, pat);
+      } else if(roll < 0.70){
+        var target = Math.round(len*(0.50+Math.random()*0.25));
+        target = Math.max(1, Math.min(len-1, target));
+        if(Math.random()<0.5 || target<=2){
+          var start=Math.floor(Math.random()*(len-target+1));
+          var line=Array(len).fill(false);
+          for(var i=start;i<start+target;i++) line[i]=true;
+          return line;
+        } else {
+          var a=1+Math.floor(Math.random()*(target-2));
+          var b=target-a;
+          if(a+1+b>len){ a=Math.floor(target/2); b=target-a; }
+          if(a+1+b>len) return patternToLine(len,[target]);
+          return patternToLine(len,[a,b]);
+        }
+      } else {
+        var rate=0.40+Math.random()*0.15;
+        return Array.from({length:len},function(){return Math.random()<rate;});
+      }
+    }
+    
+    function buildEasyPatterns(len){
+      var pats=[];
+      for(var s=Math.max(1,len-2);s<=len-1;s++) pats.push([s]);
+      for(var a=1;a<len;a++){
+        for(var b=1;b<len;b++){
+          var tot=a+1+b;
+          if(tot===len-1||tot===len-2) pats.push([a,b]);
+        }
+      }
+      for(var a2=1;a2<=len;a2++){
+        for(var b2=1;b2<=len;b2++){
+          for(var c2=1;c2<=len;c2++){
+            var tot2=a2+b2+c2+2;
+            if(tot2===len-1||tot2===len-2) pats.push([a2,b2,c2]);
+          }
+        }
+      }
+      pats=pats.filter(function(p){
+        return p.every(function(b){return b>=1&&b<len;}) &&
+               p.reduce(function(s,b){return s+b;},0)+p.length-1 <= len;
+      });
+      return pats;
+    }
+    
+    function patternToLine(len, blocks){
+      var minLen = blocks.reduce(function(s,b){return s+b;},0)+blocks.length-1;
+      var slack  = len - minLen;
+      var line   = Array(len).fill(false);
+      var spaces = blocks.length+1;
+      var extra  = Array(spaces).fill(0);
+      for(var i=0;i<slack;i++) extra[Math.floor(Math.random()*spaces)]++;
+      var pos=extra[0];
+      for(var b=0;b<blocks.length;b++){
+        for(var j=pos;j<pos+blocks[b];j++) line[j]=true;
+        pos+=blocks[b]+1+extra[b+1];
+      }
+      return line;
+    }
+    
+    function hasEnoughEasyLines(rows,cols,rowClues,colClues){
+      function isEasyClue(clues,len){
+        if(!clues.length) return true;
+        var minLen=clues.reduce(function(s,b){return s+b;},0)+clues.length-1;
+        return minLen>=len-1;
+      }
+      var total=rows+cols, easy=0;
+      for(var r=0;r<rows;r++) if(isEasyClue(rowClues[r]||[],cols)) easy++;
+      for(var c=0;c<cols;c++) if(isEasyClue(colClues[c]||[],rows)) easy++;
+      return easy >= Math.ceil(total*0.4);
+    }
+    
+    function lineSolve(rows,cols,rowClues,colClues){
+      var g=mk2d(rows,cols,0);
+      var changed=true, iter=0;
+      while(changed && iter<100){
+        changed=false; iter++;
+        for(var r=0;r<rows;r++){
+          var res=solveLine(g[r].slice(), rowClues[r]||[]);
+          if(!res) return false;
+          for(var c=0;c<cols;c++) if(g[r][c]===0&&res[c]!==0){g[r][c]=res[c];changed=true;}
+        }
+        for(var c2=0;c2<cols;c2++){
+          var col=g.map(function(row){return row[c2];});
+          var res2=solveLine(col, colClues[c2]||[]);
+          if(!res2) return false;
+          for(var r2=0;r2<rows;r2++) if(g[r2][c2]===0&&res2[r2]!==0){g[r2][c2]=res2[r2];changed=true;}
+        }
+      }
+      for(var r3=0;r3<rows;r3++) for(var c3=0;c3<cols;c3++) if(g[r3][c3]===0) return false;
+      return true;
+    }
+    
+    function solveLine(line, clues){
+      var n=line.length;
+      if(!clues.length){
+        var res=[];
+        for(var i=0;i<n;i++){
+          if(line[i]===1) return false;
+          res.push(-1);
+        }
+        return res;
+      }
+      var left =placeLeft(line, clues);
+      if(!left) return false;
+      var right=placeRight(line, clues);
+      if(!right) return false;
+      var out=[];
+      for(var i=0;i<n;i++){
+        if(left[i]===1&&right[i]===1) out.push(1);
+        else if(left[i]===-1&&right[i]===-1) out.push(-1);
+        else out.push(0);
+      }
+      return out;
+    }
+    
+    function placeLeft(line,clues){
+      var n=line.length, k=clues.length;
+      var pos=new Array(k);
+      pos[0]=0;
+      for(var i=1;i<k;i++) pos[i]=pos[i-1]+clues[i-1]+1;
+      if(pos[k-1]+clues[k-1]>n) return false;
+    
+      function fits(p,len,ln){
+        for(var j=p;j<p+len;j++) if(j>=ln.length||ln[j]===-1) return false;
+        if(p+len<ln.length&&ln[p+len]===1) return false;
+        return true;
+      }
+      function push(){
+        var ok=true;
+        for(var iter=0;iter<n*2;iter++){
+          ok=true;
+          for(var i=0;i<k;i++){
+            while(pos[i]>0&&line[pos[i]-1]===1){ return false; }
+            var moved=true;
+            while(moved){
+              moved=false;
+              for(var j=pos[i];j<pos[i]+clues[i];j++){
+                if(j>=n) return false;
+                if(line[j]===-1){ pos[i]=j+1; moved=true; ok=false; break; }
+              }
+              if(pos[i]+clues[i]>n) return false;
+              if(pos[i]+clues[i]<n&&line[pos[i]+clues[i]]===1){ pos[i]++; moved=true; ok=false; }
+            }
+            if(i>0&&pos[i]<pos[i-1]+clues[i-1]+1){ pos[i]=pos[i-1]+clues[i-1]+1; ok=false; }
+            if(pos[i]+clues[i]>n) return false;
+          }
+          if(ok) break;
+        }
+        return ok;
+      }
+      if(!push()) return false;
+      for(var j=0;j<n;j++){
+        if(line[j]===1){
+          var covered=false;
+          for(var i=0;i<k;i++) if(j>=pos[i]&&j<pos[i]+clues[i]){covered=true;break;}
+          if(!covered) return false;
+        }
+      }
+      var out=new Array(n).fill(-1);
+      for(var i=0;i<k;i++) for(var j=pos[i];j<pos[i]+clues[i];j++) out[j]=1;
+      return out;
+    }
+    
+    function placeRight(line,clues){
+      var rev=line.slice().reverse();
+      var crev=clues.slice().reverse();
+      var res=placeLeft(rev,crev);
+      if(!res) return false;
+      return res.reverse();
+    }
+    
+    function startSolve(){
+      C.tool='fill'; setTool('fill');
+      document.getElementById('hint-toggle').checked=false; C.hintCheck=false;
+      hide('complete-msg'); hide('solve-error');
+      showTab('solve');
+      renderSolve();
+    }
+    
+    function renderSolve(){
+      var el=document.getElementById('solve-grid');
+      el.innerHTML='';
+      el.appendChild(buildTable(
+        C.sRows,C.sCols,C.rowClues,C.colClues,
+        function(r,c){return C.sGrid[r][c];},
+        function(r,c){return 'sc-'+r+'-'+c;},
+        function(r){return 'srh-'+r;},
+        function(c){return 'sch-'+c;},
+        C.hintCheck,
+        function(td,r,c){
+          td.addEventListener('mousedown',function(e){
+            e.preventDefault();
+            C.mouseDown=true; C.dragInCreate=false;
+            var cur=C.sGrid[r][c];
+            if(C.tool==='fill')      C.dragMode=cur==='filled'?'unfill':'fill';
+            else if(C.tool==='mark') C.dragMode=cur==='marked'?'unmark':'mark';
+            else                     C.dragMode='erase';
+            doSolve(r,c);
+          });
+          td.addEventListener('mouseover',function(){
+            if(!C.mouseDown||C.dragInCreate) return;
+            doSolve(r,c);
+          });
+        }
+      ));
+    }
+    function doSolve(r,c){
+      var prev=C.sGrid[r][c], next;
+      if(C.dragMode==='fill')   next='filled';
+      else if(C.dragMode==='unfill') next='';
+      else if(C.dragMode==='mark')   next='marked';
+      else next='';
+      if(prev===next) return;
+      C.sGrid[r][c]=next;
+      var td=document.getElementById('sc-'+r+'-'+c);
+      if(td){ updateCellCls(td, next); td.textContent=next==='marked'?'✕':'';}
+      if(C.hintCheck) refreshSolveHints();
+      autoCheck();
+    }
+    
+    function buildTable(rows,cols,rowClues,colClues,getState,cellId,rowHintId,colHintId,hintCheck,onCell){
+      var table=document.createElement('table');
+      table.className='puzzle-table';
+      /* thead: コーナー + 列ヒント */
+      var thead=document.createElement('thead');
+      var tr0=document.createElement('tr');
+      var corner=document.createElement('th');
+      corner.className='td-corner';
+      tr0.appendChild(corner);
+      for(var c=0;c<cols;c++){
+        var th=document.createElement('th');
+        var sep=(c+1)%5===0&&c<cols-1;
+        th.className='td-col-hint'+(sep?' gsep':'');
+        th.id=colHintId(c);
+        var cc=colClues[c]||[];
+        if(hintCheck&&isDoneCol(c,cc)) th.classList.add('done');
+        th.innerHTML=cc.length?cc.join('<br>'):'0';
+        tr0.appendChild(th);
+      }
+      thead.appendChild(tr0);
+      table.appendChild(thead);
+      var tbody=document.createElement('tbody');
+      for(var r=0;r<rows;r++){
+        var tr=document.createElement('tr');
+        var rh=document.createElement('td');
+        var rsep=(r+1)%5===0&&r<rows-1;
+        rh.className='td-row-hint'+(rsep?' gsep':'');
+        rh.id=rowHintId(r);
+        var rc=rowClues[r]||[];
+        if(hintCheck&&isDoneRow(r,rc)) rh.classList.add('done');
+        rh.textContent=rc.length?rc.join(' '):'0';
+        tr.appendChild(rh);
+        for(var c2=0;c2<cols;c2++){
+          var td=document.createElement('td');
+          var st=getState(r,c2);
+          td.className=cellCls(st);
+          td.id=cellId(r,c2);
+          if((c2+1)%5===0&&c2<cols-1) td.classList.add('csep');
+          if((r+1)%5===0&&r<rows-1)   td.classList.add('rsep');
+          td.textContent=st==='marked'?'✕':'';
+          onCell(td,r,c2);
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);
+      return table;
+    }
+    function cellCls(s){ return 'td-cell'+(s==='filled'||s===true?' filled':s==='marked'?' marked':''); }
+    function updateCellCls(td, s){
+      td.classList.remove('filled','marked');
+      if(s==='filled'||s===true) td.classList.add('filled');
+      else if(s==='marked')      td.classList.add('marked');
+    }
+    
+    function setHintCheck(v){ C.hintCheck=v; refreshSolveHints(); }
+    function refreshSolveHints(){
+      for(var r=0;r<C.sRows;r++){
+        var el=document.getElementById('srh-'+r); if(!el) continue;
+        var d=C.hintCheck&&isDoneRow(r,C.rowClues[r]||[]);
+        el.className='td-row-hint'+((r+1)%5===0&&r<C.sRows-1?' gsep':'')+(d?' done':'');
+      }
+      for(var c=0;c<C.sCols;c++){
+        var el2=document.getElementById('sch-'+c); if(!el2) continue;
+        var d2=C.hintCheck&&isDoneCol(c,C.colClues[c]||[]);
+        el2.className='td-col-hint'+((c+1)%5===0&&c<C.sCols-1?' gsep':'')+(d2?' done':'');
+      }
+    }
+    function isDoneRow(r,clues){
+      if(!clues.length) return true;
+      return clue(C.sGrid[r].map(function(v){return v==='filled'?1:0;})).join(',')===clues.join(',');
+    }
+    function isDoneCol(c,clues){
+      if(!clues.length) return true;
+      return clue(C.sGrid.map(function(row){return row[c]==='filled'?1:0;})).join(',')===clues.join(',');
+    }
+    
+    function setTool(t){
+      C.tool=t;
+      document.getElementById('tool-fill').className ='tool'+(t==='fill' ?' on':'');
+      document.getElementById('tool-mark').className ='tool tool-mark'+(t==='mark' ?' on':'');
+      document.getElementById('tool-erase').className='tool tool-erase'+(t==='erase'?' on':'');
+    }
+    
+    function checkSolve(){
+      if(isSolved()){ show('complete-msg'); hide('solve-error'); }
+      else{ show('solve-error'); hide('complete-msg'); setTimeout(function(){hide('solve-error');},3000); }
+    }
+    function autoCheck(){
+      var any=C.sGrid.reduce(function(s,row){return s+row.filter(function(v){return v==='filled';}).length;},0);
+      if(any>0&&isSolved()) setTimeout(function(){show('complete-msg');},200);
+    }
+    function isSolved(){
+      for(var r=0;r<C.sRows;r++) if((C.rowClues[r]||[]).length&&!isDoneRow(r,C.rowClues[r])) return false;
+      for(var c=0;c<C.sCols;c++) if((C.colClues[c]||[]).length&&!isDoneCol(c,C.colClues[c])) return false;
+      return true;
+    }
+    function resetSolve(){
+      C.sGrid=mk2d(C.sRows,C.sCols,'');
+      hide('complete-msg'); hide('solve-error');
+      renderSolve();
+    }
+    
+    function clue(line){ var r=[],n=0; for(var i=0;i<line.length;i++){if(line[i])n++;else if(n){r.push(n);n=0;}} if(n)r.push(n); return r; }
+    function mk2d(r,c,v){ return Array.from({length:r},function(){return Array(c).fill(v);}); }
+    function range(n){ return Array.from({length:n},function(_,i){return i;}); }
+    function clamp(v,a,b){ return Math.min(b,Math.max(a,v)); }
+    function show(id){ document.getElementById(id).classList.add('show'); }
+    function hide(id){ document.getElementById(id).classList.remove('show'); }
+    
+    window.onload = function(){
+      document.getElementById('diff-note').textContent=DIFF_NOTE['easy'];
+    
+      applySize();
+    
+      var params=new URLSearchParams(window.location.search);
+      var d=params.get('d');
+      if(d){
+        var decoded=decodeGrid(d);
+        if(decoded){
+          C.cRows=decoded.rows; C.cCols=decoded.cols; C.cGrid=decoded.grid;
+          document.getElementById('c-rows').value=C.cRows;
+          document.getElementById('c-cols').value=C.cCols;
+          renderCreate();
+          goSolveOwn();
+        }
+      }
+    };
+  </script>
+</body>
+</html>
