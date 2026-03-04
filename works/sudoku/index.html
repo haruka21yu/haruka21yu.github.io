@@ -27,40 +27,6 @@
       line-height: 1.7;
     }
 
-    h1 {
-      font-size: 18px;
-      font-weight: normal;
-      color: var(--ink);
-      letter-spacing: 0.05em;
-      margin-bottom: 4px;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 0;
-      margin-bottom: 28px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .tab {
-      padding: 8px 20px;
-      border: none;
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-      border-bottom: 2px solid transparent;
-      position: relative;
-      bottom: -1px;
-      transition: color .15s, border-color .15s;
-    }
-    .tab:hover { color: var(--ink); }
-    .tab.active { color: var(--ink); border-bottom-color: var(--ink); }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
     button {
       padding: 5px 14px;
       font-size: 12px;
@@ -72,45 +38,24 @@
       letter-spacing: 0.03em;
       transition: background .12s, color .12s, border-color .12s;
     }
-    button:hover {
-      background: var(--bg);
-      color: var(--ink);
-      border-color: var(--accent);
-    }
-    button.primary {
-      background: var(--accent);
-      color: var(--paper);
-      border-color: var(--accent);
-    }
+    button:hover { background: var(--bg); color: var(--ink); border-color: var(--accent); }
+    button.primary { background: var(--accent); color: var(--paper); border-color: var(--accent); }
     button.primary:hover { background: #d86a42; }
-    button.danger {
-      background: transparent;
-      color: #a55;
-      border-color: #a55;
-    }
+    button.danger { background: transparent; color: #a55; border-color: #a55; }
     button.danger:hover { background: rgba(180,100,100,0.1); }
 
-    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
     .pill {
-      padding: 4px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      background: var(--paper);
-      color: var(--muted);
-      transition: all .12s;
+      padding: 4px 14px; font-size: 12px; cursor: pointer;
+      border: 1px solid var(--line); border-radius: 2px;
+      background: var(--paper); color: var(--muted); transition: all .12s;
     }
     .pill:hover { color: var(--ink); border-color: var(--accent); }
     .pill.active { background: var(--accent); color: var(--paper); border-color: var(--accent); }
 
     .msg {
-      display: none;
-      border-radius: 2px;
-      padding: 10px 14px;
-      margin-top: 10px;
-      font-size: 12px;
-      border: 1px solid;
+      display: none; border-radius: 2px; padding: 10px 14px;
+      margin-bottom: 12px; font-size: 12px; border: 1px solid;
     }
     .msg.show { display: block; }
     .msg-ok  { background: rgba(196,96,58,0.07); border-color: var(--accent); color: var(--accent); }
@@ -119,142 +64,84 @@
     .section-note { font-size: 12px; color: var(--muted); margin: 4px 0 12px; }
 
     /* ===== 数独グリッド ===== */
-    .sudoku-wrap {
-      display: inline-block;
-      margin-bottom: 16px;
-    }
+    .sudoku-wrap { display: inline-block; margin-bottom: 16px; }
 
-    .sudoku-grid {
-      display: grid;
-      grid-template-columns: repeat(9, 44px);
-      grid-template-rows:    repeat(9, 44px);
+    .sudoku-table {
+      border-collapse: collapse;
       border: 2px solid var(--ink);
-      gap: 0;
     }
-
-    .s-cell {
+    .sudoku-table td {
       width: 44px; height: 44px;
       border: 1px solid var(--line);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
+      text-align: center; vertical-align: middle;
+      position: relative; padding: 0;
       cursor: pointer;
-      background: var(--bg);
-      color: var(--ink);
-      user-select: none;
-      position: relative;
       transition: background .07s;
-      outline: none;
     }
+    .sudoku-table td.box-right  { border-right:  2px solid var(--ink); }
+    .sudoku-table td.box-bottom { border-bottom: 2px solid var(--ink); }
 
-    /* 3×3ブロック境界線 */
-    .s-cell[data-c="2"], .s-cell[data-c="5"] { border-right: 2px solid var(--ink); }
-    .s-cell[data-r="2"], .s-cell[data-r="5"] { border-bottom: 2px solid var(--ink); }
-
-    .s-cell.given {
-      color: var(--ink);
-      background: var(--paper);
-      cursor: default;
-      font-weight: bold;
-    }
-
-    .s-cell.selected {
-      background: rgba(196,96,58,0.18) !important;
-    }
-
-    .s-cell.highlight {
-      background: rgba(196,96,58,0.07);
-    }
-
-    .s-cell.conflict {
-      color: #a55 !important;
-    }
-
-    .s-cell.user-input {
-      color: var(--accent);
-    }
-
-    /* メモモード */
-    .s-cell .memo-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows:    repeat(3, 1fr);
+    .sudoku-table td .cell-val {
       width: 100%; height: 100%;
-      padding: 1px;
-    }
-    .s-cell .memo-num {
-      font-size: 9px;
       display: flex; align-items: center; justify-content: center;
-      color: var(--muted);
+      font-size: 20px; font-family: inherit;
+      color: var(--accent);
+      user-select: none;
+    }
+    .sudoku-table td.given .cell-val {
+      color: var(--muted); font-weight: bold;
+    }
+    .sudoku-table td.selected { background: var(--paper); }
+    .sudoku-table td.highlight { background: var(--paper); opacity: 0.6; }
+    .sudoku-table td.error .cell-val { color: #a55; }
+
+    /* メモ */
+    .memo-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      width: 100%; height: 100%; padding: 2px;
+    }
+    .memo-grid span {
+      font-size: 9px; color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
       line-height: 1;
     }
-    .s-cell .memo-num.on { color: var(--accent); }
 
-    /* 数字入力パッド */
+    /* 数字パッド */
     .numpad {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-      max-width: 400px;
+      display: flex; gap: 5px; flex-wrap: wrap;
+      margin-bottom: 14px; align-items: center;
     }
-    .num-btn {
-      width: 38px; height: 38px;
-      font-size: 18px;
+    .numpad-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; margin-right: 2px; }
+    .numpad-btn {
+      width: 36px; height: 36px; font-size: 16px; padding: 0;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      background: var(--paper);
-      color: var(--ink);
-      transition: all .1s;
-      font-weight: bold;
-    }
-    .num-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .num-btn.erase { font-size: 14px; color: var(--muted); }
-
-    .toolbar-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-    input[type=checkbox] {
-      width: 14px; height: 14px;
-      cursor: pointer;
-      accent-color: var(--accent);
-    }
-
-    #timer {
-      font-size: 12px;
-      color: var(--muted);
-      font-variant-numeric: tabular-nums;
-      margin-left: auto;
-    }
-
-    .share-box {
-      display: none;
-      margin-top: 14px;
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      padding: 12px 14px;
-    }
-    .share-box.show { display: block; }
-    .share-box p { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-    .share-url {
-      width: 100%; padding: 5px 8px; font-size: 12px;
       border: 1px solid var(--line); border-radius: 2px;
-      background: var(--bg); color: var(--ink); word-break: break-all;
+      background: var(--paper); color: var(--ink);
+      cursor: pointer; transition: all .12s;
     }
+    .numpad-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .numpad-btn.erase { font-size: 12px; width: auto; padding: 0 10px; color: var(--muted); }
+
+    /* ツールバー */
+    .toolbar {
+      display: flex; gap: 8px; margin-bottom: 14px;
+      flex-wrap: wrap; align-items: center;
+    }
+    .tool-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
+    .memo-toggle {
+      padding: 5px 13px; font-size: 12px; cursor: pointer;
+      border: 1px solid var(--line); border-radius: 2px;
+      background: var(--paper); color: var(--muted); transition: all .12s;
+    }
+    .memo-toggle:hover { color: var(--ink); border-color: var(--accent); }
+    .memo-toggle.on { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+
+    .top-bar {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px; flex-wrap: wrap;
+    }
+    .game-label { font-size: 12px; color: var(--muted); }
+    .timer { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
   </style>
 </head>
 <body>
@@ -281,87 +168,62 @@
     <h1>sudoku</h1>
   </div>
 
-  <!-- タブ -->
-  <div class="tabs">
-    <div class="tab active" id="tab-play" onclick="showTab('play')">数独を解く</div>
-    <div class="tab" id="tab-select" onclick="showTab('select')">問題を選ぶ</div>
+  <!-- 難易度選択 -->
+  <div id="page-select">
+    <p class="section-note">難易度を選んでください。</p>
+    <div class="pill-group">
+      <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">やさしい</div>
+      <div class="pill"        data-diff="normal" onclick="pickDiff(this)">ふつう</div>
+      <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
+    </div>
+    <div id="diff-note" style="font-size:11px;color:var(--muted);margin-bottom:14px;"></div>
+    <button class="primary" onclick="startGame()">はじめる</button>
+    <div id="gen-msg" class="msg msg-err" style="margin-top:10px;"></div>
   </div>
 
-  <!-- ===== 解くページ ===== -->
-  <div class="page active" id="page-play">
+  <!-- ゲーム画面 -->
+  <div id="page-game" style="display:none;">
 
-    <div class="toolbar-row">
-      <span id="solve-label" style="font-size:12px;color:var(--muted);"></span>
-      <button onclick="showTab('select')">← 問題を選ぶ</button>
-      <span id="timer">0:00</span>
+    <div class="top-bar">
+      <span class="game-label" id="game-label"></span>
+      <button onclick="backToSelect()">← 選択に戻る</button>
+      <span class="timer" id="timer">0:00</span>
     </div>
 
-    <div class="toolbar-row">
-      <label class="toggle-row">
-        <input type="checkbox" id="memo-toggle" onchange="S.memoMode=this.checked">
-        メモモード
-      </label>
-      <label class="toggle-row">
-        <input type="checkbox" id="highlight-toggle" checked onchange="S.highlightMode=this.checked; renderBoard()">
-        同じ数字をハイライト
-      </label>
-      <label class="toggle-row">
-        <input type="checkbox" id="conflict-toggle" checked onchange="S.conflictMode=this.checked; renderBoard()">
-        競合を赤表示
-      </label>
+    <div id="complete-msg" class="msg msg-ok">
+      🎉 完成！数独を解き終わりました。
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="startGame()">同じ難易度でもう一度</button>
+        <button onclick="backToSelect()">選択に戻る</button>
+      </div>
+    </div>
+    <div id="error-msg" class="msg msg-err"></div>
+
+    <div class="toolbar">
+      <span class="tool-label">メモ：</span>
+      <div class="memo-toggle" id="memo-toggle" onclick="toggleMemo()">メモモード OFF</div>
+      <button class="danger" onclick="resetGame()">🔄 リセット</button>
+      <button class="primary" onclick="checkGame()">✅ 答え合わせ</button>
+    </div>
+
+    <div class="numpad">
+      <span class="numpad-label">入力：</span>
+      <button class="numpad-btn" onclick="inputNum(1)">1</button>
+      <button class="numpad-btn" onclick="inputNum(2)">2</button>
+      <button class="numpad-btn" onclick="inputNum(3)">3</button>
+      <button class="numpad-btn" onclick="inputNum(4)">4</button>
+      <button class="numpad-btn" onclick="inputNum(5)">5</button>
+      <button class="numpad-btn" onclick="inputNum(6)">6</button>
+      <button class="numpad-btn" onclick="inputNum(7)">7</button>
+      <button class="numpad-btn" onclick="inputNum(8)">8</button>
+      <button class="numpad-btn" onclick="inputNum(9)">9</button>
+      <button class="numpad-btn erase" onclick="inputNum(0)">消す</button>
     </div>
 
     <div class="sudoku-wrap">
-      <div class="sudoku-grid" id="sudoku-grid"></div>
+      <table class="sudoku-table" id="sudoku-table"></table>
     </div>
 
-    <div class="numpad" id="numpad"></div>
-
-    <div class="toolbar-row">
-      <button onclick="resetBoard()">🔄 最初からやり直す</button>
-      <button class="primary" onclick="checkBoard()">✅ 答え合わせ</button>
-      <button onclick="showShare()">共有URLを作る</button>
-    </div>
-
-    <div id="solve-error" class="msg msg-err">まだ完成していません。どこか間違いがあります。</div>
-    <div id="complete-msg" class="msg msg-ok">
-      🎉 完成！数独を解き終わりました。<br>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="resetBoard()">もう一度</button>
-        <button class="primary" onclick="showTab('select')">新しい問題を選ぶ</button>
-      </div>
-    </div>
-
-    <div class="share-box" id="share-box">
-      <p>以下のURLを共有すると、この問題を直接開けます。</p>
-      <input class="share-url" id="share-url" type="text" readonly onclick="this.select()">
-      <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
-        <button onclick="copyShareUrl()">コピー</button>
-        <span id="copy-ok" style="font-size:12px;color:var(--accent);display:none;">コピーしました</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== 問題選択ページ ===== -->
-  <div class="page" id="page-select">
-    <p class="section-note" style="margin-bottom:16px;">難易度を選んで「生成して解く」を押してください。</p>
-
-    <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      <div style="border:1px solid var(--line);border-radius:2px;padding:16px 20px;min-width:240px;">
-        <div style="font-size:14px;color:var(--ink);margin-bottom:10px;">🎲 自動生成</div>
-
-        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">難易度：</div>
-        <div class="pill-group" style="margin-bottom:14px;">
-          <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">かんたん</div>
-          <div class="pill"        data-diff="normal" onclick="pickDiff(this)">ふつう</div>
-          <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
-        </div>
-        <div id="diff-note" style="font-size:11px;color:var(--muted);margin-bottom:12px;"></div>
-
-        <button class="primary" onclick="generateAndPlay()">生成して解く</button>
-        <div id="gen-msg" class="msg msg-err" style="margin-top:8px;"></div>
-      </div>
-    </div>
   </div>
 
   <footer>
@@ -374,35 +236,27 @@
    STATE
 ===================================================== */
 var S = {
-  given:    Array(81).fill(0),   // 問題の数字（0=空）
-  board:    Array(81).fill(0),   // 現在の盤面
-  memo:     Array.from({length:81}, function(){ return Array(10).fill(false); }),
-  selected: -1,
-  memoMode: false,
-  highlightMode: true,
-  conflictMode: true,
   diff: 'easy',
+  given: [],
+  board: [],
+  memo: [],
+  solution: [],
+  selected: null,
+  memoMode: false,
   timerStart: null,
   timerInterval: null,
 };
 
 var DIFF_NOTE = {
-  easy:   'かんたん：ヒントが多め（約40マス）。',
-  normal: 'ふつう：ヒントが中程度（約32マス）。',
-  hard:   'むずかしい：ヒントが少なめ（約26マス）。',
+  easy:   'やさしい：ヒントが多め。比較的シンプルに解けます。',
+  normal: 'ふつう：ヒントは中程度。少し考える場面があります。',
+  hard:   'むずかしい：ヒントが少なめ。じっくり考える必要があります。',
 };
-var DIFF_GIVENS = { easy: 40, normal: 32, hard: 26 };
+var DIFF_CLUES = { easy: 36, normal: 28, hard: 22 };
 
 /* =====================================================
-   TAB
+   DIFFICULTY UI
 ===================================================== */
-function showTab(id) {
-  ['play','select'].forEach(function(t) {
-    document.getElementById('page-'+t).classList.toggle('active', t===id);
-    document.getElementById('tab-'+t).classList.toggle('active', t===id);
-  });
-}
-
 function pickDiff(btn) {
   document.querySelectorAll('[data-diff]').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
@@ -410,394 +264,355 @@ function pickDiff(btn) {
   document.getElementById('diff-note').textContent = DIFF_NOTE[S.diff];
 }
 
+function backToSelect() {
+  clearInterval(S.timerInterval);
+  document.getElementById('page-select').style.display = '';
+  document.getElementById('page-game').style.display = 'none';
+}
+
 /* =====================================================
    SUDOKU GENERATOR
 ===================================================== */
-function shuffle(arr) {
-  for (var i = arr.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
-  }
-  return arr;
-}
+function generateSudoku(numClues) {
+  var sol = mk9x9(0);
+  if (!fillBoard(sol)) return null;
 
-function idx(r, c) { return r * 9 + c; }
+  var given = sol.map(function(row){ return row.slice(); });
+  var positions = shuffle(range81());
+  var target = 81 - numClues;
+  var removed = 0;
 
-function isValid(board, pos, num) {
-  var r = Math.floor(pos / 9), c = pos % 9;
-  for (var i = 0; i < 9; i++) {
-    if (board[idx(r, i)] === num) return false;
-    if (board[idx(i, c)] === num) return false;
+  for (var i = 0; i < positions.length && removed < target; i++) {
+    var r = Math.floor(positions[i] / 9);
+    var c = positions[i] % 9;
+    var backup = given[r][c];
+    given[r][c] = 0;
+    if (countSolutions(given, 2) === 1) {
+      removed++;
+    } else {
+      given[r][c] = backup;
+    }
   }
-  var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
-  for (var dr = 0; dr < 3; dr++)
-    for (var dc = 0; dc < 3; dc++)
-      if (board[idx(br+dr, bc+dc)] === num) return false;
-  return true;
+
+  return { given: given, solution: sol };
 }
 
 function fillBoard(board) {
-  var pos = board.indexOf(0);
-  if (pos === -1) return true;
+  var pos = findEmpty(board);
+  if (!pos) return true;
+  var r = pos[0], c = pos[1];
   var nums = shuffle([1,2,3,4,5,6,7,8,9]);
   for (var i = 0; i < nums.length; i++) {
-    if (isValid(board, pos, nums[i])) {
-      board[pos] = nums[i];
+    if (isValid(board, r, c, nums[i])) {
+      board[r][c] = nums[i];
       if (fillBoard(board)) return true;
-      board[pos] = 0;
+      board[r][c] = 0;
     }
   }
   return false;
 }
 
+function findEmpty(board) {
+  for (var r = 0; r < 9; r++)
+    for (var c = 0; c < 9; c++)
+      if (board[r][c] === 0) return [r, c];
+  return null;
+}
+
+function isValid(board, r, c, num) {
+  for (var i = 0; i < 9; i++) if (board[r][i] === num) return false;
+  for (var i = 0; i < 9; i++) if (board[i][c] === num) return false;
+  var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+  for (var dr = 0; dr < 3; dr++)
+    for (var dc = 0; dc < 3; dc++)
+      if (board[br+dr][bc+dc] === num) return false;
+  return true;
+}
+
 function countSolutions(board, limit) {
-  var pos = board.indexOf(0);
-  if (pos === -1) return 1;
+  var copy = board.map(function(row){ return row.slice(); });
   var count = 0;
-  for (var n = 1; n <= 9; n++) {
-    if (isValid(board, pos, n)) {
-      board[pos] = n;
-      count += countSolutions(board, limit);
-      board[pos] = 0;
-      if (count >= limit) return count;
+  function solve() {
+    var pos = findEmpty(copy);
+    if (!pos) { count++; return; }
+    var r = pos[0], c = pos[1];
+    for (var n = 1; n <= 9 && count < limit; n++) {
+      if (isValid(copy, r, c, n)) {
+        copy[r][c] = n;
+        solve();
+        copy[r][c] = 0;
+      }
     }
   }
+  solve();
   return count;
 }
 
-function generatePuzzle(numGivens) {
-  // 完成盤面を生成
-  var solution = Array(81).fill(0);
-  fillBoard(solution);
+/* =====================================================
+   GAME CONTROL
+===================================================== */
+function startGame() {
+  hide('gen-msg'); hide('complete-msg'); hide('error-msg');
 
-  // ランダムな順でマスを削除、一意解を維持
-  var positions = shuffle(Array.from({length:81}, function(_,i){ return i; }));
-  var puzzle = solution.slice();
-  var removed = 0;
-  var target = 81 - numGivens;
-
-  for (var i = 0; i < positions.length && removed < target; i++) {
-    var pos = positions[i];
-    var backup = puzzle[pos];
-    puzzle[pos] = 0;
-    var test = puzzle.slice();
-    if (countSolutions(test, 2) === 1) {
-      removed++;
-    } else {
-      puzzle[pos] = backup;
-    }
+  var numClues = DIFF_CLUES[S.diff] || 28;
+  var result = generateSudoku(numClues);
+  if (!result) {
+    var el = document.getElementById('gen-msg');
+    el.textContent = '生成に失敗しました。もう一度お試しください。';
+    el.classList.add('show');
+    return;
   }
 
-  return { puzzle: puzzle, solution: solution };
+  S.given    = result.given;
+  S.solution = result.solution;
+  S.board    = result.given.map(function(row){ return row.slice(); });
+  S.memo     = Array.from({length:9}, function(){
+    return Array.from({length:9}, function(){ return new Set(); });
+  });
+  S.selected = null;
+  S.memoMode = false;
+  var mt = document.getElementById('memo-toggle');
+  mt.classList.remove('on');
+  mt.textContent = 'メモモード OFF';
+
+  var labels = {easy:'やさしい', normal:'ふつう', hard:'むずかしい'};
+  document.getElementById('game-label').textContent = 'sudoku — ' + labels[S.diff];
+
+  document.getElementById('page-select').style.display = 'none';
+  document.getElementById('page-game').style.display = '';
+
+  renderBoard();
+  startTimer();
+}
+
+function resetGame() {
+  hide('complete-msg'); hide('error-msg');
+  S.board = S.given.map(function(row){ return row.slice(); });
+  S.memo  = Array.from({length:9}, function(){
+    return Array.from({length:9}, function(){ return new Set(); });
+  });
+  S.selected = null;
+  renderBoard();
+  startTimer();
+}
+
+function checkGame() {
+  hide('complete-msg'); hide('error-msg');
+  for (var r = 0; r < 9; r++)
+    for (var c = 0; c < 9; c++)
+      if (S.board[r][c] === 0) {
+        showErr('まだ空のマスがあります。');
+        return;
+      }
+  for (var r = 0; r < 9; r++)
+    for (var c = 0; c < 9; c++)
+      if (S.board[r][c] !== S.solution[r][c]) {
+        showErr('間違いがあります。もう一度確認してみてください。');
+        markErrors();
+        return;
+      }
+  clearInterval(S.timerInterval);
+  show('complete-msg');
+}
+
+function markErrors() {
+  for (var r = 0; r < 9; r++)
+    for (var c = 0; c < 9; c++) {
+      var td = getCell(r, c);
+      if (!td) continue;
+      td.classList.remove('error');
+      if (S.board[r][c] !== 0 && S.given[r][c] === 0 && S.board[r][c] !== S.solution[r][c])
+        td.classList.add('error');
+    }
+}
+
+function autoCheck() {
+  for (var r = 0; r < 9; r++)
+    for (var c = 0; c < 9; c++)
+      if (S.board[r][c] === 0 || S.board[r][c] !== S.solution[r][c]) return;
+  clearInterval(S.timerInterval);
+  setTimeout(function(){ show('complete-msg'); }, 200);
 }
 
 /* =====================================================
-   PLAY
+   INPUT
 ===================================================== */
-function startGame(puzzle, solution, label) {
-  S.given    = puzzle.slice();
-  S.board    = puzzle.slice();
-  S.solution = solution.slice();
-  S.memo     = Array.from({length:81}, function(){ return Array(10).fill(false); });
-  S.selected = -1;
-  S.memoMode = false;
-  document.getElementById('memo-toggle').checked = false;
+function inputNum(n) {
+  if (!S.selected) return;
+  var r = S.selected[0], c = S.selected[1];
+  if (S.given[r][c] !== 0) return;
 
-  hide('complete-msg'); hide('solve-error'); hide('share-box'); hide('gen-msg');
+  if (S.memoMode) {
+    if (n === 0) {
+      S.memo[r][c].clear();
+    } else {
+      if (S.memo[r][c].has(n)) S.memo[r][c].delete(n);
+      else S.memo[r][c].add(n);
+      S.board[r][c] = 0;
+    }
+  } else {
+    S.board[r][c] = n;
+    S.memo[r][c].clear();
+    // エラー表示を消す
+    var td = getCell(r, c);
+    if (td) td.classList.remove('error');
+  }
 
-  document.getElementById('solve-label').textContent = label;
-  showTab('play');
   renderBoard();
-  buildNumpad();
-
-  clearInterval(S.timerInterval);
-  S.timerStart = Date.now();
-  document.getElementById('timer').textContent = '0:00';
-  S.timerInterval = setInterval(function() {
-    var s = Math.floor((Date.now() - S.timerStart) / 1000);
-    var m = Math.floor(s / 60); s = s % 60;
-    document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
-  }, 1000);
+  selectCell(r, c);
+  if (!S.memoMode && n !== 0) autoCheck();
 }
 
-function generateAndPlay() {
-  hide('gen-msg');
-  var numGivens = DIFF_GIVENS[S.diff] || 32;
-  var label = {easy:'かんたん', normal:'ふつう', hard:'むずかしい'}[S.diff];
-  try {
-    var result = generatePuzzle(numGivens);
-    startGame(result.puzzle, result.solution, '自動生成（' + label + '）');
-  } catch(e) {
-    var el = document.getElementById('gen-msg');
-    el.textContent = '生成に失敗しました。もう一度お試しください。';
-    show('gen-msg');
-  }
+function toggleMemo() {
+  S.memoMode = !S.memoMode;
+  var btn = document.getElementById('memo-toggle');
+  btn.classList.toggle('on', S.memoMode);
+  btn.textContent = 'メモモード ' + (S.memoMode ? 'ON' : 'OFF');
 }
 
 /* =====================================================
    RENDER
 ===================================================== */
 function renderBoard() {
-  var grid = document.getElementById('sudoku-grid');
-  grid.innerHTML = '';
-  var selVal = S.selected >= 0 ? S.board[S.selected] : 0;
-
+  var table = document.getElementById('sudoku-table');
+  table.innerHTML = '';
   for (var r = 0; r < 9; r++) {
+    var tr = document.createElement('tr');
     for (var c = 0; c < 9; c++) {
-      var pos = idx(r, c);
-      var cell = document.createElement('div');
-      cell.className = 's-cell';
-      cell.dataset.r = r;
-      cell.dataset.c = c;
-      cell.dataset.pos = pos;
-      cell.tabIndex = 0;
+      var td = document.createElement('td');
+      td.dataset.r = r;
+      td.dataset.c = c;
 
-      var val = S.board[pos];
-      var isGiven = S.given[pos] !== 0;
+      if (c === 2 || c === 5) td.classList.add('box-right');
+      if (r === 2 || r === 5) td.classList.add('box-bottom');
+      if (S.given[r][c] !== 0) td.classList.add('given');
 
-      if (isGiven) {
-        cell.classList.add('given');
-        cell.textContent = val;
-      } else if (val !== 0) {
-        cell.classList.add('user-input');
-        // conflict check
-        if (S.conflictMode && hasConflict(pos, val)) {
-          cell.classList.add('conflict');
+      var val = S.board[r][c];
+      var memoSet = S.memo[r][c];
+
+      if (val !== 0) {
+        var div = document.createElement('div');
+        div.className = 'cell-val';
+        div.textContent = val;
+        td.appendChild(div);
+      } else if (memoSet.size > 0) {
+        var grid = document.createElement('div');
+        grid.className = 'memo-grid';
+        for (var n = 1; n <= 9; n++) {
+          var span = document.createElement('span');
+          span.textContent = memoSet.has(n) ? n : '';
+          grid.appendChild(span);
         }
-        cell.textContent = val;
+        td.appendChild(grid);
       } else {
-        // メモ表示
-        var hasMemo = S.memo[pos].some(function(v){ return v; });
-        if (hasMemo) {
-          var mg = document.createElement('div');
-          mg.className = 'memo-grid';
-          for (var n = 1; n <= 9; n++) {
-            var mn = document.createElement('div');
-            mn.className = 'memo-num' + (S.memo[pos][n] ? ' on' : '');
-            mn.textContent = S.memo[pos][n] ? n : '';
-            mg.appendChild(mn);
-          }
-          cell.appendChild(mg);
-        }
+        var div = document.createElement('div');
+        div.className = 'cell-val';
+        div.textContent = '';
+        td.appendChild(div);
       }
 
-      // 選択状態
-      if (pos === S.selected) {
-        cell.classList.add('selected');
-      } else if (S.highlightMode && selVal > 0 && val === selVal) {
-        cell.classList.add('highlight');
-      }
+      (function(row, col){
+        td.addEventListener('click', function(){ selectCell(row, col); });
+      })(r, c);
 
-      (function(p) {
-        cell.addEventListener('mousedown', function(e) {
-          e.preventDefault();
-          selectCell(p);
-        });
-      })(pos);
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+}
 
-      grid.appendChild(cell);
+function selectCell(r, c) {
+  S.selected = [r, c];
+  var selVal = S.board[r][c];
+
+  for (var rr = 0; rr < 9; rr++) {
+    for (var cc = 0; cc < 9; cc++) {
+      var td = getCell(rr, cc);
+      if (!td) continue;
+      td.classList.remove('selected', 'highlight');
+      var sameBox = Math.floor(rr/3)===Math.floor(r/3) && Math.floor(cc/3)===Math.floor(c/3);
+      if (rr===r || cc===c || sameBox) td.classList.add('highlight');
+      if (selVal !== 0 && S.board[rr][cc] === selVal) td.classList.add('highlight');
     }
   }
+  var selTd = getCell(r, c);
+  if (selTd) { selTd.classList.remove('highlight'); selTd.classList.add('selected'); }
 }
 
-function hasConflict(pos, val) {
-  if (val === 0) return false;
-  var r = Math.floor(pos / 9), c = pos % 9;
-  for (var i = 0; i < 9; i++) {
-    if (i !== c && S.board[idx(r, i)] === val) return true;
-    if (i !== r && S.board[idx(i, c)] === val) return true;
-  }
-  var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
-  for (var dr = 0; dr < 3; dr++)
-    for (var dc = 0; dc < 3; dc++) {
-      var p2 = idx(br+dr, bc+dc);
-      if (p2 !== pos && S.board[p2] === val) return true;
-    }
-  return false;
-}
-
-function buildNumpad() {
-  var pad = document.getElementById('numpad');
-  pad.innerHTML = '';
-  for (var n = 1; n <= 9; n++) {
-    (function(num) {
-      var btn = document.createElement('div');
-      btn.className = 'num-btn';
-      btn.textContent = num;
-      btn.addEventListener('mousedown', function(e) {
-        e.preventDefault();
-        inputNumber(num);
-      });
-      pad.appendChild(btn);
-    })(n);
-  }
-  var del = document.createElement('div');
-  del.className = 'num-btn erase';
-  del.textContent = '消す';
-  del.addEventListener('mousedown', function(e) {
-    e.preventDefault();
-    inputNumber(0);
-  });
-  pad.appendChild(del);
-}
-
-function selectCell(pos) {
-  S.selected = pos;
-  renderBoard();
-}
-
-function inputNumber(num) {
-  var pos = S.selected;
-  if (pos < 0 || S.given[pos] !== 0) return;
-
-  if (S.memoMode) {
-    if (num === 0) {
-      S.memo[pos] = Array(10).fill(false);
-    } else {
-      S.memo[pos][num] = !S.memo[pos][num];
-    }
-  } else {
-    S.board[pos] = num;
-    if (num !== 0) S.memo[pos] = Array(10).fill(false);
-  }
-  renderBoard();
-  autoCheck();
+function getCell(r, c) {
+  return document.querySelector('[data-r="'+r+'"][data-c="'+c+'"]');
 }
 
 /* =====================================================
-   キーボード入力
+   TIMER
 ===================================================== */
-document.addEventListener('keydown', function(e) {
-  if (S.selected < 0) return;
-  var pos = S.selected;
-  var r = Math.floor(pos / 9), c = pos % 9;
-
-  if (e.key >= '1' && e.key <= '9') { inputNumber(parseInt(e.key)); return; }
-  if (e.key === '0' || e.key === 'Backspace' || e.key === 'Delete') { inputNumber(0); return; }
-
-  var nr = r, nc = c;
-  if (e.key === 'ArrowUp')    nr = (r + 8) % 9;
-  if (e.key === 'ArrowDown')  nr = (r + 1) % 9;
-  if (e.key === 'ArrowLeft')  nc = (c + 8) % 9;
-  if (e.key === 'ArrowRight') nc = (c + 1) % 9;
-  if (nr !== r || nc !== c) {
-    e.preventDefault();
-    S.selected = idx(nr, nc);
-    renderBoard();
-  }
-});
-
-/* =====================================================
-   CHECK / RESET
-===================================================== */
-function checkBoard() {
-  // 全マス埋まっているか
-  if (S.board.indexOf(0) !== -1) {
-    show('solve-error');
-    hide('complete-msg');
-    setTimeout(function(){ hide('solve-error'); }, 3000);
-    return;
-  }
-  // 解答と一致するか
-  var correct = S.board.every(function(v, i){ return v === S.solution[i]; });
-  if (correct) {
-    clearInterval(S.timerInterval);
-    hide('solve-error');
-    show('complete-msg');
-  } else {
-    show('solve-error');
-    hide('complete-msg');
-    setTimeout(function(){ hide('solve-error'); }, 3000);
-  }
-}
-
-function autoCheck() {
-  if (S.board.indexOf(0) !== -1) return;
-  if (S.board.every(function(v, i){ return v === S.solution[i]; })) {
-    clearInterval(S.timerInterval);
-    setTimeout(function(){ hide('solve-error'); show('complete-msg'); }, 200);
-  }
-}
-
-function resetBoard() {
-  S.board = S.given.slice();
-  S.memo  = Array.from({length:81}, function(){ return Array(10).fill(false); });
-  S.selected = -1;
-  hide('complete-msg'); hide('solve-error');
-  renderBoard();
-
+function startTimer() {
   clearInterval(S.timerInterval);
   S.timerStart = Date.now();
   document.getElementById('timer').textContent = '0:00';
-  S.timerInterval = setInterval(function() {
-    var s = Math.floor((Date.now() - S.timerStart) / 1000);
-    var m = Math.floor(s / 60); s = s % 60;
+  S.timerInterval = setInterval(function(){
+    var elapsed = Math.floor((Date.now() - S.timerStart) / 1000);
+    var m = Math.floor(elapsed / 60);
+    var s = elapsed % 60;
     document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
   }, 1000);
 }
 
 /* =====================================================
-   SHARE URL
+   KEYBOARD
 ===================================================== */
-function encodePuzzle(puzzle) {
-  // 81マス、各0-9を1文字で表現
-  return puzzle.join('');
-}
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('page-game').style.display === 'none') return;
+  if (!S.selected) return;
+  var r = S.selected[0], c = S.selected[1];
 
-function decodePuzzle(str) {
-  if (str.length !== 81) return null;
-  var arr = [];
-  for (var i = 0; i < 81; i++) {
-    var n = parseInt(str[i]);
-    if (isNaN(n) || n < 0 || n > 9) return null;
-    arr.push(n);
+  if (e.key >= '1' && e.key <= '9') { inputNum(parseInt(e.key)); return; }
+  if (e.key === '0' || e.key === 'Backspace' || e.key === 'Delete') { inputNum(0); return; }
+
+  var dr = 0, dc = 0;
+  if (e.key === 'ArrowUp')    dr = -1;
+  if (e.key === 'ArrowDown')  dr =  1;
+  if (e.key === 'ArrowLeft')  dc = -1;
+  if (e.key === 'ArrowRight') dc =  1;
+  if (dr || dc) {
+    e.preventDefault();
+    selectCell(Math.max(0, Math.min(8, r+dr)), Math.max(0, Math.min(8, c+dc)));
   }
-  return arr;
-}
-
-function showShare() {
-  var base = window.location.href.split('?')[0];
-  var url = base + '?p=' + encodePuzzle(S.given) + '&s=' + encodePuzzle(S.solution);
-  document.getElementById('share-url').value = url;
-  show('share-box');
-}
-
-function copyShareUrl() {
-  var el = document.getElementById('share-url');
-  el.select();
-  try { document.execCommand('copy'); } catch(e) {}
-  var ok = document.getElementById('copy-ok');
-  ok.style.display = 'inline';
-  setTimeout(function(){ ok.style.display = 'none'; }, 2000);
-}
+});
 
 /* =====================================================
    UTILS
 ===================================================== */
+function mk9x9(v) {
+  return Array.from({length:9}, function(){ return Array(9).fill(v); });
+}
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function range81() {
+  var a = [];
+  for (var i = 0; i < 81; i++) a.push(i);
+  return a;
+}
 function show(id) { document.getElementById(id).classList.add('show'); }
 function hide(id) { document.getElementById(id).classList.remove('show'); }
+function showErr(text) {
+  var el = document.getElementById('error-msg');
+  el.textContent = text;
+  el.classList.add('show');
+  setTimeout(function(){ el.classList.remove('show'); }, 4000);
+}
 
 /* =====================================================
    INIT
 ===================================================== */
 window.onload = function() {
   document.getElementById('diff-note').textContent = DIFF_NOTE['easy'];
-
-  // URLパラメータから問題を復元
-  var params = new URLSearchParams(window.location.search);
-  var p = params.get('p');
-  var s = params.get('s');
-  if (p && s) {
-    var puzzle   = decodePuzzle(p);
-    var solution = decodePuzzle(s);
-    if (puzzle && solution) {
-      startGame(puzzle, solution, '共有された問題');
-      return;
-    }
-  }
-
-  // デフォルト：問題選択画面
-  showTab('select');
 };
 </script>
 </body>
