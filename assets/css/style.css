@@ -538,7 +538,7 @@ footer p {
 .tab.active { color: var(--ink); border-bottom-color: var(--ink); }
 
 .page { display: none; }
-.page.active { display: block; }
+.page.active { display: block; padding: 0rem 6vw 0rem; }
 
 .settings {
   display: flex;
