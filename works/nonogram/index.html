@@ -1092,8 +1092,6 @@
     window.onload = function(){
       document.getElementById('diff-note').textContent=DIFF_NOTE['easy'];
     
-      applySize();
-    
       var params=new URLSearchParams(window.location.search);
       var d=params.get('d');
       if(d){
@@ -1104,8 +1102,11 @@
           document.getElementById('c-cols').value=C.cCols;
           renderCreate();
           goSolveOwn();
+          return;
         }
       }
+      
+      applySize();
     };
   </script>
 </body>
