@@ -654,7 +654,7 @@
     function buildShareUrl(){
       var enc=encodeGrid(C.cGrid, C.cRows, C.cCols);
       var base=window.location.href.split('?')[0];
-      return base+'?d='+enc;
+      return base+'?d='+enc.replace(/\+/g,'%2B');
     }
     function copyShareUrl(){
       var el=document.getElementById('share-url');
