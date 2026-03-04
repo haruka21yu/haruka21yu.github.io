@@ -589,6 +589,7 @@ button.primary {
   background: var(--accent);
   color: var(--paper);
   border-color: var(--accent);
+  padding: 0rem 6vw 0rem;
 }
 
 button.primary:hover {
