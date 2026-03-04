@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yu's website">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yu's website">
+  <meta property="og:locale" content="ja_JP">
+  <title>sudoku — works — haruka21yu's website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/css/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 40px 24px 60px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: normal;
+      color: var(--ink);
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      border-bottom: 2px solid transparent;
+      position: relative;
+      bottom: -1px;
+      transition: color .15s, border-color .15s;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    button {
+      padding: 5px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      transition: background .12s, color .12s, border-color .12s;
+    }
+    button:hover {
+      background: var(--bg);
+      color: var(--ink);
+      border-color: var(--accent);
+    }
+    button.primary {
+      background: var(--accent);
+      color: var(--paper);
+      border-color: var(--accent);
+    }
+    button.primary:hover { background: #d86a42; }
+    button.danger {
+      background: transparent;
+      color: #a55;
+      border-color: #a55;
+    }
+    button.danger:hover { background: rgba(180,100,100,0.1); }
+
+    .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill {
+      padding: 4px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--muted);
+      transition: all .12s;
+    }
+    .pill:hover { color: var(--ink); border-color: var(--accent); }
+    .pill.active { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+
+    .msg {
+      display: none;
+      border-radius: 2px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      font-size: 12px;
+      border: 1px solid;
+    }
+    .msg.show { display: block; }
+    .msg-ok  { background: rgba(196,96,58,0.07); border-color: var(--accent); color: var(--accent); }
+    .msg-err { background: rgba(180,100,100,0.07); border-color: #a55; color: #a55; }
+
+    .section-note { font-size: 12px; color: var(--muted); margin: 4px 0 12px; }
+
+    /* ===== 数独グリッド ===== */
+    .sudoku-wrap {
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .sudoku-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 44px);
+      grid-template-rows:    repeat(9, 44px);
+      border: 2px solid var(--ink);
+      gap: 0;
+    }
+
+    .s-cell {
+      width: 44px; height: 44px;
+      border: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      background: var(--bg);
+      color: var(--ink);
+      user-select: none;
+      position: relative;
+      transition: background .07s;
+      outline: none;
+    }
+
+    /* 3×3ブロック境界線 */
+    .s-cell[data-c="2"], .s-cell[data-c="5"] { border-right: 2px solid var(--ink); }
+    .s-cell[data-r="2"], .s-cell[data-r="5"] { border-bottom: 2px solid var(--ink); }
+
+    .s-cell.given {
+      color: var(--ink);
+      background: var(--paper);
+      cursor: default;
+      font-weight: bold;
+    }
+
+    .s-cell.selected {
+      background: rgba(196,96,58,0.18) !important;
+    }
+
+    .s-cell.highlight {
+      background: rgba(196,96,58,0.07);
+    }
+
+    .s-cell.conflict {
+      color: #a55 !important;
+    }
+
+    .s-cell.user-input {
+      color: var(--accent);
+    }
+
+    /* メモモード */
+    .s-cell .memo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows:    repeat(3, 1fr);
+      width: 100%; height: 100%;
+      padding: 1px;
+    }
+    .s-cell .memo-num {
+      font-size: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      line-height: 1;
+    }
+    .s-cell .memo-num.on { color: var(--accent); }
+
+    /* 数字入力パッド */
+    .numpad {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      max-width: 400px;
+    }
+    .num-btn {
+      width: 38px; height: 38px;
+      font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      background: var(--paper);
+      color: var(--ink);
+      transition: all .1s;
+      font-weight: bold;
+    }
+    .num-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .num-btn.erase { font-size: 14px; color: var(--muted); }
+
+    .toolbar-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    input[type=checkbox] {
+      width: 14px; height: 14px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    #timer {
+      font-size: 12px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      margin-left: auto;
+    }
+
+    .share-box {
+      display: none;
+      margin-top: 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 12px 14px;
+    }
+    .share-box.show { display: block; }
+    .share-box p { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .share-url {
+      width: 100%; padding: 5px 8px; font-size: 12px;
+      border: 1px solid var(--line); border-radius: 2px;
+      background: var(--bg); color: var(--ink); word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yu's<br><em>website</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/" class="active">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      <a href="https://haruka21yu.github.io/works/">works</a>
+      <span>/</span>
+      sudoku
+    </p>
+    <h1>sudoku</h1>
+  </div>
+
+  <!-- タブ -->
+  <div class="tabs">
+    <div class="tab active" id="tab-play" onclick="showTab('play')">数独を解く</div>
+    <div class="tab" id="tab-select" onclick="showTab('select')">問題を選ぶ</div>
+  </div>
+
+  <!-- ===== 解くページ ===== -->
+  <div class="page active" id="page-play">
+
+    <div class="toolbar-row">
+      <span id="solve-label" style="font-size:12px;color:var(--muted);"></span>
+      <button onclick="showTab('select')">← 問題を選ぶ</button>
+      <span id="timer">0:00</span>
+    </div>
+
+    <div class="toolbar-row">
+      <label class="toggle-row">
+        <input type="checkbox" id="memo-toggle" onchange="S.memoMode=this.checked">
+        メモモード
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="highlight-toggle" checked onchange="S.highlightMode=this.checked; renderBoard()">
+        同じ数字をハイライト
+      </label>
+      <label class="toggle-row">
+        <input type="checkbox" id="conflict-toggle" checked onchange="S.conflictMode=this.checked; renderBoard()">
+        競合を赤表示
+      </label>
+    </div>
+
+    <div class="sudoku-wrap">
+      <div class="sudoku-grid" id="sudoku-grid"></div>
+    </div>
+
+    <div class="numpad" id="numpad"></div>
+
+    <div class="toolbar-row">
+      <button onclick="resetBoard()">🔄 最初からやり直す</button>
+      <button class="primary" onclick="checkBoard()">✅ 答え合わせ</button>
+      <button onclick="showShare()">共有URLを作る</button>
+    </div>
+
+    <div id="solve-error" class="msg msg-err">まだ完成していません。どこか間違いがあります。</div>
+    <div id="complete-msg" class="msg msg-ok">
+      🎉 完成！数独を解き終わりました。<br>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button onclick="resetBoard()">もう一度</button>
+        <button class="primary" onclick="showTab('select')">新しい問題を選ぶ</button>
+      </div>
+    </div>
+
+    <div class="share-box" id="share-box">
+      <p>以下のURLを共有すると、この問題を直接開けます。</p>
+      <input class="share-url" id="share-url" type="text" readonly onclick="this.select()">
+      <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+        <button onclick="copyShareUrl()">コピー</button>
+        <span id="copy-ok" style="font-size:12px;color:var(--accent);display:none;">コピーしました</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 問題選択ページ ===== -->
+  <div class="page" id="page-select">
+    <p class="section-note" style="margin-bottom:16px;">難易度を選んで「生成して解く」を押してください。</p>
+
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div style="border:1px solid var(--line);border-radius:2px;padding:16px 20px;min-width:240px;">
+        <div style="font-size:14px;color:var(--ink);margin-bottom:10px;">🎲 自動生成</div>
+
+        <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">難易度：</div>
+        <div class="pill-group" style="margin-bottom:14px;">
+          <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">かんたん</div>
+          <div class="pill"        data-diff="normal" onclick="pickDiff(this)">ふつう</div>
+          <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
+        </div>
+        <div id="diff-note" style="font-size:11px;color:var(--muted);margin-bottom:12px;"></div>
+
+        <button class="primary" onclick="generateAndPlay()">生成して解く</button>
+        <div id="gen-msg" class="msg msg-err" style="margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yu's website</span>
+  </footer>
+
+<script>
+/* =====================================================
+   STATE
+===================================================== */
+var S = {
+  given:    Array(81).fill(0),   // 問題の数字（0=空）
+  board:    Array(81).fill(0),   // 現在の盤面
+  memo:     Array.from({length:81}, function(){ return Array(10).fill(false); }),
+  selected: -1,
+  memoMode: false,
+  highlightMode: true,
+  conflictMode: true,
+  diff: 'easy',
+  timerStart: null,
+  timerInterval: null,
+};
+
+var DIFF_NOTE = {
+  easy:   'かんたん：ヒントが多め（約40マス）。',
+  normal: 'ふつう：ヒントが中程度（約32マス）。',
+  hard:   'むずかしい：ヒントが少なめ（約26マス）。',
+};
+var DIFF_GIVENS = { easy: 40, normal: 32, hard: 26 };
+
+/* =====================================================
+   TAB
+===================================================== */
+function showTab(id) {
+  ['play','select'].forEach(function(t) {
+    document.getElementById('page-'+t).classList.toggle('active', t===id);
+    document.getElementById('tab-'+t).classList.toggle('active', t===id);
+  });
+}
+
+function pickDiff(btn) {
+  document.querySelectorAll('[data-diff]').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  S.diff = btn.dataset.diff;
+  document.getElementById('diff-note').textContent = DIFF_NOTE[S.diff];
+}
+
+/* =====================================================
+   SUDOKU GENERATOR
+===================================================== */
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+function idx(r, c) { return r * 9 + c; }
+
+function isValid(board, pos, num) {
+  var r = Math.floor(pos / 9), c = pos % 9;
+  for (var i = 0; i < 9; i++) {
+    if (board[idx(r, i)] === num) return false;
+    if (board[idx(i, c)] === num) return false;
+  }
+  var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+  for (var dr = 0; dr < 3; dr++)
+    for (var dc = 0; dc < 3; dc++)
+      if (board[idx(br+dr, bc+dc)] === num) return false;
+  return true;
+}
+
+function fillBoard(board) {
+  var pos = board.indexOf(0);
+  if (pos === -1) return true;
+  var nums = shuffle([1,2,3,4,5,6,7,8,9]);
+  for (var i = 0; i < nums.length; i++) {
+    if (isValid(board, pos, nums[i])) {
+      board[pos] = nums[i];
+      if (fillBoard(board)) return true;
+      board[pos] = 0;
+    }
+  }
+  return false;
+}
+
+function countSolutions(board, limit) {
+  var pos = board.indexOf(0);
+  if (pos === -1) return 1;
+  var count = 0;
+  for (var n = 1; n <= 9; n++) {
+    if (isValid(board, pos, n)) {
+      board[pos] = n;
+      count += countSolutions(board, limit);
+      board[pos] = 0;
+      if (count >= limit) return count;
+    }
+  }
+  return count;
+}
+
+function generatePuzzle(numGivens) {
+  // 完成盤面を生成
+  var solution = Array(81).fill(0);
+  fillBoard(solution);
+
+  // ランダムな順でマスを削除、一意解を維持
+  var positions = shuffle(Array.from({length:81}, function(_,i){ return i; }));
+  var puzzle = solution.slice();
+  var removed = 0;
+  var target = 81 - numGivens;
+
+  for (var i = 0; i < positions.length && removed < target; i++) {
+    var pos = positions[i];
+    var backup = puzzle[pos];
+    puzzle[pos] = 0;
+    var test = puzzle.slice();
+    if (countSolutions(test, 2) === 1) {
+      removed++;
+    } else {
+      puzzle[pos] = backup;
+    }
+  }
+
+  return { puzzle: puzzle, solution: solution };
+}
+
+/* =====================================================
+   PLAY
+===================================================== */
+function startGame(puzzle, solution, label) {
+  S.given    = puzzle.slice();
+  S.board    = puzzle.slice();
+  S.solution = solution.slice();
+  S.memo     = Array.from({length:81}, function(){ return Array(10).fill(false); });
+  S.selected = -1;
+  S.memoMode = false;
+  document.getElementById('memo-toggle').checked = false;
+
+  hide('complete-msg'); hide('solve-error'); hide('share-box'); hide('gen-msg');
+
+  document.getElementById('solve-label').textContent = label;
+  showTab('play');
+  renderBoard();
+  buildNumpad();
+
+  clearInterval(S.timerInterval);
+  S.timerStart = Date.now();
+  document.getElementById('timer').textContent = '0:00';
+  S.timerInterval = setInterval(function() {
+    var s = Math.floor((Date.now() - S.timerStart) / 1000);
+    var m = Math.floor(s / 60); s = s % 60;
+    document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }, 1000);
+}
+
+function generateAndPlay() {
+  hide('gen-msg');
+  var numGivens = DIFF_GIVENS[S.diff] || 32;
+  var label = {easy:'かんたん', normal:'ふつう', hard:'むずかしい'}[S.diff];
+  try {
+    var result = generatePuzzle(numGivens);
+    startGame(result.puzzle, result.solution, '自動生成（' + label + '）');
+  } catch(e) {
+    var el = document.getElementById('gen-msg');
+    el.textContent = '生成に失敗しました。もう一度お試しください。';
+    show('gen-msg');
+  }
+}
+
+/* =====================================================
+   RENDER
+===================================================== */
+function renderBoard() {
+  var grid = document.getElementById('sudoku-grid');
+  grid.innerHTML = '';
+  var selVal = S.selected >= 0 ? S.board[S.selected] : 0;
+
+  for (var r = 0; r < 9; r++) {
+    for (var c = 0; c < 9; c++) {
+      var pos = idx(r, c);
+      var cell = document.createElement('div');
+      cell.className = 's-cell';
+      cell.dataset.r = r;
+      cell.dataset.c = c;
+      cell.dataset.pos = pos;
+      cell.tabIndex = 0;
+
+      var val = S.board[pos];
+      var isGiven = S.given[pos] !== 0;
+
+      if (isGiven) {
+        cell.classList.add('given');
+        cell.textContent = val;
+      } else if (val !== 0) {
+        cell.classList.add('user-input');
+        // conflict check
+        if (S.conflictMode && hasConflict(pos, val)) {
+          cell.classList.add('conflict');
+        }
+        cell.textContent = val;
+      } else {
+        // メモ表示
+        var hasMemo = S.memo[pos].some(function(v){ return v; });
+        if (hasMemo) {
+          var mg = document.createElement('div');
+          mg.className = 'memo-grid';
+          for (var n = 1; n <= 9; n++) {
+            var mn = document.createElement('div');
+            mn.className = 'memo-num' + (S.memo[pos][n] ? ' on' : '');
+            mn.textContent = S.memo[pos][n] ? n : '';
+            mg.appendChild(mn);
+          }
+          cell.appendChild(mg);
+        }
+      }
+
+      // 選択状態
+      if (pos === S.selected) {
+        cell.classList.add('selected');
+      } else if (S.highlightMode && selVal > 0 && val === selVal) {
+        cell.classList.add('highlight');
+      }
+
+      (function(p) {
+        cell.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          selectCell(p);
+        });
+      })(pos);
+
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function hasConflict(pos, val) {
+  if (val === 0) return false;
+  var r = Math.floor(pos / 9), c = pos % 9;
+  for (var i = 0; i < 9; i++) {
+    if (i !== c && S.board[idx(r, i)] === val) return true;
+    if (i !== r && S.board[idx(i, c)] === val) return true;
+  }
+  var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+  for (var dr = 0; dr < 3; dr++)
+    for (var dc = 0; dc < 3; dc++) {
+      var p2 = idx(br+dr, bc+dc);
+      if (p2 !== pos && S.board[p2] === val) return true;
+    }
+  return false;
+}
+
+function buildNumpad() {
+  var pad = document.getElementById('numpad');
+  pad.innerHTML = '';
+  for (var n = 1; n <= 9; n++) {
+    (function(num) {
+      var btn = document.createElement('div');
+      btn.className = 'num-btn';
+      btn.textContent = num;
+      btn.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        inputNumber(num);
+      });
+      pad.appendChild(btn);
+    })(n);
+  }
+  var del = document.createElement('div');
+  del.className = 'num-btn erase';
+  del.textContent = '消す';
+  del.addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    inputNumber(0);
+  });
+  pad.appendChild(del);
+}
+
+function selectCell(pos) {
+  S.selected = pos;
+  renderBoard();
+}
+
+function inputNumber(num) {
+  var pos = S.selected;
+  if (pos < 0 || S.given[pos] !== 0) return;
+
+  if (S.memoMode) {
+    if (num === 0) {
+      S.memo[pos] = Array(10).fill(false);
+    } else {
+      S.memo[pos][num] = !S.memo[pos][num];
+    }
+  } else {
+    S.board[pos] = num;
+    if (num !== 0) S.memo[pos] = Array(10).fill(false);
+  }
+  renderBoard();
+  autoCheck();
+}
+
+/* =====================================================
+   キーボード入力
+===================================================== */
+document.addEventListener('keydown', function(e) {
+  if (S.selected < 0) return;
+  var pos = S.selected;
+  var r = Math.floor(pos / 9), c = pos % 9;
+
+  if (e.key >= '1' && e.key <= '9') { inputNumber(parseInt(e.key)); return; }
+  if (e.key === '0' || e.key === 'Backspace' || e.key === 'Delete') { inputNumber(0); return; }
+
+  var nr = r, nc = c;
+  if (e.key === 'ArrowUp')    nr = (r + 8) % 9;
+  if (e.key === 'ArrowDown')  nr = (r + 1) % 9;
+  if (e.key === 'ArrowLeft')  nc = (c + 8) % 9;
+  if (e.key === 'ArrowRight') nc = (c + 1) % 9;
+  if (nr !== r || nc !== c) {
+    e.preventDefault();
+    S.selected = idx(nr, nc);
+    renderBoard();
+  }
+});
+
+/* =====================================================
+   CHECK / RESET
+===================================================== */
+function checkBoard() {
+  // 全マス埋まっているか
+  if (S.board.indexOf(0) !== -1) {
+    show('solve-error');
+    hide('complete-msg');
+    setTimeout(function(){ hide('solve-error'); }, 3000);
+    return;
+  }
+  // 解答と一致するか
+  var correct = S.board.every(function(v, i){ return v === S.solution[i]; });
+  if (correct) {
+    clearInterval(S.timerInterval);
+    hide('solve-error');
+    show('complete-msg');
+  } else {
+    show('solve-error');
+    hide('complete-msg');
+    setTimeout(function(){ hide('solve-error'); }, 3000);
+  }
+}
+
+function autoCheck() {
+  if (S.board.indexOf(0) !== -1) return;
+  if (S.board.every(function(v, i){ return v === S.solution[i]; })) {
+    clearInterval(S.timerInterval);
+    setTimeout(function(){ hide('solve-error'); show('complete-msg'); }, 200);
+  }
+}
+
+function resetBoard() {
+  S.board = S.given.slice();
+  S.memo  = Array.from({length:81}, function(){ return Array(10).fill(false); });
+  S.selected = -1;
+  hide('complete-msg'); hide('solve-error');
+  renderBoard();
+
+  clearInterval(S.timerInterval);
+  S.timerStart = Date.now();
+  document.getElementById('timer').textContent = '0:00';
+  S.timerInterval = setInterval(function() {
+    var s = Math.floor((Date.now() - S.timerStart) / 1000);
+    var m = Math.floor(s / 60); s = s % 60;
+    document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  }, 1000);
+}
+
+/* =====================================================
+   SHARE URL
+===================================================== */
+function encodePuzzle(puzzle) {
+  // 81マス、各0-9を1文字で表現
+  return puzzle.join('');
+}
+
+function decodePuzzle(str) {
+  if (str.length !== 81) return null;
+  var arr = [];
+  for (var i = 0; i < 81; i++) {
+    var n = parseInt(str[i]);
+    if (isNaN(n) || n < 0 || n > 9) return null;
+    arr.push(n);
+  }
+  return arr;
+}
+
+function showShare() {
+  var base = window.location.href.split('?')[0];
+  var url = base + '?p=' + encodePuzzle(S.given) + '&s=' + encodePuzzle(S.solution);
+  document.getElementById('share-url').value = url;
+  show('share-box');
+}
+
+function copyShareUrl() {
+  var el = document.getElementById('share-url');
+  el.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  var ok = document.getElementById('copy-ok');
+  ok.style.display = 'inline';
+  setTimeout(function(){ ok.style.display = 'none'; }, 2000);
+}
+
+/* =====================================================
+   UTILS
+===================================================== */
+function show(id) { document.getElementById(id).classList.add('show'); }
+function hide(id) { document.getElementById(id).classList.remove('show'); }
+
+/* =====================================================
+   INIT
+===================================================== */
+window.onload = function() {
+  document.getElementById('diff-note').textContent = DIFF_NOTE['easy'];
+
+  // URLパラメータから問題を復元
+  var params = new URLSearchParams(window.location.search);
+  var p = params.get('p');
+  var s = params.get('s');
+  if (p && s) {
+    var puzzle   = decodePuzzle(p);
+    var solution = decodePuzzle(s);
+    if (puzzle && solution) {
+      startGame(puzzle, solution, '共有された問題');
+      return;
+    }
+  }
+
+  // デフォルト：問題選択画面
+  showTab('select');
+};
+</script>
+</body>
+</html>
