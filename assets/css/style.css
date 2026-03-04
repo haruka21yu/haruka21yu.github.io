@@ -517,6 +517,7 @@ footer p {
   gap: 0;
   margin-bottom: 28px;
   border-bottom: 1px solid var(--line);
+  padding: 0rem 6vw 0rem;
 }
 
 .tab {
@@ -545,6 +546,7 @@ footer p {
   gap: 12px;
   margin-bottom: 10px;
   flex-wrap: wrap;
+  padding: 0rem 6vw 0rem;
 }
 
 .settings label { font-size: 13px; color: var(--muted); }
@@ -620,6 +622,7 @@ button.danger:hover {
   margin-bottom: 12px;
   flex-wrap: wrap;
   align-items: center;
+  padding: 0rem 6vw 0rem;
 }
 
 .tool {
@@ -658,7 +661,7 @@ button.danger:hover {
 
 .tool-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
 
-.puzzle-table { border-collapse: collapse; }
+.puzzle-table { border-collapse: collapse; padding: 0rem 6vw 0rem; }
 .puzzle-table td, .puzzle-table th { padding: 0; }
 
 .td-corner {
@@ -756,6 +759,7 @@ input[type=checkbox] {
   border: 1px solid var(--line);
   border-radius: 2px;
   line-height: 2;
+  padding: 0rem 6vw 0rem;
 }
 
 .legend strong { color: var(--ink); }
@@ -767,6 +771,7 @@ input[type=checkbox] {
   margin-top: 10px;
   font-size: 12px;
   border: 1px solid;
+  padding: 0rem 6vw 0rem;
 }
 
 .msg.show { display: block; }
@@ -839,6 +844,7 @@ input[type=checkbox] {
   font-size: 12px;
   color: var(--muted);
   margin: 4px 0 12px;
+  padding: 0rem 6vw 0rem;
 }
 
 hr {
@@ -847,7 +853,7 @@ hr {
   margin: 16px 0;
 }
 
-.sudoku-wrap { display: inline-block; margin-bottom: 16px; }
+.sudoku-wrap { display: inline-block; margin-bottom: 16px; padding: 0rem 6vw 0rem; }
 
 .sudoku-table {
   border-collapse: collapse;
@@ -899,6 +905,7 @@ hr {
 .numpad {
   display: flex; gap: 5px; flex-wrap: wrap;
   margin-bottom: 14px; align-items: center;
+  padding: 0rem 6vw 0rem;
 }
 
 .numpad-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; margin-right: 2px; }
@@ -928,6 +935,7 @@ hr {
 .top-bar {
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 14px; flex-wrap: wrap;
+  padding: 0rem 6vw 0rem;
 }
 
 .game-label { font-size: 12px; color: var(--muted); }
