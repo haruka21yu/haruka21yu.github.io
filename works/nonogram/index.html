@@ -470,7 +470,6 @@
         <div id="diff-note" style="font-size:11px;color:#444;margin-bottom:10px;"></div>
   
         <button class="primary" onclick="goSolveRandom()">生成して解く</button>
-        <div id="gen-msg" class="msg msg-err" style="margin-top:8px;"></div>
       </div>
   
     </div>
@@ -500,6 +499,7 @@
       <button class="primary" onclick="checkSolve()">✅ 答え合わせ</button>
     </div>
   
+    <div id="gen-msg" class="msg msg-err" style="margin-top:8px;"></div>
     <div id="solve-error" class="msg msg-err">まだ完成していません。ヒントをよく確認してみてください。</div>
     <div id="solve-grid"></div>
   
@@ -925,6 +925,7 @@
       C.tool='fill'; setTool('fill');
       document.getElementById('hint-toggle').checked=false; C.hintCheck=false;
       hide('complete-msg'); hide('solve-error');
+      hide('gen-msg');
       showTab('solve');
       renderSolve();
       clearInterval(C.timerInterval);
