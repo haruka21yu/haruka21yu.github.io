@@ -9,7 +9,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="haruka21yu's website">
   <meta property="og:locale" content="ja_JP">
-  <title>sudoku — works — haruka21yu's website</title>
+  <title>sudoku - works - haruka21yuの物置小屋</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://haruka21yu.github.io/assets/css/style.css">
@@ -18,7 +18,7 @@
 <body>
   <header>
     <div>
-      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yu's<br><em>website</em></a>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yuの<br><em>物置小屋</em></a>
     </div>
     <p class="site-sub">作ったものを置いておく場所</p>
   </header>
@@ -38,8 +38,6 @@
     </p>
     <h1>sudoku</h1>
   </div>
-
-  <!-- 難易度選択 -->
   <div id="page-select">
     <p class="section-note">難易度を選んでください。</p>
     <div class="pill-group">
@@ -53,16 +51,12 @@
     </div>
     <div id="gen-msg" class="msg msg-err" style="margin-top:10px;"></div>
   </div>
-
-  <!-- ゲーム画面 -->
   <div id="page-game" style="display:none;">
-
     <div class="top-bar">
       <span class="game-label" id="game-label"></span>
       <button onclick="backToSelect()">← 選択に戻る</button>
       <span class="timer" id="timer">0:00</span>
     </div>
-
     <div id="complete-msg" class="msg msg-ok">
       🎉 完成！数独を解き終わりました。
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
@@ -71,14 +65,12 @@
       </div>
     </div>
     <div id="error-msg" class="msg msg-err"></div>
-
     <div class="toolbar">
       <span class="tool-label">メモ：</span>
       <div class="memo-toggle" id="memo-toggle" onclick="toggleMemo()">メモモード OFF</div>
       <button class="danger" onclick="resetGame()">🔄 リセット</button>
       <button class="primary" onclick="checkGame()">✅ 答え合わせ</button>
     </div>
-
     <div class="numpad">
       <span class="numpad-label">入力：</span>
       <button class="numpad-btn" onclick="inputNum(1)">1</button>
@@ -92,401 +84,366 @@
       <button class="numpad-btn" onclick="inputNum(9)">9</button>
       <button class="numpad-btn erase" onclick="inputNum(0)">消す</button>
     </div>
-
     <div class="sudoku-wrap">
       <table class="sudoku-table" id="sudoku-table"></table>
     </div>
-
   </div>
-
   <footer>
     <p>Copyright © haruka21yu</p>
     <span class="footer-mark">haruka21yu's website</span>
   </footer>
-
-<script>
-/* =====================================================
-   STATE
-===================================================== */
-var S = {
-  diff: 'easy',
-  given: [],
-  board: [],
-  memo: [],
-  solution: [],
-  selected: null,
-  memoMode: false,
-  timerStart: null,
-  timerInterval: null,
-};
-
-var DIFF_NOTE = {
-  easy:   'やさしい：ヒントが多め。比較的シンプルに解けます。',
-  normal: 'ふつう：ヒントは中程度。少し考える場面があります。',
-  hard:   'むずかしい：ヒントが少なめ。じっくり考える必要があります。',
-};
-var DIFF_CLUES = { easy: 36, normal: 28, hard: 22 };
-
-/* =====================================================
-   DIFFICULTY UI
-===================================================== */
-function pickDiff(btn) {
-  document.querySelectorAll('[data-diff]').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  S.diff = btn.dataset.diff;
-  document.getElementById('diff-note').textContent = DIFF_NOTE[S.diff];
-}
-
-function backToSelect() {
-  clearInterval(S.timerInterval);
-  document.getElementById('page-select').style.display = '';
-  document.getElementById('page-game').style.display = 'none';
-}
-
-/* =====================================================
-   SUDOKU GENERATOR
-===================================================== */
-function generateSudoku(numClues) {
-  var sol = mk9x9(0);
-  if (!fillBoard(sol)) return null;
-
-  var given = sol.map(function(row){ return row.slice(); });
-  var positions = shuffle(range81());
-  var target = 81 - numClues;
-  var removed = 0;
-
-  for (var i = 0; i < positions.length && removed < target; i++) {
-    var r = Math.floor(positions[i] / 9);
-    var c = positions[i] % 9;
-    var backup = given[r][c];
-    given[r][c] = 0;
-    if (countSolutions(given, 2) === 1) {
-      removed++;
-    } else {
-      given[r][c] = backup;
+  <script>
+    var S = {
+      diff: 'easy',
+      given: [],
+      board: [],
+      memo: [],
+      solution: [],
+      selected: null,
+      memoMode: false,
+      timerStart: null,
+      timerInterval: null,
+    };
+    
+    var DIFF_NOTE = {
+      easy:   'やさしい：ヒントが多め。比較的シンプルに解けます。',
+      normal: 'ふつう：ヒントは中程度。少し考える場面があります。',
+      hard:   'むずかしい：ヒントが少なめ。じっくり考える必要があります。',
+    };
+    var DIFF_CLUES = { easy: 36, normal: 28, hard: 22 };
+    
+    function pickDiff(btn) {
+      document.querySelectorAll('[data-diff]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      S.diff = btn.dataset.diff;
+      document.getElementById('diff-note').textContent = DIFF_NOTE[S.diff];
     }
-  }
-
-  return { given: given, solution: sol };
-}
-
-function fillBoard(board) {
-  var pos = findEmpty(board);
-  if (!pos) return true;
-  var r = pos[0], c = pos[1];
-  var nums = shuffle([1,2,3,4,5,6,7,8,9]);
-  for (var i = 0; i < nums.length; i++) {
-    if (isValid(board, r, c, nums[i])) {
-      board[r][c] = nums[i];
-      if (fillBoard(board)) return true;
-      board[r][c] = 0;
+    
+    function backToSelect() {
+      clearInterval(S.timerInterval);
+      document.getElementById('page-select').style.display = '';
+      document.getElementById('page-game').style.display = 'none';
     }
-  }
-  return false;
-}
-
-function findEmpty(board) {
-  for (var r = 0; r < 9; r++)
-    for (var c = 0; c < 9; c++)
-      if (board[r][c] === 0) return [r, c];
-  return null;
-}
-
-function isValid(board, r, c, num) {
-  for (var i = 0; i < 9; i++) if (board[r][i] === num) return false;
-  for (var i = 0; i < 9; i++) if (board[i][c] === num) return false;
-  var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
-  for (var dr = 0; dr < 3; dr++)
-    for (var dc = 0; dc < 3; dc++)
-      if (board[br+dr][bc+dc] === num) return false;
-  return true;
-}
-
-function countSolutions(board, limit) {
-  var copy = board.map(function(row){ return row.slice(); });
-  var count = 0;
-  function solve() {
-    var pos = findEmpty(copy);
-    if (!pos) { count++; return; }
-    var r = pos[0], c = pos[1];
-    for (var n = 1; n <= 9 && count < limit; n++) {
-      if (isValid(copy, r, c, n)) {
-        copy[r][c] = n;
-        solve();
-        copy[r][c] = 0;
-      }
-    }
-  }
-  solve();
-  return count;
-}
-
-/* =====================================================
-   GAME CONTROL
-===================================================== */
-function startGame() {
-  hide('gen-msg'); hide('complete-msg'); hide('error-msg');
-
-  var numClues = DIFF_CLUES[S.diff] || 28;
-  var result = generateSudoku(numClues);
-  if (!result) {
-    var el = document.getElementById('gen-msg');
-    el.textContent = '生成に失敗しました。もう一度お試しください。';
-    el.classList.add('show');
-    return;
-  }
-
-  S.given    = result.given;
-  S.solution = result.solution;
-  S.board    = result.given.map(function(row){ return row.slice(); });
-  S.memo     = Array.from({length:9}, function(){
-    return Array.from({length:9}, function(){ return new Set(); });
-  });
-  S.selected = null;
-  S.memoMode = false;
-  var mt = document.getElementById('memo-toggle');
-  mt.classList.remove('on');
-  mt.textContent = 'メモモード OFF';
-
-  var labels = {easy:'やさしい', normal:'ふつう', hard:'むずかしい'};
-  document.getElementById('game-label').textContent = 'sudoku — ' + labels[S.diff];
-
-  document.getElementById('page-select').style.display = 'none';
-  document.getElementById('page-game').style.display = '';
-
-  renderBoard();
-  startTimer();
-}
-
-function resetGame() {
-  hide('complete-msg'); hide('error-msg');
-  S.board = S.given.map(function(row){ return row.slice(); });
-  S.memo  = Array.from({length:9}, function(){
-    return Array.from({length:9}, function(){ return new Set(); });
-  });
-  S.selected = null;
-  renderBoard();
-  startTimer();
-}
-
-function checkGame() {
-  hide('complete-msg'); hide('error-msg');
-  for (var r = 0; r < 9; r++)
-    for (var c = 0; c < 9; c++)
-      if (S.board[r][c] === 0) {
-        showErr('まだ空のマスがあります。');
-        return;
-      }
-  for (var r = 0; r < 9; r++)
-    for (var c = 0; c < 9; c++)
-      if (S.board[r][c] !== S.solution[r][c]) {
-        showErr('間違いがあります。もう一度確認してみてください。');
-        markErrors();
-        return;
-      }
-  clearInterval(S.timerInterval);
-  show('complete-msg');
-}
-
-function markErrors() {
-  for (var r = 0; r < 9; r++)
-    for (var c = 0; c < 9; c++) {
-      var td = getCell(r, c);
-      if (!td) continue;
-      td.classList.remove('error');
-      if (S.board[r][c] !== 0 && S.given[r][c] === 0 && S.board[r][c] !== S.solution[r][c])
-        td.classList.add('error');
-    }
-}
-
-function autoCheck() {
-  for (var r = 0; r < 9; r++)
-    for (var c = 0; c < 9; c++)
-      if (S.board[r][c] === 0 || S.board[r][c] !== S.solution[r][c]) return;
-  clearInterval(S.timerInterval);
-  setTimeout(function(){ show('complete-msg'); }, 200);
-}
-
-/* =====================================================
-   INPUT
-===================================================== */
-function inputNum(n) {
-  if (!S.selected) return;
-  var r = S.selected[0], c = S.selected[1];
-  if (S.given[r][c] !== 0) return;
-
-  if (S.memoMode) {
-    if (n === 0) {
-      S.memo[r][c].clear();
-    } else {
-      if (S.memo[r][c].has(n)) S.memo[r][c].delete(n);
-      else S.memo[r][c].add(n);
-      S.board[r][c] = 0;
-    }
-  } else {
-    S.board[r][c] = n;
-    S.memo[r][c].clear();
-    // エラー表示を消す
-    var td = getCell(r, c);
-    if (td) td.classList.remove('error');
-  }
-
-  renderBoard();
-  selectCell(r, c);
-  if (!S.memoMode && n !== 0) autoCheck();
-}
-
-function toggleMemo() {
-  S.memoMode = !S.memoMode;
-  var btn = document.getElementById('memo-toggle');
-  btn.classList.toggle('on', S.memoMode);
-  btn.textContent = 'メモモード ' + (S.memoMode ? 'ON' : 'OFF');
-}
-
-/* =====================================================
-   RENDER
-===================================================== */
-function renderBoard() {
-  var table = document.getElementById('sudoku-table');
-  table.innerHTML = '';
-  for (var r = 0; r < 9; r++) {
-    var tr = document.createElement('tr');
-    for (var c = 0; c < 9; c++) {
-      var td = document.createElement('td');
-      td.dataset.r = r;
-      td.dataset.c = c;
-
-      if (c === 2 || c === 5) td.classList.add('box-right');
-      if (r === 2 || r === 5) td.classList.add('box-bottom');
-      if (S.given[r][c] !== 0) td.classList.add('given');
-
-      var val = S.board[r][c];
-      var memoSet = S.memo[r][c];
-
-      if (val !== 0) {
-        var div = document.createElement('div');
-        div.className = 'cell-val';
-        div.textContent = val;
-        td.appendChild(div);
-      } else if (memoSet.size > 0) {
-        var grid = document.createElement('div');
-        grid.className = 'memo-grid';
-        for (var n = 1; n <= 9; n++) {
-          var span = document.createElement('span');
-          span.textContent = memoSet.has(n) ? n : '';
-          grid.appendChild(span);
+    
+    function generateSudoku(numClues) {
+      var sol = mk9x9(0);
+      if (!fillBoard(sol)) return null;
+    
+      var given = sol.map(function(row){ return row.slice(); });
+      var positions = shuffle(range81());
+      var target = 81 - numClues;
+      var removed = 0;
+    
+      for (var i = 0; i < positions.length && removed < target; i++) {
+        var r = Math.floor(positions[i] / 9);
+        var c = positions[i] % 9;
+        var backup = given[r][c];
+        given[r][c] = 0;
+        if (countSolutions(given, 2) === 1) {
+          removed++;
+        } else {
+          given[r][c] = backup;
         }
-        td.appendChild(grid);
-      } else {
-        var div = document.createElement('div');
-        div.className = 'cell-val';
-        div.textContent = '';
-        td.appendChild(div);
       }
-
-      (function(row, col){
-        td.addEventListener('click', function(){ selectCell(row, col); });
-      })(r, c);
-
-      tr.appendChild(td);
+    
+      return { given: given, solution: sol };
     }
-    table.appendChild(tr);
-  }
-}
-
-function selectCell(r, c) {
-  S.selected = [r, c];
-  var selVal = S.board[r][c];
-
-  for (var rr = 0; rr < 9; rr++) {
-    for (var cc = 0; cc < 9; cc++) {
-      var td = getCell(rr, cc);
-      if (!td) continue;
-      td.classList.remove('selected', 'highlight');
-      var sameBox = Math.floor(rr/3)===Math.floor(r/3) && Math.floor(cc/3)===Math.floor(c/3);
-      if (rr===r || cc===c || sameBox) td.classList.add('highlight');
-      if (selVal !== 0 && S.board[rr][cc] === selVal) td.classList.add('highlight');
+    
+    function fillBoard(board) {
+      var pos = findEmpty(board);
+      if (!pos) return true;
+      var r = pos[0], c = pos[1];
+      var nums = shuffle([1,2,3,4,5,6,7,8,9]);
+      for (var i = 0; i < nums.length; i++) {
+        if (isValid(board, r, c, nums[i])) {
+          board[r][c] = nums[i];
+          if (fillBoard(board)) return true;
+          board[r][c] = 0;
+        }
+      }
+      return false;
     }
-  }
-  var selTd = getCell(r, c);
-  if (selTd) { selTd.classList.remove('highlight'); selTd.classList.add('selected'); }
-}
-
-function getCell(r, c) {
-  return document.querySelector('[data-r="'+r+'"][data-c="'+c+'"]');
-}
-
-/* =====================================================
-   TIMER
-===================================================== */
-function startTimer() {
-  clearInterval(S.timerInterval);
-  S.timerStart = Date.now();
-  document.getElementById('timer').textContent = '0:00';
-  S.timerInterval = setInterval(function(){
-    var elapsed = Math.floor((Date.now() - S.timerStart) / 1000);
-    var m = Math.floor(elapsed / 60);
-    var s = elapsed % 60;
-    document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
-  }, 1000);
-}
-
-/* =====================================================
-   KEYBOARD
-===================================================== */
-document.addEventListener('keydown', function(e) {
-  if (document.getElementById('page-game').style.display === 'none') return;
-  if (!S.selected) return;
-  var r = S.selected[0], c = S.selected[1];
-
-  if (e.key >= '1' && e.key <= '9') { inputNum(parseInt(e.key)); return; }
-  if (e.key === '0' || e.key === 'Backspace' || e.key === 'Delete') { inputNum(0); return; }
-
-  var dr = 0, dc = 0;
-  if (e.key === 'ArrowUp')    dr = -1;
-  if (e.key === 'ArrowDown')  dr =  1;
-  if (e.key === 'ArrowLeft')  dc = -1;
-  if (e.key === 'ArrowRight') dc =  1;
-  if (dr || dc) {
-    e.preventDefault();
-    selectCell(Math.max(0, Math.min(8, r+dr)), Math.max(0, Math.min(8, c+dc)));
-  }
-});
-
-/* =====================================================
-   UTILS
-===================================================== */
-function mk9x9(v) {
-  return Array.from({length:9}, function(){ return Array(9).fill(v); });
-}
-function shuffle(arr) {
-  var a = arr.slice();
-  for (var i = a.length-1; i > 0; i--) {
-    var j = Math.floor(Math.random()*(i+1));
-    var t = a[i]; a[i] = a[j]; a[j] = t;
-  }
-  return a;
-}
-function range81() {
-  var a = [];
-  for (var i = 0; i < 81; i++) a.push(i);
-  return a;
-}
-function show(id) { document.getElementById(id).classList.add('show'); }
-function hide(id) { document.getElementById(id).classList.remove('show'); }
-function showErr(text) {
-  var el = document.getElementById('error-msg');
-  el.textContent = text;
-  el.classList.add('show');
-  setTimeout(function(){ el.classList.remove('show'); }, 4000);
-}
-
-/* =====================================================
-   INIT
-===================================================== */
-window.onload = function() {
-  document.getElementById('diff-note').textContent = DIFF_NOTE['easy'];
-};
-</script>
+    
+    function findEmpty(board) {
+      for (var r = 0; r < 9; r++)
+        for (var c = 0; c < 9; c++)
+          if (board[r][c] === 0) return [r, c];
+      return null;
+    }
+    
+    function isValid(board, r, c, num) {
+      for (var i = 0; i < 9; i++) if (board[r][i] === num) return false;
+      for (var i = 0; i < 9; i++) if (board[i][c] === num) return false;
+      var br = Math.floor(r/3)*3, bc = Math.floor(c/3)*3;
+      for (var dr = 0; dr < 3; dr++)
+        for (var dc = 0; dc < 3; dc++)
+          if (board[br+dr][bc+dc] === num) return false;
+      return true;
+    }
+    
+    function countSolutions(board, limit) {
+      var copy = board.map(function(row){ return row.slice(); });
+      var count = 0;
+      function solve() {
+        var pos = findEmpty(copy);
+        if (!pos) { count++; return; }
+        var r = pos[0], c = pos[1];
+        for (var n = 1; n <= 9 && count < limit; n++) {
+          if (isValid(copy, r, c, n)) {
+            copy[r][c] = n;
+            solve();
+            copy[r][c] = 0;
+          }
+        }
+      }
+      solve();
+      return count;
+    }
+    
+    function startGame() {
+      hide('gen-msg'); hide('complete-msg'); hide('error-msg');
+    
+      var numClues = DIFF_CLUES[S.diff] || 28;
+      var result = generateSudoku(numClues);
+      if (!result) {
+        var el = document.getElementById('gen-msg');
+        el.textContent = '生成に失敗しました。もう一度お試しください。';
+        el.classList.add('show');
+        return;
+      }
+    
+      S.given    = result.given;
+      S.solution = result.solution;
+      S.board    = result.given.map(function(row){ return row.slice(); });
+      S.memo     = Array.from({length:9}, function(){
+        return Array.from({length:9}, function(){ return new Set(); });
+      });
+      S.selected = null;
+      S.memoMode = false;
+      var mt = document.getElementById('memo-toggle');
+      mt.classList.remove('on');
+      mt.textContent = 'メモモード OFF';
+    
+      var labels = {easy:'やさしい', normal:'ふつう', hard:'むずかしい'};
+      document.getElementById('game-label').textContent = 'sudoku — ' + labels[S.diff];
+    
+      document.getElementById('page-select').style.display = 'none';
+      document.getElementById('page-game').style.display = '';
+    
+      renderBoard();
+      startTimer();
+    }
+    
+    function resetGame() {
+      hide('complete-msg'); hide('error-msg');
+      S.board = S.given.map(function(row){ return row.slice(); });
+      S.memo  = Array.from({length:9}, function(){
+        return Array.from({length:9}, function(){ return new Set(); });
+      });
+      S.selected = null;
+      renderBoard();
+      startTimer();
+    }
+    
+    function checkGame() {
+      hide('complete-msg'); hide('error-msg');
+      for (var r = 0; r < 9; r++)
+        for (var c = 0; c < 9; c++)
+          if (S.board[r][c] === 0) {
+            showErr('まだ空のマスがあります。');
+            return;
+          }
+      for (var r = 0; r < 9; r++)
+        for (var c = 0; c < 9; c++)
+          if (S.board[r][c] !== S.solution[r][c]) {
+            showErr('間違いがあります。もう一度確認してみてください。');
+            markErrors();
+            return;
+          }
+      clearInterval(S.timerInterval);
+      show('complete-msg');
+    }
+    
+    function markErrors() {
+      for (var r = 0; r < 9; r++)
+        for (var c = 0; c < 9; c++) {
+          var td = getCell(r, c);
+          if (!td) continue;
+          td.classList.remove('error');
+          if (S.board[r][c] !== 0 && S.given[r][c] === 0 && S.board[r][c] !== S.solution[r][c])
+            td.classList.add('error');
+        }
+    }
+    
+    function autoCheck() {
+      for (var r = 0; r < 9; r++)
+        for (var c = 0; c < 9; c++)
+          if (S.board[r][c] === 0 || S.board[r][c] !== S.solution[r][c]) return;
+      clearInterval(S.timerInterval);
+      setTimeout(function(){ show('complete-msg'); }, 200);
+    }
+    
+    function inputNum(n) {
+      if (!S.selected) return;
+      var r = S.selected[0], c = S.selected[1];
+      if (S.given[r][c] !== 0) return;
+    
+      if (S.memoMode) {
+        if (n === 0) {
+          S.memo[r][c].clear();
+        } else {
+          if (S.memo[r][c].has(n)) S.memo[r][c].delete(n);
+          else S.memo[r][c].add(n);
+          S.board[r][c] = 0;
+        }
+      } else {
+        S.board[r][c] = n;
+        S.memo[r][c].clear();
+        var td = getCell(r, c);
+        if (td) td.classList.remove('error');
+      }
+    
+      renderBoard();
+      selectCell(r, c);
+      if (!S.memoMode && n !== 0) autoCheck();
+    }
+    
+    function toggleMemo() {
+      S.memoMode = !S.memoMode;
+      var btn = document.getElementById('memo-toggle');
+      btn.classList.toggle('on', S.memoMode);
+      btn.textContent = 'メモモード ' + (S.memoMode ? 'ON' : 'OFF');
+    }
+    
+    function renderBoard() {
+      var table = document.getElementById('sudoku-table');
+      table.innerHTML = '';
+      for (var r = 0; r < 9; r++) {
+        var tr = document.createElement('tr');
+        for (var c = 0; c < 9; c++) {
+          var td = document.createElement('td');
+          td.dataset.r = r;
+          td.dataset.c = c;
+    
+          if (c === 2 || c === 5) td.classList.add('box-right');
+          if (r === 2 || r === 5) td.classList.add('box-bottom');
+          if (S.given[r][c] !== 0) td.classList.add('given');
+    
+          var val = S.board[r][c];
+          var memoSet = S.memo[r][c];
+    
+          if (val !== 0) {
+            var div = document.createElement('div');
+            div.className = 'cell-val';
+            div.textContent = val;
+            td.appendChild(div);
+          } else if (memoSet.size > 0) {
+            var grid = document.createElement('div');
+            grid.className = 'memo-grid';
+            for (var n = 1; n <= 9; n++) {
+              var span = document.createElement('span');
+              span.textContent = memoSet.has(n) ? n : '';
+              grid.appendChild(span);
+            }
+            td.appendChild(grid);
+          } else {
+            var div = document.createElement('div');
+            div.className = 'cell-val';
+            div.textContent = '';
+            td.appendChild(div);
+          }
+    
+          (function(row, col){
+            td.addEventListener('click', function(){ selectCell(row, col); });
+          })(r, c);
+    
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+    }
+    
+    function selectCell(r, c) {
+      S.selected = [r, c];
+      var selVal = S.board[r][c];
+    
+      for (var rr = 0; rr < 9; rr++) {
+        for (var cc = 0; cc < 9; cc++) {
+          var td = getCell(rr, cc);
+          if (!td) continue;
+          td.classList.remove('selected', 'highlight');
+          var sameBox = Math.floor(rr/3)===Math.floor(r/3) && Math.floor(cc/3)===Math.floor(c/3);
+          if (rr===r || cc===c || sameBox) td.classList.add('highlight');
+          if (selVal !== 0 && S.board[rr][cc] === selVal) td.classList.add('highlight');
+        }
+      }
+      var selTd = getCell(r, c);
+      if (selTd) { selTd.classList.remove('highlight'); selTd.classList.add('selected'); }
+    }
+    
+    function getCell(r, c) {
+      return document.querySelector('[data-r="'+r+'"][data-c="'+c+'"]');
+    }
+    
+    function startTimer() {
+      clearInterval(S.timerInterval);
+      S.timerStart = Date.now();
+      document.getElementById('timer').textContent = '0:00';
+      S.timerInterval = setInterval(function(){
+        var elapsed = Math.floor((Date.now() - S.timerStart) / 1000);
+        var m = Math.floor(elapsed / 60);
+        var s = elapsed % 60;
+        document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }, 1000);
+    }
+    
+    document.addEventListener('keydown', function(e) {
+      if (document.getElementById('page-game').style.display === 'none') return;
+      if (!S.selected) return;
+      var r = S.selected[0], c = S.selected[1];
+    
+      if (e.key >= '1' && e.key <= '9') { inputNum(parseInt(e.key)); return; }
+      if (e.key === '0' || e.key === 'Backspace' || e.key === 'Delete') { inputNum(0); return; }
+    
+      var dr = 0, dc = 0;
+      if (e.key === 'ArrowUp')    dr = -1;
+      if (e.key === 'ArrowDown')  dr =  1;
+      if (e.key === 'ArrowLeft')  dc = -1;
+      if (e.key === 'ArrowRight') dc =  1;
+      if (dr || dc) {
+        e.preventDefault();
+        selectCell(Math.max(0, Math.min(8, r+dr)), Math.max(0, Math.min(8, c+dc)));
+      }
+    });
+    
+    function mk9x9(v) {
+      return Array.from({length:9}, function(){ return Array(9).fill(v); });
+    }
+    function shuffle(arr) {
+      var a = arr.slice();
+      for (var i = a.length-1; i > 0; i--) {
+        var j = Math.floor(Math.random()*(i+1));
+        var t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    function range81() {
+      var a = [];
+      for (var i = 0; i < 81; i++) a.push(i);
+      return a;
+    }
+    function show(id) { document.getElementById(id).classList.add('show'); }
+    function hide(id) { document.getElementById(id).classList.remove('show'); }
+    function showErr(text) {
+      var el = document.getElementById('error-msg');
+      el.textContent = text;
+      el.classList.add('show');
+      setTimeout(function(){ el.classList.remove('show'); }, 4000);
+    }
+    
+    window.onload = function() {
+      document.getElementById('diff-note').textContent = DIFF_NOTE['easy'];
+    };
+  </script>
 </body>
 </html>
