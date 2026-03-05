@@ -595,7 +595,7 @@ button.primary {
 }
 
 button.primary:hover {
-  background: ver(--accent);
+  background: var(--accent);
   color: var(--paper);
 }
 
@@ -611,8 +611,8 @@ button.success:hover {
 
 button.danger {
   background: transparent;
-  color: ver(--danger);
-  border-color: ver(--danger);
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 button.danger:hover {
@@ -787,8 +787,8 @@ input[type=checkbox] {
 
 .msg-err {
   background: rgba(180,100,100,0.07);
-  border-color: ver(--danger);
-  color: ver(--danger);
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .pill-group { display: flex; gap: 6px; flex-wrap: wrap; padding: 0rem 6vw 0rem; }
@@ -893,9 +893,9 @@ hr {
 
 .sudoku-table td.highlight { background: var(--average-paperline); }
 
-.sudoku-table td.highlight-same { background: ver(--average-accentpaper) !important; }
+.sudoku-table td.highlight-same { background: var(--average-accentpaper) !important; }
 
-.sudoku-table td.error .cell-val { color: ver(--danger); }
+.sudoku-table td.error .cell-val { color: var(--danger); }
 
 .memo-grid {
   display: grid; grid-template-columns: repeat(3,1fr);
