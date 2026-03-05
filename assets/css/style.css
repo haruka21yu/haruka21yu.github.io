@@ -5,6 +5,7 @@
   --accent: #c4603a;
   --paper: #ede8dc;
   --line: #d4c9b4;
+  --danger: #aa5555;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -592,7 +593,7 @@ button.primary {
 }
 
 button.primary:hover {
-  background: #d86a42;
+  background: ver(--accent);
   color: var(--paper);
 }
 
@@ -608,8 +609,8 @@ button.success:hover {
 
 button.danger {
   background: transparent;
-  color: #a55;
-  border-color: #a55;
+  color: ver(--danger);
+  border-color: ver(--danger);
 }
 
 button.danger:hover {
@@ -784,8 +785,8 @@ input[type=checkbox] {
 
 .msg-err {
   background: rgba(180,100,100,0.07);
-  border-color: #a55;
-  color: #a55;
+  border-color: ver(--danger);
+  color: ver(--danger);
 }
 
 .pill-group { display: flex; gap: 6px; flex-wrap: wrap; padding: 0rem 6vw 0rem; }
@@ -885,11 +886,11 @@ hr {
   color: var(--muted); font-weight: bold;
 }
 
-.sudoku-table td.selected { background: var(--paper); }
+.sudoku-table td.selected { background: var(--line); }
 
-.sudoku-table td.highlight { background: var(--paper); opacity: 0.6; }
+.sudoku-table td.highlight { background: var(--line); opacity: 0.6; }
 
-.sudoku-table td.error .cell-val { color: #a55; }
+.sudoku-table td.error .cell-val { color: ver(--danger); }
 
 .memo-grid {
   display: grid; grid-template-columns: repeat(3,1fr);
