@@ -38,21 +38,17 @@
     </p>
     <h1>nonogram</h1>
   </div>
-
   <div class="tabs">
     <div class="tab active" id="tab-create"       onclick="showTab('create')">ノノグラムを作る</div>
     <div class="tab"        id="tab-solve-select" onclick="showTab('solve-select')">ノノグラムを解く</div>
   </div>
-  
   <div class="page active" id="page-create">
-  
     <div class="legend">
       <strong>ヒント数字の読み方：</strong>
       グリッドの<strong>上</strong>の数字 → その<strong>列</strong>を上から順に見た「連続して塗られるマスの数」の塊<br>
       グリッドの<strong>左</strong>の数字 → その<strong>行</strong>を左から順に見た「連続して塗られるマスの数」の塊<br>
       例：「3 1」なら、3マスの塊・1マスの塊の順（間に1マス以上の空白が必要）
     </div>
-  
     <div class="settings">
       <label>横のマス数: <input type="number" id="c-cols" value="10" min="2" max="25"></label>
       <label>縦のマス数: <input type="number" id="c-rows" value="10" min="2" max="25"></label>
@@ -63,11 +59,8 @@
       <button class="success" onclick="goSolveOwn()">このノノグラムを解く →</button>
       <button onclick="showShare()">共有URLを作る</button>
     </div>
-  
     <p class="section-note">マスをクリック・ドラッグして塗りつぶしてください。ヒント数字は自動で更新されます。</p>
-  
     <div id="create-grid" style="padding: 0rem 6vw 0rem;"></div>
-  
     <div class="share-box" id="share-box">
       <p>以下のURLを共有すると、このノノグラムを解く画面を直接開けます。</p>
       <input class="share-url" id="share-url" type="text" readonly onclick="this.select()">
@@ -77,21 +70,17 @@
       </div>
     </div>
   </div>
-  
   <div class="page" id="page-solve-select">
     <p style="margin-bottom:14px;color:#666;font-size:13px;">どのノノグラムを解きますか？</p>
     <div style="display:flex;gap:16px;flex-wrap:wrap;">
-  
       <div style="border:1px solid #222;border-radius:2px;padding:16px 20px;min-width:210px;cursor:pointer;" onclick="goSolveOwn()">
         <div style="font-size:14px;color:#ccc;margin-bottom:6px;">✏️ 自分で作ったノノグラム</div>
         <div style="font-size:12px;color:#555;">「ノノグラムを作る」タブで作ったものを解きます。</div>
         <div id="own-status" style="font-size:11px;color:#444;margin-top:6px;"></div>
       </div>
-  
       <div style="border:1px solid #222;border-radius:2px;padding:16px 20px;min-width:260px;">
         <div style="font-size:14px;color:#ccc;margin-bottom:6px;">🎲 自動生成ノノグラム</div>
         <div style="font-size:12px;color:#555;margin-bottom:10px;">必ず解けるノノグラムを自動で作ります。</div>
-  
         <div style="font-size:12px;color:#555;margin-bottom:4px;">サイズ：</div>
         <div class="pill-group" style="margin-bottom:10px;">
           <div class="pill active" data-r="5"  data-c="5"  onclick="pickSize(this)">5×5</div>
@@ -99,7 +88,6 @@
           <div class="pill"        data-r="10" data-c="10" onclick="pickSize(this)">10×10</div>
           <div class="pill"        data-r="15" data-c="15" onclick="pickSize(this)">15×15</div>
         </div>
-  
         <div style="font-size:12px;color:#555;margin-bottom:4px;">難易度：</div>
         <div class="pill-group" style="margin-bottom:12px;">
           <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">やさしい</div>
@@ -107,28 +95,22 @@
           <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
         </div>
         <div id="diff-note" style="font-size:11px;color:#444;margin-bottom:10px;"></div>
-  
         <button class="primary" onclick="goSolveRandom()">生成して解く</button>
       </div>
-  
     </div>
   </div>
-  
   <div class="page" id="page-solve">
-  
     <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span id="solve-label" style="font-size:12px;color:#555;"></span>
       <button onclick="showTab('solve-select')">← 選択に戻る</button>
       <span id="timer" style="font-size:12px;color:#555;font-variant-numeric:tabular-nums;margin-left:auto;">0:00</span>
     </div>
-  
     <div class="toolbar">
       <span style="font-size:12px;color:#555;letter-spacing:0.04em;">ツール：</span>
       <button class="tool on"         id="tool-fill"  onclick="setTool('fill')">⬛ 塗りつぶす</button>
       <button class="tool tool-mark"  id="tool-mark"  onclick="setTool('mark')">✕ ×印をつける</button>
       <button class="tool tool-erase" id="tool-erase" onclick="setTool('erase')">◻ 消す</button>
     </div>
-  
     <div style="margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
       <label class="toggle-row">
         <input type="checkbox" id="hint-toggle" onchange="setHintCheck(this.checked)">
@@ -137,11 +119,9 @@
       <button onclick="resetSolve()">🔄 最初からやり直す</button>
       <button class="primary" onclick="checkSolve()">✅ 答え合わせ</button>
     </div>
-  
     <div id="gen-msg" class="msg msg-err" style="margin-top:8px;"></div>
     <div id="solve-error" class="msg msg-err">まだ完成していません。ヒントをよく確認してみてください。</div>
     <div id="solve-grid"></div>
-  
     <div id="complete-msg" class="msg msg-ok">
       🎉 完成！ノノグラムを解き終わりました。<br>
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
@@ -155,7 +135,6 @@
     <p>Copyright © haruka21yu</p>
     <span class="footer-mark">haruka21yuの物置小屋</span>
   </footer>
-  
   <script>
     var C = {
       cRows:10, cCols:10, cGrid:[],
