@@ -881,6 +881,7 @@ hr {
   font-size: 20px; font-family: inherit;
   color: var(--accent);
   user-select: none;
+  font-weight: bold;
 }
 
 .sudoku-table td.given .cell-val {
@@ -902,6 +903,7 @@ hr {
   font-size: 9px; color: var(--muted);
   display: flex; align-items: center; justify-content: center;
   line-height: 1;
+  font-weight: bold;
 }
 
 .numpad {
