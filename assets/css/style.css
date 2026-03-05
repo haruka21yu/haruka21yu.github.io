@@ -893,9 +893,9 @@ hr {
 
 .sudoku-table td.highlight { background: var(--average-paperline); }
 
-.sudoku-table td.error .cell-val { color: ver(--danger); }
-
 .sudoku-table td.highlight-same { background: ver(--average-accentpaper); }
+
+.sudoku-table td.error .cell-val { color: ver(--danger); }
 
 .memo-grid {
   display: grid; grid-template-columns: repeat(3,1fr);
