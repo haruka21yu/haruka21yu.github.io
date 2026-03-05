@@ -6,6 +6,7 @@
   --paper: #ede8dc;
   --line: #d4c9b4;
   --danger: #aa5555;
+  --average-accentpaper: #d9a48b;
   --average-paperline: #e1d9c8;
 }
 
@@ -888,11 +889,13 @@ hr {
   color: var(--muted); font-weight: bold;
 }
 
-.sudoku-table td.selected { background: var(--paper); }
+.sudoku-table td.selected { background: var(--average-accentpaper); }
 
 .sudoku-table td.highlight { background: var(--average-paperline); }
 
 .sudoku-table td.error .cell-val { color: ver(--danger); }
+
+.sudoku-table td.highlight-same { background: ver(--average-accentpaper); }
 
 .memo-grid {
   display: grid; grid-template-columns: repeat(3,1fr);
