@@ -386,7 +386,7 @@
         for (var cc = 0; cc < 9; cc++) {
           var td = getCell(rr, cc);
           if (!td) continue;
-          td.classList.remove('selected', 'highlight');
+          td.classList.remove('selected', 'highlight', 'highlight-same');
           var sameBox = Math.floor(rr/3)===Math.floor(r/3) && Math.floor(cc/3)===Math.floor(c/3);
           if (rr===r || cc===c || sameBox) td.classList.add('highlight');
           if (selVal !== 0 && S.board[rr][cc] === selVal) {
