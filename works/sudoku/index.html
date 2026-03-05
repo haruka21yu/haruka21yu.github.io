@@ -296,12 +296,27 @@
           else S.memo[r][c].add(n);
           S.board[r][c] = 0;
         }
-      } else {
-        S.board[r][c] = n;
-        S.memo[r][c].clear();
-        var td = getCell(r, c);
-        if (td) td.classList.remove('error');
-      }
+        } else {
+          S.board[r][c] = n;
+          S.memo[r][c].clear();
+          var td = getCell(r, c);
+          if (td) td.classList.remove('error');
+        
+          if (n !== 0) {
+            for (var rr = 0; rr < 9; rr++) {
+              for (var cc = 0; cc < 9; cc++) {
+                if (rr === r && cc === c) continue;
+                var sameRow = rr === r;
+                var sameCol = cc === c;
+                var sameBox = Math.floor(rr/3) === Math.floor(r/3) &&
+                              Math.floor(cc/3) === Math.floor(c/3);
+                if (sameRow || sameCol || sameBox) {
+                  S.memo[rr][cc].delete(n);
+                }
+              }
+            }
+          }
+        }
     
       renderBoard();
       selectCell(r, c);
