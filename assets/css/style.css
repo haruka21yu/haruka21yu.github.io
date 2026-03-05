@@ -6,7 +6,7 @@
   --paper: #ede8dc;
   --line: #d4c9b4;
   --danger: #aa5555;
-  --average-accentpaper: #d8a48b;
+  --average-paperline: #e1d9c8;
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -887,9 +887,9 @@ hr {
   color: var(--muted); font-weight: bold;
 }
 
-.sudoku-table td.selected { background: var(--accent); }
+.sudoku-table td.selected { background: var(--paper); }
 
-.sudoku-table td.highlight { background: var(--average-accentpaper); }
+.sudoku-table td.highlight { background: var(--average-paperline); }
 
 .sudoku-table td.error .cell-val { color: ver(--danger); }
 
