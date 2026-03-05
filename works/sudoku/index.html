@@ -389,7 +389,10 @@
           td.classList.remove('selected', 'highlight');
           var sameBox = Math.floor(rr/3)===Math.floor(r/3) && Math.floor(cc/3)===Math.floor(c/3);
           if (rr===r || cc===c || sameBox) td.classList.add('highlight');
-          if (selVal !== 0 && S.board[rr][cc] === selVal) td.classList.add('highlight');
+          if (selVal !== 0 && S.board[rr][cc] === selVal) {
+            td.classList.remove('highlight');
+            td.classList.add('highlight-same');
+          }
         }
       }
       var selTd = getCell(r, c);
