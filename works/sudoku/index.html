@@ -84,6 +84,10 @@
       <button class="numpad-btn" data-num="9" onclick="inputNum(9)">9</button>
       <button class="numpad-btn erase" onclick="inputNum(0)">消す</button>
     </div>
+    <label class="toggle-row">
+      <input type="checkbox" id="mistake-check" onchange="S.mistakeCheck=this.checked">
+      ミスを即座に表示
+    </label>
     <div class="sudoku-wrap">
       <table class="sudoku-table" id="sudoku-table"></table>
     </div>
@@ -103,6 +107,7 @@
       memoMode: false,
       timerStart: null,
       timerInterval: null,
+      mistakeCheck: false,
     };
     
     var DIFF_NOTE = {
@@ -321,6 +326,11 @@
           S.memo[r][c].clear();
           var td = getCell(r, c);
           if (td) td.classList.remove('error');
+
+          if (S.mistakeCheck && n !== 0 && n !== S.solution[r][c]) {
+            td.classList.add('error');
+            showErr('間違っています。');
+          }
         
           if (n !== 0) {
             for (var rr = 0; rr < 9; rr++) {
