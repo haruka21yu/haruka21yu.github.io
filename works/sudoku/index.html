@@ -73,15 +73,15 @@
     </div>
     <div class="numpad">
       <span class="numpad-label">入力：</span>
-      <button class="numpad-btn" onclick="inputNum(1)">1</button>
-      <button class="numpad-btn" onclick="inputNum(2)">2</button>
-      <button class="numpad-btn" onclick="inputNum(3)">3</button>
-      <button class="numpad-btn" onclick="inputNum(4)">4</button>
-      <button class="numpad-btn" onclick="inputNum(5)">5</button>
-      <button class="numpad-btn" onclick="inputNum(6)">6</button>
-      <button class="numpad-btn" onclick="inputNum(7)">7</button>
-      <button class="numpad-btn" onclick="inputNum(8)">8</button>
-      <button class="numpad-btn" onclick="inputNum(9)">9</button>
+      <button class="numpad-btn" data-num="1" onclick="inputNum(1)">1</button>
+      <button class="numpad-btn" data-num="2" onclick="inputNum(2)">2</button>
+      <button class="numpad-btn" data-num="3" onclick="inputNum(3)">3</button>
+      <button class="numpad-btn" data-num="4" onclick="inputNum(4)">4</button>
+      <button class="numpad-btn" data-num="5" onclick="inputNum(5)">5</button>
+      <button class="numpad-btn" data-num="6" onclick="inputNum(6)">6</button>
+      <button class="numpad-btn" data-num="7" onclick="inputNum(7)">7</button>
+      <button class="numpad-btn" data-num="8" onclick="inputNum(8)">8</button>
+      <button class="numpad-btn" data-num="9" onclick="inputNum(9)">9</button>
       <button class="numpad-btn erase" onclick="inputNum(0)">消す</button>
     </div>
     <div class="sudoku-wrap">
@@ -231,6 +231,7 @@
       document.getElementById('page-game').style.display = '';
     
       renderBoard();
+      refreshNumpad();
       startTimer();
     }
     
@@ -242,6 +243,7 @@
       });
       S.selected = null;
       renderBoard();
+      refreshNumpad();
       startTimer();
     }
     
@@ -282,6 +284,24 @@
       clearInterval(S.timerInterval);
       setTimeout(function(){ show('complete-msg'); }, 200);
     }
+
+    function refreshNumpad() {
+      for (var n = 1; n <= 9; n++) {
+        var count = 0;
+        for (var r = 0; r < 9; r++)
+          for (var c = 0; c < 9; c++)
+            if (S.board[r][c] === n) count++;
+        var btn = document.querySelector('.numpad-btn[data-num="' + n + '"]');
+        if (!btn) continue;
+        if (count >= 9) {
+          btn.disabled = true;
+          btn.style.opacity = '0.3';
+        } else {
+          btn.disabled = false;
+          btn.style.opacity = '';
+        }
+      }
+    }
     
     function inputNum(n) {
       if (!S.selected) return;
@@ -320,6 +340,7 @@
     
       renderBoard();
       selectCell(r, c);
+      refreshNumpad();
       if (!S.memoMode && n !== 0) autoCheck();
     }
     
