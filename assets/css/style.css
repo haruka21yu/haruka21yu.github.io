@@ -929,6 +929,8 @@ hr {
 
 .numpad-btn.erase { font-size: 12px; width: auto; padding: 0 10px; color: var(--muted); }
 
+.toggle-row { padding: 0rem 6vw 0rem; }
+
 .memo-toggle {
   padding: 5px 13px; font-size: 12px; cursor: pointer;
   border: 1px solid var(--line); border-radius: 2px;
