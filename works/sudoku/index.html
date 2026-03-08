@@ -64,7 +64,6 @@
         <button onclick="backToSelect()">選択に戻る</button>
       </div>
     </div>
-    <div id="error-msg" class="msg msg-err"></div>
     <div class="toolbar">
       <span class="tool-label">メモ：</span>
       <div class="memo-toggle" id="memo-toggle" onclick="toggleMemo()">メモモード OFF</div>
@@ -88,6 +87,7 @@
       <input type="checkbox" id="mistake-check" onchange="S.mistakeCheck=this.checked">
       ミスを即座に表示
     </label>
+    <div id="error-msg" class="msg msg-err"></div>
     <div class="sudoku-wrap">
       <table class="sudoku-table" id="sudoku-table"></table>
     </div>
