@@ -583,6 +583,7 @@
         }
       ));
     }
+    
     function doSolve(r,c){
       var prev=C.sGrid[r][c], next;
       if(C.dragMode==='fill')   next='filled';
@@ -615,6 +616,7 @@
         th.innerHTML=cc.length?cc.join('<br>'):'0';
         tr0.appendChild(th);
       }
+      
       thead.appendChild(tr0);
       table.appendChild(thead);
       var tbody=document.createElement('tbody');
@@ -641,9 +643,11 @@
         }
         tbody.appendChild(tr);
       }
+      
       table.appendChild(tbody);
       return table;
     }
+    
     function cellCls(s){ return 'td-cell'+(s==='filled'||s===true?' filled':s==='marked'?' marked':''); }
     function updateCellCls(td, s){
       td.classList.remove('filled','marked');
@@ -658,16 +662,19 @@
         var d=C.hintCheck&&isDoneRow(r,C.rowClues[r]||[]);
         el.className='td-row-hint'+((r+1)%5===0&&r<C.sRows-1?' gsep':'')+(d?' done':'');
       }
+      
       for(var c=0;c<C.sCols;c++){
         var el2=document.getElementById('sch-'+c); if(!el2) continue;
         var d2=C.hintCheck&&isDoneCol(c,C.colClues[c]||[]);
         el2.className='td-col-hint'+((c+1)%5===0&&c<C.sCols-1?' gsep':'')+(d2?' done':'');
       }
     }
+    
     function isDoneRow(r,clues){
       if(!clues.length) return true;
       return clue(C.sGrid[r].map(function(v){return v==='filled'?1:0;})).join(',')===clues.join(',');
     }
+    
     function isDoneCol(c,clues){
       if(!clues.length) return true;
       return clue(C.sGrid.map(function(row){return row[c]==='filled'?1:0;})).join(',')===clues.join(',');
@@ -685,16 +692,20 @@
       else{ show('solve-error'); hide('complete-msg'); setTimeout(function(){hide('solve-error');},3000); }
       clearInterval(C.timerInterval);
     }
+    
     function autoCheck(){
       var any=C.sGrid.reduce(function(s,row){return s+row.filter(function(v){return v==='filled';}).length;},0);
       if(any>0&&isSolved()) setTimeout(function(){show('complete-msg');},200);
     }
+    
     function isSolved(){
       for(var r=0;r<C.sRows;r++) if((C.rowClues[r]||[]).length&&!isDoneRow(r,C.rowClues[r])) return false;
       for(var c=0;c<C.sCols;c++) if((C.colClues[c]||[]).length&&!isDoneCol(c,C.colClues[c])) return false;
       return true;
     }
+    
     function resetSolve(){
+      if (!confirm('最初からやり直しますか？')) return;
       C.sGrid=mk2d(C.sRows,C.sCols,'');
       hide('complete-msg'); hide('solve-error');
       renderSolve();
