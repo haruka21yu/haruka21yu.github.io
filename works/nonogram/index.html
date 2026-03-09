@@ -152,6 +152,11 @@
         <div class="board-field-err" id="bferr-name">名前を入力してください。</div>
       </div>
       <div class="board-form-group">
+        <label>題名 <span style="color:var(--accent);font-size:11px;">※</span></label>
+        <input type="text" id="bf-title" placeholder="ノノグラムのタイトル" maxlength="100">
+        <div class="board-field-err" id="bferr-title">題名を入力してください。</div>
+      </div>
+      <div class="board-form-group">
         <label>連絡先 <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <input type="email" id="bf-email" placeholder="メールアドレス" style="flex:1;min-width:160px;">
@@ -841,7 +846,7 @@
             item.innerHTML =
               '<div class="board-item-body">' +
                 '<div class="board-item-name">' + escHtml(post.name) + '</div>' +
-                '<a class="board-item-url" href="' + escHtml(post.url) + '" target="_blank" rel="noopener">' + escHtml(post.url) + '</a>' +
+                '<a class="board-item-url" href="' + escHtml(post.url) + '" target="_blank">' + escHtml(post.title) + '</a>' +
                 '<div class="board-item-meta">UUID: ' + escHtml(post.uuid) + '　' + escHtml(post.timestamp) + '</div>' +
               '</div>' +
               '<div class="board-item-actions">' +
@@ -858,7 +863,8 @@
     function goSolveFromBoard(url) {
       var d = url.split('?d=')[1];
       if (!d) { alert('URLの形式が正しくありません。'); return; }
-      var decoded = decodeGrid(decodeURIComponent(d));
+      d = d.replace(/%2B/gi, '+');
+      var decoded = decodeGrid(d);
       if (!decoded) { alert('ノノグラムのデータを読み込めませんでした。'); return; }
       C.cRows = decoded.rows; C.cCols = decoded.cols; C.cGrid = decoded.grid;
       document.getElementById('c-rows').value = C.cRows;
@@ -879,23 +885,25 @@
     }
 
     function submitBoardPost() {
-      var name  = document.getElementById('bf-name').value.trim();
+      var name  = document.getElementById('bf-name').value.trim();]
+      var title = document.getElementById('bf-title').value.trim();
       var email = document.getElementById('bf-email').value.trim();
       var tel   = document.getElementById('bf-tel').value.trim();
       var url   = document.getElementById('bf-url').value.trim();
       var ok = true;
 
       toggleBoardErr('bferr-name',    !name,               'bferr-name');
+      toggleBoardErr('bferr-title', !title, 'bferr-title');
       toggleBoardErr('bferr-contact', !email && !tel,      'bferr-contact');
       toggleBoardErr('bferr-url',     url.indexOf(BOARD_URL_PREFIX) !== 0, 'bferr-url');
-      if (!name || (!email && !tel) || url.indexOf(BOARD_URL_PREFIX) !== 0) return;
+      if (!name || !title || (!email && !tel) || url.indexOf(BOARD_URL_PREFIX) !== 0) return;
 
       var btn = event.target;
       btn.disabled = true; btn.textContent = '送信中…';
 
       fetch(BOARD_GAS_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'post', name: name, email: email, tel: tel, url: url })
+        body: JSON.stringify({ action: 'post', name: name, title: title, email: email, tel: tel, url: url })
       })
       .then(function(r){ return r.json(); })
       .then(function(data) {
