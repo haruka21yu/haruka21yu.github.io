@@ -40,7 +40,7 @@
     <h1>nonogram</h1>
   </div>
   <div class="tabs">
-    <div class="tab active" id="tab-create"       onclick="showTab('create')">ノノグラムを作る</div>
+    <div class="tab active" id="tab-create" onclick="showTab('create')">ノノグラムを作る</div>
     <div class="tab" id="tab-solve-select" onclick="showTab('solve-select')">ノノグラムを解く</div>
     <div class="tab" id="tab-board" onclick="showTab('board')">掲示板</div>
   </div>
@@ -131,6 +131,77 @@
         <button class="primary" id="btn-new-rand" onclick="goSolveRandom()">新しいランダムノノグラム</button>
         <button onclick="showTab('solve-select')">選択に戻る</button>
       </div>
+    </div>
+  </div>
+  <div class="page" id="page-board">
+    <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <p class="section-note" style="margin:0;">みんなのノノグラムを解いてみよう。</p>
+      <div style="display:flex;gap:6px;margin-left:auto;">
+        <button class="success" onclick="showBoardForm('post')">＋ 投稿する</button>
+        <button onclick="showBoardForm('delete')">削除を要望する</button>
+      </div>
+    </div>
+    <div id="board-loading" style="font-size:12px;color:var(--muted);margin-bottom:12px;">読み込み中…</div>
+    <div id="board-list"></div>
+    <div id="board-empty" style="display:none;font-size:12px;color:var(--muted);margin-bottom:12px;">まだ投稿がありません。</div>
+    <div id="board-form-post" style="display:none;margin-top:20px;background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:16px 18px;max-width:520px;">
+      <div style="font-size:13px;color:var(--ink);margin-bottom:12px;font-weight:bold;">ノノグラムを投稿する</div>
+      <div class="board-form-group">
+        <label>表示名 <span style="color:var(--accent);font-size:11px;">※</span></label>
+        <input type="text" id="bf-name" placeholder="ニックネームなど" maxlength="50">
+        <div class="board-field-err" id="bferr-name">名前を入力してください。</div>
+      </div>
+      <div class="board-form-group">
+        <label>連絡先 <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="email" id="bf-email" placeholder="メールアドレス" style="flex:1;min-width:160px;">
+          <input type="tel"   id="bf-tel"   placeholder="電話番号"       style="flex:1;min-width:140px;">
+        </div>
+        <div class="board-field-err" id="bferr-contact">メールアドレスまたは電話番号を入力してください。</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">連絡先は掲示板には表示されません。</div>
+      </div>
+      <div class="board-form-group">
+        <label>ノノグラムのURL <span style="color:var(--accent);font-size:11px;">※</span></label>
+        <input type="text" id="bf-url" placeholder="https://haruka21yu.github.io/works/nonogram/?d=...">
+        <div class="board-field-err" id="bferr-url">正しいURLを入力してください。</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">「ノノグラムを作る」→「共有URLを作る」で取得したURLを貼り付けてください。</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+        <button class="primary" onclick="submitBoardPost()">投稿する</button>
+        <button onclick="hideBoardForm()">キャンセル</button>
+      </div>
+      <div id="board-post-msg" class="msg" style="margin-top:10px;"></div>
+    </div>
+    <div id="board-form-delete" style="display:none;margin-top:20px;background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:16px 18px;max-width:520px;">
+      <div style="font-size:13px;color:var(--ink);margin-bottom:12px;font-weight:bold;">削除を要望する</div>
+      <div class="board-form-group">
+        <label>名前 <span style="color:var(--accent);font-size:11px;">※</span></label>
+        <input type="text" id="bd-name" placeholder="名前" maxlength="50">
+        <div class="board-field-err" id="bderr-name">名前を入力してください。</div>
+      </div>
+      <div class="board-form-group">
+        <label>連絡先 <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="email" id="bd-email" placeholder="メールアドレス" style="flex:1;min-width:160px;">
+          <input type="tel"   id="bd-tel"   placeholder="電話番号"       style="flex:1;min-width:140px;">
+        </div>
+        <div class="board-field-err" id="bderr-contact">メールアドレスまたは電話番号を入力してください。</div>
+      </div>
+      <div class="board-form-group">
+        <label>URLまたはUUID <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
+        <input type="text" id="bd-url"  placeholder="URL" style="margin-bottom:6px;">
+        <input type="text" id="bd-uuid" placeholder="UUID（8文字）" maxlength="8">
+        <div class="board-field-err" id="bderr-target">URLまたはUUIDを入力してください。</div>
+      </div>
+      <div class="board-form-group">
+        <label>削除理由 <span style="color:var(--muted);font-size:11px;">任意</span></label>
+        <textarea id="bd-reason" placeholder="削除を希望する理由をご記入ください。" style="width:100%;min-height:80px;padding:6px 10px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:13px;font-family:inherit;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+        <button class="danger" onclick="submitBoardDelete()">削除要望を送信</button>
+        <button onclick="hideBoardForm()">キャンセル</button>
+      </div>
+      <div id="board-delete-msg" class="msg" style="margin-top:10px;"></div>
     </div>
   </div>
   <footer>
