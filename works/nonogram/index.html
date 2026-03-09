@@ -196,6 +196,7 @@
         <label>URLまたはUUID <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
         <input type="text" id="bd-url"  placeholder="URL" style="margin-bottom:6px;">
         <input type="text" id="bd-uuid" placeholder="UUID（8文字）" maxlength="8">
+        <input type="text" id="bd-title" placeholder="題名（わかれば）" maxlength="100">
         <div class="board-field-err" id="bderr-target">URLまたはUUIDを入力してください。</div>
       </div>
       <div class="board-form-group">
@@ -943,7 +944,7 @@
 
       fetch(BOARD_GAS_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'delete_request', name: name, email: email, tel: tel, url: url, uuid: uuid, reason: reason })
+        body: JSON.stringify({ action: 'delete_request', name: name, email: email, tel: tel, url: url, uuid: uuid, title: document.getElementById('bd-title').value.trim(), reason: reason })
       })
       .then(function(r){ return r.json(); })
       .then(function(data) {
