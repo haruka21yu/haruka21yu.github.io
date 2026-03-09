@@ -538,7 +538,7 @@ footer p {
 }
 
 .tab:hover { color: var(--ink); }
-.tab.active { color: var(--ink); border-bottom-color: var(--ink); }
+.tab.active { color: var(--ink); border-bottom-color: var(--accent); }
 
 .page { display: none; }
 .page.active { display: block; padding: 0rem 6vw 0rem; }
