@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yu's website">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yu's website">
+  <meta property="og:locale" content="ja_JP">
+  <title>contact - haruka21yuの物置小屋</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/css/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yuの<br><em>物置小屋</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+    <a href="https://haruka21yu.github.io/contact/" class="active">contact</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      contact
+    </p>
+    <h1>contact</h1>
+  </div>
+  <p class="section-note">
+    お問い合わせはこちらのフォームからどうぞ。<br>
+    <span style="color:var(--accent);">※</span> は必須項目です。
+  </p>
+  <div id="form-wrap">
+    <div class="form-group">
+      <label>問い合わせ種別 <span class="req">※</span></label>
+      <select id="category">
+        <option value="">選択してください</option>
+        <option value="サイトに掲載されている情報などの間違い">サイトに掲載されている情報などの間違い</option>
+        <option value="著作権関係">著作権関係</option>
+        <option value="サイトやサイト運営者に関する質問">サイトやサイト運営者に関する質問</option>
+        <option value="機能や作品リクエスト">機能や作品リクエスト</option>
+        <option value="その他">その他</option>
+      </select>
+      <div class="field-err" id="err-category">問い合わせ種別を選択してください。</div>
+    </div>
+    <div class="form-group">
+      <label>名前 <span class="req">※</span></label>
+      <input type="text" id="name" placeholder="山田 太郎" maxlength="100">
+      <div class="field-err" id="err-name">名前を入力してください。</div>
+    </div>
+    <div class="form-group">
+      <label>連絡先 <span class="req">※ メールアドレスまたは電話番号のどちらか一方は必須</span></label>
+      <div class="contact-group">
+        <p class="contact-note">どちらか一方を必ずご入力ください。両方の入力も可能です。</p>
+        <div class="contact-row">
+          <div class="contact-field">
+            <label>メールアドレス</label>
+            <input type="email" id="email" placeholder="example@example.com">
+          </div>
+          <div class="contact-field">
+            <label>電話番号</label>
+            <input type="tel" id="tel" placeholder="090-0000-0000">
+          </div>
+        </div>
+      </div>
+      <div class="field-err" id="err-contact">メールアドレスまたは電話番号を入力してください。</div>
+    </div>
+    <div class="form-group">
+      <label>件名 <span class="req">※</span></label>
+      <input type="text" id="subject" placeholder="件名を入力してください" maxlength="200">
+      <div class="field-err" id="err-subject">件名を入力してください。</div>
+    </div>
+    <div class="form-group">
+      <label>メッセージ <span class="req">※</span></label>
+      <textarea id="message" placeholder="お問い合わせ内容をご記入ください。"></textarea>
+      <div class="field-err" id="err-message">メッセージを入力してください。</div>
+    </div>
+    <div class="form-group">
+      <label>添付ファイル <span class="opt">任意</span></label>
+      <div class="file-area">
+        <label class="file-label" for="file-input">ファイルを選択</label>
+        <input type="file" id="file-input" accept="image/*,.pdf,.txt,.zip" onchange="onFileChange(this)">
+        <div class="file-name" id="file-name" style="display:none;">
+          <span id="file-name-text"></span>
+          <span class="file-remove" onclick="removeFile()">✕ 削除</span>
+        </div>
+        <p class="file-note">対応形式：画像・PDF・TXT・ZIP　最大サイズ：5MB</p>
+        <div class="field-err" id="err-file"></div>
+      </div>
+    </div>
+    <button class="primary" id="submit-btn" onclick="submitForm()">送信する</button>
+    <div class="msg msg-ok" id="msg-ok">
+      ✅ お問い合わせを送信しました。ご入力いただいたメールアドレス宛に自動返信メールをお送りしています。
+    </div>
+    <div class="msg msg-err" id="msg-err"></div>
+  </div>
+  <div id="form-done" style="display:none;">
+    <p style="font-size:13px;color:var(--ink);margin-bottom:8px;">お問い合わせを受け付けました。</p>
+    <p style="font-size:12px;color:var(--muted);">内容を確認の上、順次ご返信いたします。しばらくお待ちください。</p>
+    <p style="margin-top:16px;"><a href="https://haruka21yu.github.io/" style="font-size:12px;color:var(--accent);">← ホームに戻る</a></p>
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yuの物置小屋</span>
+  </footer>
+  <script>
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbzwxPjYUDLy0xXsP5Lgs_9kL6hey3NBSwSGSyySDRLnsJHSjK7L756NJ1_Y49fS1Q6d/exec';
+  
+    var selectedFile = null;
+  
+    function onFileChange(input) {
+      var file = input.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        showFieldErr('err-file', 'ファイルサイズが5MBを超えています。');
+        input.value = '';
+        return;
+      }
+      hideFieldErr('err-file');
+      selectedFile = file;
+      document.getElementById('file-name-text').textContent = file.name;
+      document.getElementById('file-name').style.display = 'block';
+    }
+  
+    function removeFile() {
+      selectedFile = null;
+      document.getElementById('file-input').value = '';
+      document.getElementById('file-name').style.display = 'none';
+    }
+  
+    function validate() {
+      var ok = true;
+  
+      var category = document.getElementById('category').value;
+      if (!category) { showFieldErr('err-category'); markInvalid('category'); ok = false; }
+      else { hideFieldErr('err-category'); markValid('category'); }
+  
+      var name = document.getElementById('name').value.trim();
+      if (!name) { showFieldErr('err-name'); markInvalid('name'); ok = false; }
+      else { hideFieldErr('err-name'); markValid('name'); }
+  
+      var email = document.getElementById('email').value.trim();
+      var tel   = document.getElementById('tel').value.trim();
+      if (!email && !tel) {
+        showFieldErr('err-contact');
+        ok = false;
+      } else {
+        hideFieldErr('err-contact');
+      }
+  
+      var subject = document.getElementById('subject').value.trim();
+      if (!subject) { showFieldErr('err-subject'); markInvalid('subject'); ok = false; }
+      else { hideFieldErr('err-subject'); markValid('subject'); }
+  
+      var message = document.getElementById('message').value.trim();
+      if (!message) { showFieldErr('err-message'); markInvalid('message'); ok = false; }
+      else { hideFieldErr('err-message'); markValid('message'); }
+  
+      return ok;
+    }
+  
+    function submitForm() {
+      hideMsg();
+      if (!validate()) return;
+  
+      var btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = '送信中...';
+  
+      var payload = {
+        category: document.getElementById('category').value,
+        name:     document.getElementById('name').value.trim(),
+        email:    document.getElementById('email').value.trim(),
+        tel:      document.getElementById('tel').value.trim(),
+        subject:  document.getElementById('subject').value.trim(),
+        message:  document.getElementById('message').value.trim(),
+        fileName: '',
+        fileData: '',
+        fileType: '',
+      };
+  
+      if (selectedFile) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64 = e.target.result.split(',')[1];
+          payload.fileName = selectedFile.name;
+          payload.fileData = base64;
+          payload.fileType = selectedFile.type;
+          send(payload, btn);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        send(payload, btn);
+      }
+    }
+  
+    function send(payload, btn) {
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      })
+      .then(function(res){ return res.json(); })
+      .then(function(data) {
+        btn.disabled = false;
+        btn.textContent = '送信する';
+        if (data.status === 'ok') {
+          document.getElementById('form-wrap').style.display = 'none';
+          document.getElementById('form-done').style.display = 'block';
+        } else {
+          showMsg('msg-err', '送信に失敗しました。しばらくしてから再度お試しください。');
+        }
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = '送信する';
+        showMsg('msg-err', '通信エラーが発生しました。しばらくしてから再度お試しください。');
+      });
+    }
+  
+    function showFieldErr(id, msg) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (msg) el.textContent = msg;
+      el.classList.add('show');
+    }
+    function hideFieldErr(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('show');
+    }
+    function markInvalid(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('invalid');
+    }
+    function markValid(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('invalid');
+    }
+    function showMsg(id, text) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      if (text) el.textContent = text;
+      el.classList.add('show');
+    }
+    function hideMsg() {
+      document.getElementById('msg-ok').classList.remove('show');
+      document.getElementById('msg-err').classList.remove('show');
+    }
+  </script>
+</body>
+</html>
