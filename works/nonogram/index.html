@@ -851,8 +851,11 @@
                 '<div class="board-item-meta">UUID: ' + escHtml(post.uuid) + '　' + escHtml(post.timestamp) + '</div>' +
               '</div>' +
               '<div class="board-item-actions">' +
-                '<button onclick="goSolveFromBoard(' + JSON.stringify(post.url) + ')">解く</button>' +
+                '<button class="board-solve-btn">解く</button>' +
               '</div>';
+            item.querySelector('.board-solve-btn').addEventListener('click', function() {
+              goSolveFromBoard(post.url);
+            });
             list.appendChild(item);
           });
         })
