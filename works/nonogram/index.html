@@ -320,9 +320,12 @@
     }
     
     function decodeGrid(str){
-      var parts=str.split('x');
-      if(parts.length<3) return null;
-      var rows=parseInt(parts[0]), cols=parseInt(parts[1]), enc=parts[2];
+      var firstX  = str.indexOf('x');
+      var secondX = str.indexOf('x', firstX + 1);
+      if(firstX < 0 || secondX < 0) return null;
+      var rows = parseInt(str.substring(0, firstX));
+      var cols = parseInt(str.substring(firstX + 1, secondX));
+      var enc  = str.substring(secondX + 1);
       if(!rows||!cols||rows<2||rows>25||cols<2||cols>25) return null;
       var b64chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-';
       var bits=[];
