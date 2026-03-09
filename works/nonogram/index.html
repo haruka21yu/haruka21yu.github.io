@@ -41,7 +41,8 @@
   </div>
   <div class="tabs">
     <div class="tab active" id="tab-create"       onclick="showTab('create')">ノノグラムを作る</div>
-    <div class="tab"        id="tab-solve-select" onclick="showTab('solve-select')">ノノグラムを解く</div>
+    <div class="tab" id="tab-solve-select" onclick="showTab('solve-select')">ノノグラムを解く</div>
+    <div class="tab" id="tab-board" onclick="showTab('board')">掲示板</div>
   </div>
   <div class="page active" id="page-create">
     <div class="legend">
@@ -170,12 +171,13 @@
     }
     
     function showTab(id){
-      ['create','solve-select','solve'].forEach(function(t){
+      ['create','solve-select','solve','board'].forEach(function(t){
         document.getElementById('page-'+t).classList.toggle('active', t===id);
         var tab=document.getElementById('tab-'+t);
         if(tab) tab.classList.toggle('active', t===id);
       });
       if(id==='solve-select') refreshOwnStatus();
+      if(id==='board') loadBoard();
     }
     
     function applySize(){
@@ -739,6 +741,161 @@
       
       applySize();
     };
+    
+    var BOARD_GAS_URL = 'https://script.google.com/macros/s/AKfycbx11masSWAwlRrl9RLPFDDL8gMi6nnNTnCNPbkp6H9GHR--0xj5Hq8pCTCq5myQDTc/exec';
+    var BOARD_URL_PREFIX = 'https://haruka21yu.github.io/works/nonogram/?d';
+
+    function loadBoard() {
+      var loading = document.getElementById('board-loading');
+      var list    = document.getElementById('board-list');
+      var empty   = document.getElementById('board-empty');
+      loading.style.display = 'block';
+      list.innerHTML = '';
+      empty.style.display = 'none';
+
+      fetch(BOARD_GAS_URL)
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          loading.style.display = 'none';
+          if (!data.posts || data.posts.length === 0) {
+            empty.style.display = 'block';
+            return;
+          }
+          data.posts.forEach(function(post) {
+            var item = document.createElement('div');
+            item.className = 'board-item';
+            item.innerHTML =
+              '<div class="board-item-body">' +
+                '<div class="board-item-name">' + escHtml(post.name) + '</div>' +
+                '<a class="board-item-url" href="' + escHtml(post.url) + '" target="_blank" rel="noopener">' + escHtml(post.url) + '</a>' +
+                '<div class="board-item-meta">UUID: ' + escHtml(post.uuid) + '　' + escHtml(post.timestamp) + '</div>' +
+              '</div>' +
+              '<div class="board-item-actions">' +
+                '<button onclick="goSolveFromBoard(' + JSON.stringify(post.url) + ')">解く</button>' +
+              '</div>';
+            list.appendChild(item);
+          });
+        })
+        .catch(function() {
+          loading.textContent = '読み込みに失敗しました。';
+        });
+    }
+
+    function goSolveFromBoard(url) {
+      var d = url.split('?d=')[1];
+      if (!d) { alert('URLの形式が正しくありません。'); return; }
+      var decoded = decodeGrid(decodeURIComponent(d));
+      if (!decoded) { alert('ノノグラムのデータを読み込めませんでした。'); return; }
+      C.cRows = decoded.rows; C.cCols = decoded.cols; C.cGrid = decoded.grid;
+      document.getElementById('c-rows').value = C.cRows;
+      document.getElementById('c-cols').value = C.cCols;
+      renderCreate();
+      goSolveOwn();
+    }
+
+    function showBoardForm(type) {
+      hideBoardForm();
+      document.getElementById('board-form-' + type).style.display = 'block';
+    }
+    function hideBoardForm() {
+      document.getElementById('board-form-post').style.display   = 'none';
+      document.getElementById('board-form-delete').style.display = 'none';
+      hideBoardMsg('board-post-msg');
+      hideBoardMsg('board-delete-msg');
+    }
+
+    function submitBoardPost() {
+      var name  = document.getElementById('bf-name').value.trim();
+      var email = document.getElementById('bf-email').value.trim();
+      var tel   = document.getElementById('bf-tel').value.trim();
+      var url   = document.getElementById('bf-url').value.trim();
+      var ok = true;
+
+      toggleBoardErr('bferr-name',    !name,               'bferr-name');
+      toggleBoardErr('bferr-contact', !email && !tel,      'bferr-contact');
+      toggleBoardErr('bferr-url',     url.indexOf(BOARD_URL_PREFIX) !== 0, 'bferr-url');
+      if (!name || (!email && !tel) || url.indexOf(BOARD_URL_PREFIX) !== 0) return;
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '送信中…';
+
+      fetch(BOARD_GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'post', name: name, email: email, tel: tel, url: url })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = '投稿する';
+        if (data.status === 'ok') {
+          showBoardMsg('board-post-msg', '投稿しました！UUID: ' + data.uuid, true);
+          document.getElementById('bf-name').value  = '';
+          document.getElementById('bf-email').value = '';
+          document.getElementById('bf-tel').value   = '';
+          document.getElementById('bf-url').value   = '';
+          loadBoard();
+        } else {
+          showBoardMsg('board-post-msg', data.message || '送信に失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = '投稿する';
+        showBoardMsg('board-post-msg', '通信エラーが発生しました。', false);
+      });
+    }
+
+    function submitBoardDelete() {
+      var name   = document.getElementById('bd-name').value.trim();
+      var email  = document.getElementById('bd-email').value.trim();
+      var tel    = document.getElementById('bd-tel').value.trim();
+      var url    = document.getElementById('bd-url').value.trim();
+      var uuid   = document.getElementById('bd-uuid').value.trim();
+      var reason = document.getElementById('bd-reason').value.trim();
+
+      toggleBoardErr('bderr-name',    !name,              'bderr-name');
+      toggleBoardErr('bderr-contact', !email && !tel,     'bderr-contact');
+      toggleBoardErr('bderr-target',  !url && !uuid,      'bderr-target');
+      if (!name || (!email && !tel) || (!url && !uuid)) return;
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '送信中…';
+
+      fetch(BOARD_GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete_request', name: name, email: email, tel: tel, url: url, uuid: uuid, reason: reason })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = '削除要望を送信';
+        if (data.status === 'ok') {
+          showBoardMsg('board-delete-msg', '削除要望を送信しました。' + (data.deleted ? '該当の投稿を削除しました。' : ''), true);
+          loadBoard();
+        } else {
+          showBoardMsg('board-delete-msg', data.message || '送信に失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = '削除要望を送信';
+        showBoardMsg('board-delete-msg', '通信エラーが発生しました。', false);
+      });
+    }
+
+    function toggleBoardErr(id, show, _) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('show', show);
+    }
+    function showBoardMsg(id, text, isOk) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'msg show ' + (isOk ? 'msg-ok' : 'msg-err');
+    }
+    function hideBoardMsg(id) {
+      var el = document.getElementById(id);
+      if (el) { el.className = 'msg'; el.textContent = ''; }
+    }
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
   </script>
 </body>
 </html>
