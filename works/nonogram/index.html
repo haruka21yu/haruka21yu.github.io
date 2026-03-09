@@ -187,6 +187,7 @@
       renderCreate();
     }
     function clearGrid(){
+      if (!confirm('全部消しますか？')) return;
       C.cGrid=mk2d(C.cRows,C.cCols,false);
       hide('share-box');
       renderCreate();
