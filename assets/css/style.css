@@ -950,3 +950,168 @@ hr {
 .game-label { font-size: 12px; color: var(--muted); }
 
 .timer { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+
+.form-group label .req {
+  color: var(--accent);
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.form-group label .opt {
+  color: var(--muted);
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.form-group input[type=text],
+.form-group input[type=email],
+.form-group input[type=tel],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  max-width: 520px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color .12s;
+  appearance: none;
+}
+
+.form-group input[type=text]:focus,
+.form-group input[type=email]:focus,
+.form-group input[type=tel]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-group select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a6a55'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+
+.contact-group {
+  max-width: 520px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 12px 14px;
+  background: var(--paper);
+}
+
+.contact-group .contact-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.contact-group .contact-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.contact-group .contact-row .contact-field {
+  flex: 1;
+  min-width: 180px;
+}
+
+.contact-group .contact-row .contact-field label {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.contact-group .contact-row .contact-field input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  font-family: inherit;
+  transition: border-color .12s;
+}
+
+.contact-group .contact-row .contact-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.file-area {
+  max-width: 520px;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 5px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--paper);
+  color: var(--muted);
+  transition: all .12s;
+}
+
+.file-label:hover {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+
+input[type=file] { display: none; }
+
+.file-name {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.file-name .file-remove {
+  color: #a55;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 11px;
+}
+
+.file-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.field-err {
+  font-size: 11px;
+  color: #a55;
+  margin-top: 4px;
+  display: none;
+}
+.field-err.show { display: block; }
+input.invalid, select.invalid, textarea.invalid {
+  border-color: #a55 !important;
+}
