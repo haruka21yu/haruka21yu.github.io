@@ -6,7 +6,12 @@
   --paper: #ede8dc;
   --line: #d4c9b4;
   --danger: #aa5555;
-  --
+  --ok-bg: #d4edda;
+  --ok-color: #2d5a3d;
+  --ok-border: #b8dcc4;
+  --err-bg: #f8d7da;
+  --err-color: #6b1f26;
+  --err-border: #f0b8bc;
   --average-accentpaper: #d9a48b;
   --average-paperline: #e1d9c8;
 }
