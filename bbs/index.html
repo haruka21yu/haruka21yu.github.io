@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yu's website">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yu's website">
+  <meta property="og:locale" content="ja_JP">
+  <title>bbs - haruka21yuの物置小屋</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/css/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yuの<br><em>物置小屋</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+    <a href="https://haruka21yu.github.io/bbs/" class="active">bbs</a>
+    <a href="https://haruka21yu.github.io/contact/">contact</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      bbs
+    </p>
+    <h1>bbs</h1>
+  </div>
+  <div class="bbs-container">
+    <div class="account-bar" id="account-bar">
+      <span id="account-bar-text">ログインしていません</span>
+      <div class="ml-auto" style="display:flex;gap:6px;">
+        <button id="btn-open-auth" onclick="openAuthModal()">ログイン / 登録</button>
+        <button id="btn-logout" style="display:none;" onclick="logout()">ログアウト</button>
+      </div>
+    </div>
+    <div id="view-threads">
+      <div class="bbs-toolbar">
+        <h2>スレッド一覧</h2>
+        <button class="primary" style="margin-left:auto;" onclick="openCreateThread()">＋ スレッドを立てる</button>
+      </div>
+      <div class="loading" id="threads-loading">読み込み中…</div>
+      <div class="thread-list" id="thread-list"></div>
+      <div class="empty-msg" id="threads-empty" style="display:none;">まだスレッドがありません。</div>
+    </div>
+    <div id="view-posts" style="display:none;">
+      <div class="back-btn" onclick="showThreads()">← スレッド一覧に戻る</div>
+      <div class="thread-header">
+        <div class="thread-header-title" id="post-view-title"></div>
+        <div class="thread-header-meta" id="post-view-meta"></div>
+      </div>
+      <div class="loading" id="posts-loading" style="display:none;">読み込み中…</div>
+      <div class="post-list" id="post-list"></div>
+      <div class="empty-msg" id="posts-empty" style="display:none;">まだ投稿がありません。</div>
+      <div class="thread-locked" id="thread-locked" style="display:none;">このスレッドはロックされています。</div>
+      <div class="bbs-form" id="post-form" style="display:none;">
+        <div class="bbs-form-title">返信する</div>
+        <div class="bbs-form-group">
+          <label>本文 <span style="color:var(--accent);font-size:11px;">※</span></label>
+          <textarea id="pf-body" rows="4" maxlength="2000" placeholder="本文を入力してください（2000文字以内）"></textarea>
+          <div class="bbs-field-err" id="pferr-body">本文を入力してください。</div>
+        </div>
+        <div class="bbs-form-group">
+          <label>画像 <span style="color:var(--muted);font-size:11px;">任意（jpg/png/gif/webp、5MB以内）</span></label>
+          <input type="file" id="pf-image" accept="image/jpeg,image/png,image/gif,image/webp" style="font-size:12px;">
+          <div class="bbs-field-err" id="pferr-image">ファイルサイズが大きすぎます（5MB以内）。</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="primary" onclick="submitPost()">投稿する</button>
+        </div>
+        <div class="bbs-msg" id="post-msg"></div>
+      </div>
+      <div class="bbs-form" id="post-login-notice" style="display:none;">
+        <div style="font-size:13px;color:var(--muted);">投稿するには<a href="#" onclick="openAuthModal();return false;" style="color:var(--accent);">ログイン</a>が必要です。</div>
+      </div>
+    </div>
+    <div class="bbs-form" id="create-thread-form" style="display:none;margin-top:16px;">
+      <div class="bbs-form-title">スレッドを立てる</div>
+      <div class="bbs-form-group">
+        <label>タイトル <span style="color:var(--accent);font-size:11px;">※ 100文字以内</span></label>
+        <input type="text" id="tf-title" maxlength="100" placeholder="スレッドのタイトル">
+        <div class="bbs-field-err" id="tferr-title">タイトルを入力してください。</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="primary" onclick="submitCreateThread()">作成する</button>
+        <button onclick="closeCreateThread()">キャンセル</button>
+      </div>
+      <div class="bbs-msg" id="thread-create-msg"></div>
+    </div>
+  </div>
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal">
+      <div class="modal-tabs">
+        <div class="modal-tab active" id="modal-tab-login"    onclick="switchModalTab('login')">ログイン</div>
+        <div class="modal-tab"        id="modal-tab-register" onclick="switchModalTab('register')">新規登録</div>
+      </div>
+      <div id="modal-panel-login">
+        <div class="bbs-form-group">
+          <label>メールアドレス</label>
+          <input type="email" id="lf-email" placeholder="メールアドレス">
+          <div class="bbs-field-err" id="lferr-email">メールアドレスを入力してください。</div>
+        </div>
+        <div class="bbs-form-group">
+          <label>パスワード</label>
+          <input type="password" id="lf-pass" placeholder="パスワード">
+          <div class="bbs-field-err" id="lferr-pass">パスワードを入力してください。</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="primary" onclick="submitLogin()">ログイン</button>
+          <button onclick="closeAuthModal()">キャンセル</button>
+        </div>
+        <div class="bbs-msg" id="login-msg"></div>
+      </div>
+      <div id="modal-panel-register" style="display:none;">
+        <div id="register-step1">
+          <div class="bbs-form-group">
+            <label>表示名 <span style="color:var(--accent);font-size:11px;">※</span></label>
+            <input type="text" id="rf-name" placeholder="ニックネームなど" maxlength="50">
+            <div class="bbs-field-err" id="rferr-name">表示名を入力してください。</div>
+          </div>
+          <div class="bbs-form-group">
+            <label>メールアドレス <span style="color:var(--accent);font-size:11px;">※ 確認コードを送信します</span></label>
+            <input type="email" id="rf-email" placeholder="メールアドレス">
+            <div class="bbs-field-err" id="rferr-email">メールアドレスを入力してください。</div>
+          </div>
+          <div class="bbs-form-group">
+            <label>電話番号 <span style="color:var(--muted);font-size:11px;">任意</span></label>
+            <input type="tel" id="rf-tel" placeholder="電話番号">
+          </div>
+          <div class="bbs-form-group">
+            <label>パスワード <span style="color:var(--accent);font-size:11px;">※</span></label>
+            <input type="password" id="rf-pass" placeholder="パスワード" maxlength="100">
+            <div class="bbs-field-err" id="rferr-pass">パスワードを入力してください。</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="primary" onclick="submitRegister()">確認コードを送信</button>
+            <button onclick="closeAuthModal()">キャンセル</button>
+          </div>
+          <div class="bbs-msg" id="register-msg"></div>
+        </div>
+        <div id="register-step2" style="display:none;">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">メールに送信された6桁の確認コードを入力してください。</div>
+          <div class="bbs-form-group">
+            <label>確認コード <span style="color:var(--accent);font-size:11px;">※</span></label>
+            <input type="text" id="vf-code" placeholder="123456" maxlength="6">
+            <div class="bbs-field-err" id="vferr-code">確認コードを入力してください。</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="primary" onclick="submitVerify()">認証する</button>
+            <button onclick="closeAuthModal()">キャンセル</button>
+          </div>
+          <div class="bbs-msg" id="verify-msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yuの物置小屋</span>
+  </footer>
+  <script>
+    var GAS_URL = 'https://script.google.com/macros/s/AKfycbwPl2zIHDyaDW8CSbXB-ruqwXWEctbQV5LqWHhJXEjBWscyN2Jw7jIbFz6DMzP36RNa/exec';
+
+    var State = {
+      token:       localStorage.getItem('bbs_token')  || '',
+      uuid:        localStorage.getItem('bbs_uuid')   || '',
+      name:        localStorage.getItem('bbs_name')   || '',
+      currentThread: null,
+      registerEmail: ''
+    };
+
+    function saveAuth(token, uuid, name) {
+      State.token = token; State.uuid = uuid; State.name = name;
+      localStorage.setItem('bbs_token', token);
+      localStorage.setItem('bbs_uuid',  uuid);
+      localStorage.setItem('bbs_name',  name);
+    }
+    function clearAuth() {
+      State.token = ''; State.uuid = ''; State.name = '';
+      localStorage.removeItem('bbs_token');
+      localStorage.removeItem('bbs_uuid');
+      localStorage.removeItem('bbs_name');
+    }
+
+    window.onload = function() {
+      updateAccountBar();
+      loadThreads();
+    };
+
+    function updateAccountBar() {
+      var text    = document.getElementById('account-bar-text');
+      var btnAuth = document.getElementById('btn-open-auth');
+      var btnOut  = document.getElementById('btn-logout');
+      if (State.token && State.name) {
+        text.innerHTML = '<span class="account-name">' + escHtml(State.name) + '</span> としてログイン中';
+        btnAuth.style.display = 'none';
+        btnOut.style.display  = '';
+      } else {
+        text.textContent = 'ログインしていません';
+        btnAuth.style.display = '';
+        btnOut.style.display  = 'none';
+      }
+    }
+
+    function loadThreads() {
+      var loading = document.getElementById('threads-loading');
+      var list    = document.getElementById('thread-list');
+      var empty   = document.getElementById('threads-empty');
+      loading.style.display = 'block';
+      list.innerHTML = '';
+      empty.style.display = 'none';
+
+      fetch(GAS_URL + '?action=get_threads')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          loading.style.display = 'none';
+          if (!data.threads || data.threads.length === 0) {
+            empty.style.display = 'block';
+            return;
+          }
+          data.threads.forEach(function(thread) {
+            var item = document.createElement('div');
+            item.className = 'thread-item';
+            var isOpen = thread.status === 'open';
+            item.innerHTML =
+              '<div class="thread-item-title">' + escHtml(thread.title) +
+                ' <span class="thread-status ' + (isOpen ? 'open' : 'closed') + '">' +
+                (isOpen ? '書き込み可' : 'ロック') + '</span></div>' +
+              '<div class="thread-item-meta">' +
+                '<span>作成者: ' + escHtml(thread.authorName) + '</span>' +
+                '<span>投稿数: ' + thread.postCount + '</span>' +
+                '<span>最終投稿: ' + escHtml(String(thread.lastPostedAt)) + '</span>' +
+              '</div>';
+            item.addEventListener('click', function() {
+              openThread(thread);
+            });
+            list.appendChild(item);
+          });
+        })
+        .catch(function() {
+          loading.textContent = '読み込みに失敗しました。';
+        });
+    }
+
+    function showThreads() {
+      document.getElementById('view-threads').style.display = '';
+      document.getElementById('view-posts').style.display   = 'none';
+      document.getElementById('create-thread-form').style.display = 'none';
+      State.currentThread = null;
+    }
+
+    function openThread(thread) {
+      State.currentThread = thread;
+      document.getElementById('view-threads').style.display = 'none';
+      document.getElementById('view-posts').style.display   = '';
+      document.getElementById('create-thread-form').style.display = 'none';
+      document.getElementById('post-view-title').textContent = thread.title;
+      document.getElementById('post-view-meta').textContent =
+        '作成者: ' + thread.authorName + '　' + thread.createdAt + '　投稿数: ' + thread.postCount;
+
+      var isOpen = thread.status === 'open';
+      document.getElementById('thread-locked').style.display = isOpen ? 'none' : '';
+      document.getElementById('post-form').style.display =
+        (isOpen && State.token) ? '' : 'none';
+      document.getElementById('post-login-notice').style.display =
+        (isOpen && !State.token) ? '' : 'none';
+
+      loadPosts(thread.id);
+    }
+
+    function loadPosts(threadId) {
+      var loading = document.getElementById('posts-loading');
+      var list    = document.getElementById('post-list');
+      var empty   = document.getElementById('posts-empty');
+      loading.style.display = 'block';
+      list.innerHTML = '';
+      empty.style.display = 'none';
+
+      fetch(GAS_URL + '?action=get_posts&thread_id=' + encodeURIComponent(threadId))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          loading.style.display = 'none';
+          if (!data.posts || data.posts.length === 0) {
+            empty.style.display = 'block';
+            return;
+          }
+          data.posts.forEach(function(post, idx) {
+            var item = document.createElement('div');
+            item.className = 'post-item';
+            var imageHtml = '';
+            if (post.imageUrl) {
+              imageHtml = '<div class="post-image"><a href="' + escHtml(post.imageUrl) + '" target="_blank"><img src="' + escHtml(post.imageUrl) + '" alt="添付画像"></a></div>';
+            }
+            item.innerHTML =
+              '<div class="post-item-header">' +
+                '<span class="post-author">' + escHtml(post.authorName) + '</span>' +
+                '<span class="post-date">' + escHtml(String(post.createdAt)) + '</span>' +
+                '<span class="post-no">No.' + (idx + 1) + '</span>' +
+              '</div>' +
+              '<div class="post-body">' + escHtml(post.body) + '</div>' +
+              imageHtml;
+            list.appendChild(item);
+          });
+        })
+        .catch(function() {
+          loading.textContent = '読み込みに失敗しました。';
+        });
+    }
+
+    function submitPost() {
+      var body  = document.getElementById('pf-body').value.trim();
+      var file  = document.getElementById('pf-image').files[0];
+
+      toggleErr('pferr-body', !body);
+      if (!body) return;
+
+      if (file && file.size > 5 * 1024 * 1024) {
+        toggleErr('pferr-image', true);
+        return;
+      }
+      toggleErr('pferr-image', false);
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '送信中…';
+
+      function doSubmit(fileName, fileData, fileType) {
+        fetch(GAS_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action:   'create_post',
+            token:    State.token,
+            threadId: State.currentThread.id,
+            body:     body,
+            fileName: fileName || '',
+            fileData: fileData || '',
+            fileType: fileType || ''
+          })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          btn.disabled = false; btn.textContent = '投稿する';
+          if (data.status === 'ok') {
+            document.getElementById('pf-body').value = '';
+            document.getElementById('pf-image').value = '';
+            showBbsMsg('post-msg', '投稿しました。', true);
+            loadPosts(State.currentThread.id);
+          } else {
+            showBbsMsg('post-msg', data.message || '投稿に失敗しました。', false);
+          }
+        })
+        .catch(function() {
+          btn.disabled = false; btn.textContent = '投稿する';
+          showBbsMsg('post-msg', '通信エラーが発生しました。', false);
+        });
+      }
+
+      if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64 = e.target.result.split(',')[1];
+          doSubmit(file.name, base64, file.type);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        doSubmit('', '', '');
+      }
+    }
+
+    function openCreateThread() {
+      if (!State.token) { openAuthModal(); return; }
+      document.getElementById('view-threads').style.display = 'none';
+      document.getElementById('create-thread-form').style.display = '';
+      document.getElementById('tf-title').value = '';
+      hideBbsMsg('thread-create-msg');
+    }
+    function closeCreateThread() {
+      document.getElementById('view-threads').style.display = '';
+      document.getElementById('create-thread-form').style.display = 'none';
+    }
+
+    function submitCreateThread() {
+      var title = document.getElementById('tf-title').value.trim();
+      toggleErr('tferr-title', !title);
+      if (!title) return;
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '作成中…';
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'create_thread', token: State.token, title: title })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = '作成する';
+        if (data.status === 'ok') {
+          showBbsMsg('thread-create-msg', 'スレッドを作成しました。', true);
+          setTimeout(function() {
+            closeCreateThread();
+            loadThreads();
+          }, 1000);
+        } else {
+          showBbsMsg('thread-create-msg', data.message || '作成に失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = '作成する';
+        showBbsMsg('thread-create-msg', '通信エラーが発生しました。', false);
+      });
+    }
+
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.add('show');
+      switchModalTab('login');
+    }
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.remove('show');
+    }
+    document.getElementById('auth-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeAuthModal();
+    });
+
+    function switchModalTab(tab) {
+      document.getElementById('modal-tab-login').classList.toggle('active',    tab === 'login');
+      document.getElementById('modal-tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('modal-panel-login').style.display    = tab === 'login'    ? '' : 'none';
+      document.getElementById('modal-panel-register').style.display = tab === 'register' ? '' : 'none';
+    }
+
+    function submitLogin() {
+      var email = document.getElementById('lf-email').value.trim();
+      var pass  = document.getElementById('lf-pass').value.trim();
+      toggleErr('lferr-email', !email);
+      toggleErr('lferr-pass',  !pass);
+      if (!email || !pass) return;
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '確認中…';
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'login', email: email, pass: pass })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = 'ログイン';
+        if (data.status === 'ok') {
+          saveAuth(data.token, data.uuid, data.name);
+          updateAccountBar();
+          closeAuthModal();
+          if (State.currentThread && State.currentThread.status === 'open') {
+            document.getElementById('post-form').style.display = '';
+            document.getElementById('post-login-notice').style.display = 'none';
+          }
+        } else {
+          showBbsMsg('login-msg', data.message || 'ログインに失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = 'ログイン';
+        showBbsMsg('login-msg', '通信エラーが発生しました。', false);
+      });
+    }
+
+    function submitRegister() {
+      var name  = document.getElementById('rf-name').value.trim();
+      var email = document.getElementById('rf-email').value.trim();
+      var tel   = document.getElementById('rf-tel').value.trim();
+      var pass  = document.getElementById('rf-pass').value.trim();
+      toggleErr('rferr-name',  !name);
+      toggleErr('rferr-email', !email);
+      toggleErr('rferr-pass',  !pass);
+      if (!name || !email || !pass) return;
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '送信中…';
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'register', name: name, email: email, tel: tel, pass: pass })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = '確認コードを送信';
+        if (data.status === 'ok') {
+          State.registerEmail = email;
+          document.getElementById('register-step1').style.display = 'none';
+          document.getElementById('register-step2').style.display = '';
+          hideBbsMsg('register-msg');
+        } else {
+          showBbsMsg('register-msg', data.message || '登録に失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = '確認コードを送信';
+        showBbsMsg('register-msg', '通信エラーが発生しました。', false);
+      });
+    }
+
+    function submitVerify() {
+      var code = document.getElementById('vf-code').value.trim();
+      toggleErr('vferr-code', !code);
+      if (!code) return;
+
+      var btn = event.target;
+      btn.disabled = true; btn.textContent = '確認中…';
+
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'verify', email: State.registerEmail, code: code })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = '認証する';
+        if (data.status === 'ok') {
+          showBbsMsg('verify-msg', '認証が完了しました。ログインしてください。', true);
+          setTimeout(function() {
+            document.getElementById('register-step1').style.display = '';
+            document.getElementById('register-step2').style.display = 'none';
+            switchModalTab('login');
+            document.getElementById('lf-email').value = State.registerEmail;
+          }, 1500);
+        } else {
+          showBbsMsg('verify-msg', data.message || '認証に失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = '認証する';
+        showBbsMsg('verify-msg', '通信エラーが発生しました。', false);
+      });
+    }
+
+    function logout() {
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'logout', token: State.token })
+      }).catch(function(){});
+      clearAuth();
+      updateAccountBar();
+      if (State.currentThread) {
+        document.getElementById('post-form').style.display = 'none';
+        document.getElementById('post-login-notice').style.display =
+          (State.currentThread.status === 'open') ? '' : 'none';
+      }
+    }
+
+    function toggleErr(id, show) {
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('show', show);
+    }
+    function showBbsMsg(id, text, isOk) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'bbs-msg show ' + (isOk ? 'ok' : 'err');
+    }
+    function hideBbsMsg(id) {
+      var el = document.getElementById(id);
+      if (el) { el.className = 'bbs-msg'; el.textContent = ''; }
+    }
+    function escHtml(s) {
+      return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
