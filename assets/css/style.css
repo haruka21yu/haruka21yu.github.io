@@ -905,6 +905,8 @@ hr {
 
 .board-form-group input[type=text],
 
+.board-form-group input[type=password],
+
 .board-form-group input[type=email],
 
 .board-form-group input[type=tel] {
