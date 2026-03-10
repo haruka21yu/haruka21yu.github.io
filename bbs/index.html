@@ -81,15 +81,6 @@
           <textarea id="pf-body" rows="4" maxlength="2000" placeholder="本文を入力してください（2000文字以内）"></textarea>
           <div class="bbs-field-err" id="pferr-body">本文を入力してください。</div>
         </div>
-        <div class="bbs-form-group">
-          <label>画像 <span style="color:var(--muted);font-size:11px;">任意（jpg/png/gif/webp、5MB以内）</span></label>
-          <input type="file" id="pf-image" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px;">
-            <button type="button" onclick="document.getElementById('pf-image').click()">ファイルを選択</button>
-            <span id="pf-image-name" style="font-size:12px;color:var(--muted);">選択されていません</span>
-          </div>
-          <div class="bbs-field-err" id="pferr-image">ファイルサイズが大きすぎます（5MB以内）。</div>
-        </div>
         <div style="display:flex;gap:8px;margin-top:12px;">
           <button class="primary" onclick="submitPost()">投稿する</button>
         </div>
@@ -210,11 +201,6 @@
     window.onload = function() {
       updateAccountBar();
       loadThreads();
-      
-      document.getElementById('pf-image').addEventListener('change', function() {
-        var name = this.files[0] ? this.files[0].name : '選択されていません';
-        document.getElementById('pf-image-name').textContent = name;
-      });
     };
 
     function updateAccountBar() {
@@ -320,10 +306,6 @@
           data.posts.forEach(function(post, idx) {
             var item = document.createElement('div');
             item.className = 'post-item';
-            var imageHtml = '';
-            if (post.imageUrl) {
-              imageHtml = '<div class="post-image"><a href="' + escHtml(post.imageUrl) + '" target="_blank"><img src="' + escHtml(post.imageUrl) + '" alt="添付画像"></a></div>';
-            }
             item.innerHTML =
               '<div class="post-item-header">' +
                 '<span class="post-author">' + escHtml(post.authorName) + '</span>' +
@@ -331,8 +313,7 @@
                 '<span style="font-size:11px;color:var(--muted);">ID: ' + escHtml(post.authorUuid) + '</span>' +
                 '<span class="post-no">No.' + (idx + 1) + '</span>' +
               '</div>' +
-              '<div class="post-body">' + escHtml(post.body) + '</div>' +
-              imageHtml;
+              '<div class="post-body">' + escHtml(post.body) + '</div>';
             list.appendChild(item);
           });
         })
@@ -343,21 +324,14 @@
 
     function submitPost() {
       var body  = document.getElementById('pf-body').value.trim();
-      var file  = document.getElementById('pf-image').files[0];
 
       toggleErr('pferr-body', !body);
       if (!body) return;
 
-      if (file && file.size > 5 * 1024 * 1024) {
-        toggleErr('pferr-image', true);
-        return;
-      }
-      toggleErr('pferr-image', false);
-
       var btn = event.target;
       btn.disabled = true; btn.textContent = '送信中…';
 
-      function doSubmit(fileName, fileData, fileType) {
+      function doSubmit() {
         fetch(GAS_URL, {
           method: 'POST',
           body: JSON.stringify({
@@ -365,9 +339,6 @@
             token:    State.token,
             threadId: State.currentThread.id,
             body:     body,
-            fileName: fileName || '',
-            fileData: fileData || '',
-            fileType: fileType || ''
           })
         })
         .then(function(r) { return r.json(); })
@@ -375,7 +346,6 @@
           btn.disabled = false; btn.textContent = '投稿する';
           if (data.status === 'ok') {
             document.getElementById('pf-body').value = '';
-            document.getElementById('pf-image').value = '';
             showBbsMsg('post-msg', '投稿しました。', true);
             loadPosts(State.currentThread.id);
           } else {
@@ -387,6 +357,8 @@
           showBbsMsg('post-msg', '通信エラーが発生しました。', false);
         });
       }
+
+      doSubmit();
 
       if (file) {
         var reader = new FileReader();
