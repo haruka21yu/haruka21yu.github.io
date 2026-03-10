@@ -83,7 +83,11 @@
         </div>
         <div class="bbs-form-group">
           <label>画像 <span style="color:var(--muted);font-size:11px;">任意（jpg/png/gif/webp、5MB以内）</span></label>
-          <input type="file" id="pf-image" accept="image/jpeg,image/png,image/gif,image/webp" style="font-size:12px;display:block;width:100%;margin-top:4px;">
+          <input type="file" id="pf-image" accept="image/jpeg,image/png,image/gif,image/webp" style="display:none;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px;">
+            <button type="button" onclick="document.getElementById('pf-image').click()">ファイルを選択</button>
+            <span id="pf-image-name" style="font-size:12px;color:var(--muted);">選択されていません</span>
+          </div>
           <div class="bbs-field-err" id="pferr-image">ファイルサイズが大きすぎます（5MB以内）。</div>
         </div>
         <div style="display:flex;gap:8px;margin-top:12px;">
@@ -206,6 +210,11 @@
     window.onload = function() {
       updateAccountBar();
       loadThreads();
+      
+      document.getElementById('pf-image').addEventListener('change', function() {
+        var name = this.files[0] ? this.files[0].name : '選択されていません';
+        document.getElementById('pf-image-name').textContent = name;
+      });
     };
 
     function updateAccountBar() {
