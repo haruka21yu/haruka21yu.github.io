@@ -157,7 +157,7 @@
         <div class="board-field-err" id="bferr-title">題名を入力してください。</div>
       </div>
       <div class="board-form-group">
-        <label>連絡先 <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
+        <label>連絡先 <span style="color:var(--accent);font-size:11px;">任意</span></label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <input type="email" id="bf-email" placeholder="メールアドレス" style="flex:1;min-width:160px;">
           <input type="tel"   id="bf-tel"   placeholder="電話番号"       style="flex:1;min-width:140px;">
@@ -193,15 +193,21 @@
         <div class="board-field-err" id="bderr-contact">メールアドレスまたは電話番号を入力してください。</div>
       </div>
       <div class="board-form-group">
+        <label>パスワード <span style="color:var(--accent);font-size:11px;">※</span></label>
+        <input type="password" id="bf-pass" placeholder="削除時に使用します" maxlength="50">
+        <div class="board-field-err" id="bferr-pass">パスワードを入力してください。</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">投稿を削除する際に必要です。忘れないようにしてください。</div>
+      </div>
+      <div class="board-form-group">
         <label>URLまたはUUID <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
         <input type="text" id="bd-url"  placeholder="URL" style="margin-bottom:6px;">
         <input type="text" id="bd-uuid" placeholder="UUID（8文字）" maxlength="8">
       </div>
       <div class="board-form-group">
-        <label>題名（わかれば）</label>
-        <input type="text" id="bd-title" placeholder="題名" maxlength="100">
-        <div class="board-field-err" id="bderr-target">URLまたはUUIDを入力してください。</div>
+        <label>題名</label>
+        <input type="text" id="bd-title" placeholder="題名（わかれば）" maxlength="100">
       </div>
+      <div class="board-field-err" id="bderr-target">URLまたはUUIDを入力してください。</div>
       <div class="board-form-group">
         <label>削除理由 <span style="color:var(--muted);font-size:11px;">任意</span></label>
         <textarea id="bd-reason" placeholder="削除を希望する理由をご記入ください。" style="width:100%;min-height:80px;padding:6px 10px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:13px;font-family:inherit;resize:vertical;"></textarea>
@@ -894,6 +900,7 @@
     function submitBoardPost() {
       var name  = document.getElementById('bf-name').value.trim();
       var title = document.getElementById('bf-title').value.trim();
+      var pass = document.getElementById('bf-pass').value.trim();
       var email = document.getElementById('bf-email').value.trim();
       var tel   = document.getElementById('bf-tel').value.trim();
       var url   = document.getElementById('bf-url').value.trim();
@@ -901,16 +908,16 @@
 
       toggleBoardErr('bferr-name',    !name,               'bferr-name');
       toggleBoardErr('bferr-title', !title, 'bferr-title');
-      toggleBoardErr('bferr-contact', !email && !tel,      'bferr-contact');
+      toggleBoardErr('bferr-pass', !pass, 'bferr-pass');
       toggleBoardErr('bferr-url',     url.indexOf(BOARD_URL_PREFIX) !== 0, 'bferr-url');
-      if (!name || !title || (!email && !tel) || url.indexOf(BOARD_URL_PREFIX) !== 0) return;
+      if (!name || !title || !pass || url.indexOf(BOARD_URL_PREFIX) !== 0) return;
 
       var btn = event.target;
       btn.disabled = true; btn.textContent = '送信中…';
 
       fetch(BOARD_GAS_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'post', name: name, title: title, email: email, tel: tel, url: url })
+        body: JSON.stringify({ action: 'post', name: name, title: title, pass: pass, email: email, tel: tel, url: url })
       })
       .then(function(r){ return r.json(); })
       .then(function(data) {
@@ -935,22 +942,24 @@
     function submitBoardDelete() {
       var name   = document.getElementById('bd-name').value.trim();
       var email  = document.getElementById('bd-email').value.trim();
+      var pass = document.getElementById('bd-pass').value.trim();
       var tel    = document.getElementById('bd-tel').value.trim();
       var url    = document.getElementById('bd-url').value.trim();
       var uuid   = document.getElementById('bd-uuid').value.trim();
       var reason = document.getElementById('bd-reason').value.trim();
 
       toggleBoardErr('bderr-name',    !name,              'bderr-name');
-      toggleBoardErr('bderr-contact', !email && !tel,     'bderr-contact');
+      toggleBoardErr('bderr-pass',   !pass,           'bderr-pass');
+      toggleBoardErr('bderr-target', !url && !uuid,   'bderr-target');
       toggleBoardErr('bderr-target',  !url && !uuid,      'bderr-target');
-      if (!name || (!email && !tel) || (!url && !uuid)) return;
+      if (!name || !pass || (!url && !uuid)) return;
 
       var btn = event.target;
       btn.disabled = true; btn.textContent = '送信中…';
 
       fetch(BOARD_GAS_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'delete_request', name: name, email: email, tel: tel, url: url, uuid: uuid, title: document.getElementById('bd-title').value.trim(), reason: reason })
+        body: JSON.stringify({ action: 'delete_request', name: name, pass: pass, email: email, tel: tel, url: url, uuid: uuid, title: document.getElementById('bd-title').value.trim(), reason: reason })
       })
       .then(function(r){ return r.json(); })
       .then(function(data) {
