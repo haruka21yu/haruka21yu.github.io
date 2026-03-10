@@ -171,6 +171,12 @@
         <div class="board-field-err" id="bferr-url">正しいURLを入力してください。</div>
         <div style="font-size:11px;color:var(--muted);margin-top:3px;">「ノノグラムを作る」→「共有URLを作る」で取得したURLを貼り付けてください。</div>
       </div>
+      <div class="board-form-group">
+        <label>パスワード <span style="color:var(--accent);font-size:11px;">※</span></label>
+        <input type="password" id="bf-pass" placeholder="削除時に使用します" maxlength="50">
+        <div class="board-field-err" id="bferr-pass">パスワードを入力してください。</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">投稿を削除する際に必要です。忘れないようにしてください。</div>
+      </div>
       <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
         <button class="primary" onclick="submitBoardPost()">投稿する</button>
         <button onclick="hideBoardForm()">キャンセル</button>
@@ -185,7 +191,7 @@
         <div class="board-field-err" id="bderr-name">名前を入力してください。</div>
       </div>
       <div class="board-form-group">
-        <label>連絡先 <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
+        <label>連絡先 <span style="color:var(--muted);font-size:11px;">任意</span></label>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <input type="email" id="bd-email" placeholder="メールアドレス" style="flex:1;min-width:160px;">
           <input type="tel"   id="bd-tel"   placeholder="電話番号"       style="flex:1;min-width:140px;">
@@ -194,9 +200,8 @@
       </div>
       <div class="board-form-group">
         <label>パスワード <span style="color:var(--accent);font-size:11px;">※</span></label>
-        <input type="password" id="bf-pass" placeholder="削除時に使用します" maxlength="50">
+        <input type="password" id="bd-pass" placeholder="投稿時に設定したパスワード" maxlength="50" style="background:var(--bg);color:var(--ink);">
         <div class="board-field-err" id="bferr-pass">パスワードを入力してください。</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:3px;">投稿を削除する際に必要です。忘れないようにしてください。</div>
       </div>
       <div class="board-form-group">
         <label>URLまたはUUID <span style="color:var(--accent);font-size:11px;">※ どちらか一方必須</span></label>
