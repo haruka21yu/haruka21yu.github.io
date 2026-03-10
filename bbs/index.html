@@ -43,8 +43,17 @@
       <span id="account-bar-text">ログインしていません</span>
       <div class="ml-auto" style="display:flex;gap:6px;">
         <button id="btn-open-auth" onclick="openAuthModal()">ログイン / 登録</button>
+        <button id="btn-change-name" style="display:none;" onclick="openChangeName()">名前を変更</button>
         <button id="btn-logout" style="display:none;" onclick="logout()">ログアウト</button>
       </div>
+    </div>
+    <div id="change-name-form" style="display:none;margin-bottom:14px;padding:12px 14px;background:var(--paper);border:1px solid var(--line);border-radius:2px;">
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="cn-name" maxlength="50" placeholder="名無し" style="flex:1;padding:6px 10px;border:1px solid var(--line);border-radius:2px;background:var(--bg);color:var(--ink);font-size:13px;font-family:inherit;">
+        <button class="primary" onclick="submitChangeName()">変更する</button>
+        <button onclick="closeChangeName()">キャンセル</button>
+      </div>
+      <div class="bbs-msg" id="change-name-msg"></div>
     </div>
     <div id="view-threads">
       <div class="bbs-toolbar">
@@ -127,7 +136,7 @@
         <div id="register-step1">
           <div class="bbs-form-group">
             <label>表示名 <span style="color:var(--accent);font-size:11px;">※</span></label>
-            <input type="text" id="rf-name" placeholder="ニックネームなど" maxlength="50">
+            <input type="text" id="rf-name" placeholder="名無し（空欄で名無しさん表示）" maxlength="50">
             <div class="bbs-field-err" id="rferr-name">表示名を入力してください。</div>
           </div>
           <div class="bbs-form-group">
@@ -200,17 +209,20 @@
     };
 
     function updateAccountBar() {
-      var text    = document.getElementById('account-bar-text');
-      var btnAuth = document.getElementById('btn-open-auth');
-      var btnOut  = document.getElementById('btn-logout');
+      var text       = document.getElementById('account-bar-text');
+      var btnAuth    = document.getElementById('btn-open-auth');
+      var btnChange  = document.getElementById('btn-change-name');
+      var btnOut     = document.getElementById('btn-logout');
       if (State.token && State.name) {
         text.innerHTML = '<span class="account-name">' + escHtml(State.name) + '</span> としてログイン中';
-        btnAuth.style.display = 'none';
-        btnOut.style.display  = '';
+        btnAuth.style.display   = 'none';
+        btnChange.style.display = '';
+        btnOut.style.display    = '';
       } else {
         text.textContent = 'ログインしていません';
-        btnAuth.style.display = '';
-        btnOut.style.display  = 'none';
+        btnAuth.style.display   = '';
+        btnChange.style.display = 'none';
+        btnOut.style.display    = 'none';
       }
     }
 
@@ -556,6 +568,42 @@
       }
     }
 
+    function openChangeName() {
+      var form = document.getElementById('change-name-form');
+      form.style.display = form.style.display === 'none' ? '' : 'none';
+      document.getElementById('cn-name').value = State.name;
+      hideBbsMsg('change-name-msg');
+    }
+    function closeChangeName() {
+      document.getElementById('change-name-form').style.display = 'none';
+    }
+    function submitChangeName() {
+      var name = document.getElementById('cn-name').value.trim() || '名無し';
+      var btn  = event.target;
+      btn.disabled = true; btn.textContent = '変更中…';
+    
+      fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'update_name', token: State.token, name: name })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        btn.disabled = false; btn.textContent = '変更する';
+        if (data.status === 'ok') {
+          State.name = data.name;
+          localStorage.setItem('bbs_name', data.name);
+          updateAccountBar();
+          showBbsMsg('change-name-msg', '名前を変更しました。', true);
+        } else {
+          showBbsMsg('change-name-msg', data.message || '変更に失敗しました。', false);
+        }
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = '変更する';
+        showBbsMsg('change-name-msg', '通信エラーが発生しました。', false);
+      });
+    }
+    
     function toggleErr(id, show) {
       var el = document.getElementById(id);
       if (el) el.classList.toggle('show', show);
