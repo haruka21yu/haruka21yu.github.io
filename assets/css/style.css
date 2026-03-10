@@ -1263,7 +1263,7 @@ input.invalid, select.invalid, textarea.invalid {
   color: var(--muted);
 }
 
-.thread-status.open { background: #c8dfc8; color: #3a5a3a; }
+.thread-status.open { background: var(--ok-bg); color: var(--ok-color); }
 
 .thread-status.closed { background: var(--line); color: var(--muted); }
 
@@ -1404,9 +1404,9 @@ input.invalid, select.invalid, textarea.invalid {
 
 .bbs-msg.show { display: block; }
 
-.bbs-msg.ok  { background: #d4edda; color: #2d5a3d; border: 1px solid #b8dcc4; }
+.bbs-msg.ok  { background: var(--ok-bg); color: var(--ok-color); border: 1px solid var(--ok-border); }
 
-.bbs-msg.err { background: #f8d7da; color: #6b1f26; border: 1px solid #f0b8bc; }
+.bbs-msg.err { background: var(--err-bg); color: var(--err-color); border: 1px solid var(--err-border); }
 
 .modal-overlay {
   position: fixed;
