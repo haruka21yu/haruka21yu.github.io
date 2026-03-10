@@ -75,7 +75,7 @@
       <div class="empty-msg" id="posts-empty" style="display:none;">まだ投稿がありません。</div>
       <div class="thread-locked" id="thread-locked" style="display:none;">このスレッドはロックされています。</div>
       <div class="bbs-form" id="post-form" style="display:none;">
-        <div class="bbs-form-title">返信する</div>
+        <div class="bbs-form-title">書き込む</div>
         <div class="bbs-form-group">
           <label>本文 <span style="color:var(--accent);font-size:11px;">※</span></label>
           <textarea id="pf-body" rows="4" maxlength="2000" placeholder="本文を入力してください（2000文字以内）"></textarea>
@@ -140,7 +140,7 @@
         <div id="register-step1">
           <div class="bbs-form-group">
             <label>表示名 <span style="color:var(--accent);font-size:11px;">※</span></label>
-            <input type="text" id="rf-name" placeholder="名無し（空欄で名無しさん表示）" maxlength="50">
+            <input type="text" id="rf-name" placeholder="空欄の場合は名無し" maxlength="50">
             <div class="bbs-field-err" id="rferr-name">表示名を入力してください。</div>
           </div>
           <div class="bbs-form-group">
@@ -328,6 +328,7 @@
               '<div class="post-item-header">' +
                 '<span class="post-author">' + escHtml(post.authorName) + '</span>' +
                 '<span class="post-date">' + escHtml(String(post.createdAt)) + '</span>' +
+                '<span style="font-size:11px;color:var(--muted);">ID: ' + escHtml(post.authorUuid) + '</span>' +
                 '<span class="post-no">No.' + (idx + 1) + '</span>' +
               '</div>' +
               '<div class="post-body">' + escHtml(post.body) + '</div>' +
