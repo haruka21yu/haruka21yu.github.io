@@ -492,6 +492,8 @@ footer p {
 
 .body-text p + p { margin-top: 1rem; }
 
+.skills-label,
+
 .interests-label {
   font-size: 0.68rem;
   letter-spacing: 0.15em;
