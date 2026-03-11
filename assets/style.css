@@ -516,6 +516,10 @@ footer p {
 
 .tag:hover { border-color: var(--accent); color: var(--accent); }
 
+.tags .tag img {
+  width: 3em;
+}
+
 @media (max-width: 680px) {
   .about-wrap { grid-template-columns: 1fr; gap: 2.5rem; padding: 2.5rem 5vw; }
   .avatar { max-width: 120px; }
