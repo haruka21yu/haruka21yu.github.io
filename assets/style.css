@@ -492,6 +492,10 @@ footer p {
 
 .body-text p + p { margin-top: 1rem; }
 
+.spacer {
+  margin-bottom: 2rem;
+}
+
 .skills-label,
 
 .interests-label {
