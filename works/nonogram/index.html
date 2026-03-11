@@ -452,7 +452,7 @@
         var candidate = useEasyGen ? genCandidateEasy(rows,cols) : genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
         var rowC=candidate.map(function(row){return clue(row.map(function(v){return v?1:0;}));});
         var colC=range(cols).map(function(c){return clue(candidate.map(function(r){return r[c]?1:0;}));});
-        if(useEasyGen && !hasEnoughEasyLines(...)) continue;
+        if(useEasyGen && !hasEnoughEasyLines(rows,cols,rowC,colC)) continue;
         var solved=lineSolve(rows,cols,rowC,colC);
         if(solved){ result={rowClues:rowC,colClues:colC}; }
       }
