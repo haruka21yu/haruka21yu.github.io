@@ -1549,3 +1549,77 @@ input.invalid, select.invalid, textarea.invalid {
   margin-bottom: 28px;
   line-height: 1.8;
 }
+
+.legal-body {
+  max-width: 680px;
+  margin: 0 auto 60px;
+}
+
+.legal-updated {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+.legal-section {
+  margin-bottom: 32px;
+}
+
+.legal-section h2 {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--ink);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.legal-section p {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.9;
+  margin-bottom: 8px;
+}
+
+.legal-section ol,
+
+.legal-section ul {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.9;
+  padding-left: 1.5em;
+  margin-bottom: 8px;
+}
+
+.legal-section li {
+  margin-bottom: 4px;
+}
+
+.info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.info-table th,
+
+.info-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.7;
+}
+
+.info-table th {
+  background: var(--paper);
+  color: var(--muted);
+  font-weight: normal;
+  white-space: nowrap;
+  width: 30%;
+}
+
+.info-table td {
+  color: var(--ink);
+}
