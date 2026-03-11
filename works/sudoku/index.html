@@ -52,9 +52,13 @@
   <div id="page-select">
     <p class="section-note">難易度を選んでください。</p>
     <div class="pill-group">
-      <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">やさしい</div>
-      <div class="pill"        data-diff="normal" onclick="pickDiff(this)">ふつう</div>
-      <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
+      <div class="pill active" data-diff="veryeasy"   onclick="pickDiff(this)">とてもやさしい</div>
+      <div class="pill"        data-diff="easy"        onclick="pickDiff(this)">やさしい</div>
+      <div class="pill"        data-diff="semieasy"    onclick="pickDiff(this)">やややさしい</div>
+      <div class="pill"        data-diff="normal"      onclick="pickDiff(this)">ふつう</div>
+      <div class="pill"        data-diff="semihard"    onclick="pickDiff(this)">ややむずかしい</div>
+      <div class="pill"        data-diff="hard"        onclick="pickDiff(this)">むずかしい</div>
+      <div class="pill"        data-diff="veryhard"    onclick="pickDiff(this)">とてもむずかしい</div>
     </div>
     <div id="diff-note" style="font-size:11px;color:var(--muted);margin-bottom:14px;padding: 0rem 6vw 0rem;"></div>
     <div class="pill-group">
@@ -113,7 +117,7 @@
   </footer>
   <script>
     var S = {
-      diff: 'easy',
+      diff: 'veryeasy',
       given: [],
       board: [],
       memo: [],
@@ -126,11 +130,23 @@
     };
     
     var DIFF_NOTE = {
-      easy:   'やさしい：ヒントが多め。比較的シンプルに解けます。',
-      normal: 'ふつう：ヒントは中程度。少し考える場面があります。',
-      hard:   'むずかしい：ヒントが少なめ。じっくり考える必要があります。',
+      veryeasy: 'とてもやさしい：ほとんど埋まっています。数独が初めての方にもおすすめ。',
+      easy:     'やさしい：ヒントが多め。比較的シンプルに解けます。',
+      semieasy: 'やややさしい：ヒントはやや多め。少し考える場面があります。',
+      normal:   'ふつう：ヒントは中程度。じっくり考える場面があります。',
+      semihard: 'ややむずかしい：ヒントが少なめ。複数のテクニックが必要です。',
+      hard:     'むずかしい：ヒントが少ない。かなり考える必要があります。',
+      veryhard: 'とてもむずかしい：ヒントが非常に少ない。上級者向けです。',
     };
-    var DIFF_CLUES = { easy: 36, normal: 28, hard: 22 };
+    var DIFF_CLUES = {
+      veryeasy: 46,
+      easy:     38,
+      semieasy: 32,
+      normal:   28,
+      semihard: 25,
+      hard:     22,
+      veryhard: 18,
+    };
     
     function pickDiff(btn) {
       document.querySelectorAll('[data-diff]').forEach(function(b){ b.classList.remove('active'); });
@@ -244,7 +260,15 @@
       mt.classList.remove('on');
       mt.textContent = 'メモモード OFF';
     
-      var labels = {easy:'やさしい', normal:'ふつう', hard:'むずかしい'};
+      var labels = {
+        veryeasy: 'とてもやさしい',
+        easy:     'やさしい',
+        semieasy: 'やややさしい',
+        normal:   'ふつう',
+        semihard: 'ややむずかしい',
+        hard:     'むずかしい',
+        veryhard: 'とてもむずかしい',
+      };
       document.getElementById('game-label').textContent = 'sudoku — ' + labels[S.diff];
     
       document.getElementById('page-select').style.display = 'none';
@@ -507,7 +531,7 @@
     }
     
     window.onload = function() {
-      document.getElementById('diff-note').textContent = DIFF_NOTE['easy'];
+      document.getElementById('diff-note').textContent = DIFF_NOTE['veryeasy'];
     };
   </script>
 </body>
