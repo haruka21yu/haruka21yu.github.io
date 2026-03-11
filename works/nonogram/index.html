@@ -92,19 +92,25 @@
       </div>
       <div style="border:1px solid #222;border-radius:2px;padding:16px 20px;min-width:260px;">
         <div style="font-size:14px;color:#ccc;margin-bottom:6px;">🎲 自動生成ノノグラム</div>
-        <div style="font-size:12px;color:#555;margin-bottom:10px;">必ず解けるノノグラムを自動で作ります。</div>
+        <div style="font-size:12px;color:#555;margin-bottom:10px;">必ず解けるノノグラムを自動で作ります。<br>20×20・25×25はマス数が多いため、特に「とてもむずかしい」などとの組み合わせでは生成に時間がかかる場合があります。</div>
         <div style="font-size:12px;color:#555;margin-bottom:4px;">サイズ：</div>
         <div class="pill-group" style="margin-bottom:10px;">
           <div class="pill active" data-r="5"  data-c="5"  onclick="pickSize(this)">5×5</div>
           <div class="pill"        data-r="8"  data-c="8"  onclick="pickSize(this)">8×8</div>
           <div class="pill"        data-r="10" data-c="10" onclick="pickSize(this)">10×10</div>
           <div class="pill"        data-r="15" data-c="15" onclick="pickSize(this)">15×15</div>
+          <div class="pill"        data-r="20" data-c="20" onclick="pickSize(this)">20×20</div>
+          <div class="pill"        data-r="25" data-c="25" onclick="pickSize(this)">25×25</div>
         </div>
         <div style="font-size:12px;color:#555;margin-bottom:4px;">難易度：</div>
         <div class="pill-group" style="margin-bottom:12px;">
-          <div class="pill active" data-diff="easy"   onclick="pickDiff(this)">やさしい</div>
-          <div class="pill"        data-diff="normal" onclick="pickDiff(this)">ふつう</div>
-          <div class="pill"        data-diff="hard"   onclick="pickDiff(this)">むずかしい</div>
+          <div class="pill active" data-diff="veryeasy"  onclick="pickDiff(this)">とてもやさしい</div>
+          <div class="pill"        data-diff="easy"       onclick="pickDiff(this)">やさしい</div>
+          <div class="pill"        data-diff="semieasy"   onclick="pickDiff(this)">やややさしい</div>
+          <div class="pill"        data-diff="normal"     onclick="pickDiff(this)">ふつう</div>
+          <div class="pill"        data-diff="semihard"   onclick="pickDiff(this)">ややむずかしい</div>
+          <div class="pill"        data-diff="hard"       onclick="pickDiff(this)">むずかしい</div>
+          <div class="pill"        data-diff="veryhard"   onclick="pickDiff(this)">とてもむずかしい</div>
         </div>
         <div id="diff-note" style="font-size:11px;color:#444;margin-bottom:10px;"></div>
         <button class="primary" onclick="goSolveRandom()">生成して解く</button>
@@ -253,7 +259,7 @@
       sGrid:[],
       tool:'fill', hintCheck:false,
       mouseDown:false, dragMode:null, dragInCreate:false,
-      rR:5, rC:5, diff:'easy',
+      rR:5, rC:5, diff: 'veryeasy',
       timerStart: null,
       timerInterval: null,
     };
@@ -262,9 +268,13 @@
     window.addEventListener('mouseleave',function(){ C.mouseDown=false; C.dragMode=null; });
     
     var DIFF_NOTE = {
-      easy:   'やさしい：塗るマスが多め。比較的シンプルに解けます。',
-      normal: 'ふつう：塗るマスは中程度。少し考える場面があります。',
-      hard:   'むずかしい：塗るマスが少なめで疎ら。複雑なヒントになります。'
+      veryeasy: 'とてもやさしい：ほぼ全部塗るだけ。ノノグラムが初めての方にもおすすめ。',
+      easy:     'やさしい：塗るマスが多め。比較的シンプルに解けます。',
+      semieasy: 'やややさしい：塗るマスはやや多め。少し考える場面があります。',
+      normal:   'ふつう：塗るマスは中程度。じっくり考える場面があります。',
+      semihard: 'ややむずかしい：塗るマスが少なめ。複数の手順が必要です。',
+      hard:     'むずかしい：塗るマスが少なく疎ら。複雑なヒントになります。',
+      veryhard: 'とてもむずかしい：塗るマスが非常に少ない。上級者向けです。',
     };
     function pickDiff(btn){
       document.querySelectorAll('[data-diff]').forEach(function(b){b.classList.remove('active');});
@@ -422,7 +432,15 @@
       startSolve();
     }
     
-    var FILL_RATE = { easy: 0.60, normal: 0.45, hard: 0.28 };
+    var FILL_RATE = {
+      veryeasy: 0.80,
+      easy:     0.65,
+      semieasy: 0.53,
+      normal:   0.45,
+      semihard: 0.37,
+      hard:     0.28,
+      veryhard: 0.18,
+    };
     
     function goSolveRandom(){
       hide('gen-msg');
@@ -430,15 +448,16 @@
       var result=null, tries=0, maxTries=300;
       while(!result && tries<maxTries){
         tries++;
-        var candidate = (C.diff==='easy') ? genCandidateEasy(rows,cols) : genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
+        var useEasyGen = (C.diff==='veryeasy' || C.diff==='easy');
+        var candidate = useEasyGen ? genCandidateEasy(rows,cols) : genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
         var rowC=candidate.map(function(row){return clue(row.map(function(v){return v?1:0;}));});
         var colC=range(cols).map(function(c){return clue(candidate.map(function(r){return r[c]?1:0;}));});
-        if(C.diff==='easy' && !hasEnoughEasyLines(rows,cols,rowC,colC)) continue;
+        if(useEasyGen && !hasEnoughEasyLines(...)) continue;
         var solved=lineSolve(rows,cols,rowC,colC);
         if(solved){ result={rowClues:rowC,colClues:colC}; }
       }
       if(!result){
-        var fb=(C.diff==='easy')?genCandidateEasy(rows,cols):genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
+        var fb = useEasyGen ? genCandidateEasy(rows,cols) : genCandidate(rows,cols,FILL_RATE[C.diff]||0.45);
         result={
           rowClues:fb.map(function(row){return clue(row.map(function(v){return v?1:0;}));}),
           colClues:range(cols).map(function(c){return clue(fb.map(function(r){return r[c]?1:0;}));})
@@ -455,7 +474,17 @@
       startSolve();
     }
     
-    function diffLabel(){ return {easy:'やさしい',normal:'ふつう',hard:'むずかしい'}[C.diff]||C.diff; }
+    function diffLabel(){
+      return {
+        veryeasy: 'とてもやさしい',
+        easy:     'やさしい',
+        semieasy: 'やややさしい',
+        normal:   'ふつう',
+        semihard: 'ややむずかしい',
+        hard:     'むずかしい',
+        veryhard: 'とてもむずかしい',
+      }[C.diff] || C.diff;
+    }
     
     function genCandidate(rows,cols,rate){
       var g=mk2d(rows,cols,false);
@@ -834,7 +863,7 @@
     function hide(id){ document.getElementById(id).classList.remove('show'); }
     
     window.onload = function(){
-      document.getElementById('diff-note').textContent=DIFF_NOTE['easy'];
+      document.getElementById('diff-note').textContent = DIFF_NOTE['veryeasy'];
     
       var params=new URLSearchParams(window.location.search);
       var d=params.get('d');
