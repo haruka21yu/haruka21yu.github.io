@@ -465,6 +465,11 @@ footer p {
   opacity: 0.6;
 }
 
+.link-icon-svg {
+  height:1.2em;
+  vertical-align: -0.2em;
+}
+
 .about-text { animation: fadeUp 0.7s 0.3s ease both; }
 
 .about-text .intro {
