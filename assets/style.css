@@ -496,9 +496,7 @@ footer p {
   margin-bottom: 2rem;
 }
 
-.skills-label,
-
-.interests-label {
+about-label {
   font-size: 0.68rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
