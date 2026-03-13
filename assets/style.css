@@ -1793,6 +1793,7 @@ input.invalid, select.invalid, textarea.invalid {
 .custom-inputs {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
   margin-bottom: 12px;
+  padding: 0rem 6vw 0rem;
 }
 
 .custom-inputs label { font-size: 12px; color: var(--muted); }
