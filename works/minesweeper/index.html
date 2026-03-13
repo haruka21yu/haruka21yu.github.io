@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yuの物置小屋">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yuの物置小屋">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://haruka21yu.github.io/assets/img/haruka21yu-s_storage-shed.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <title>minesweeper - works - haruka21yuの物置小屋</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K1T7J74YJK');
+  </script>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yuの<br><em>物置小屋</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/" class="active">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+    <a href="https://haruka21yu.github.io/bbs/">bbs</a>
+    <a href="https://haruka21yu.github.io/contact/">contact</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      <a href="https://haruka21yu.github.io/works/">works</a>
+      <span>/</span>
+      minesweeper
+    </p>
+    <h1>minesweeper</h1>
+  </div>
+  <p class="section-note">難易度を選んでください。</p>
+  <div class="pill-group">
+    <div class="pill active" data-preset="beginner"  onclick="pickPreset(this)">ビギナー</div>
+    <div class="pill"        data-preset="inter"     onclick="pickPreset(this)">インター</div>
+    <div class="pill"        data-preset="expert"    onclick="pickPreset(this)">エキスパート</div>
+    <div class="pill"        data-preset="custom"    onclick="pickPreset(this)">カスタム</div>
+  </div>
+  <div id="custom-area" style="display:none;">
+    <div class="custom-inputs">
+      <label>横: <input type="number" id="c-cols" value="10" min="5" max="50"></label>
+      <label>縦: <input type="number" id="c-rows" value="10" min="5" max="30"></label>
+      <label>地雷数: <input type="number" id="c-mines" value="15" min="1" max="999"></label>
+      <button onclick="applyCustom()">適用</button>
+    </div>
+  </div>
+  <div class="ms-status">
+    <span>🚩 残り地雷: <strong id="mine-count">10</strong></span>
+    <span>⏱ <strong id="timer">0:00</strong></span>
+    <button onclick="resetGame()" style="margin-left:auto;">🔄 リセット</button>
+  </div>
+  <div class="toolbar">
+    <span style="font-size:12px;color:var(--muted);">モード：</span>
+    <button class="tool on" id="tool-open"  onclick="setMode('open')">🔲 開く</button>
+    <button class="tool"    id="tool-flag"  onclick="setMode('flag')">🚩 旗</button>
+    <p class="section-note" style="margin:0;margin-left:4px;">右クリック・長押しでも旗を立てられます</p>
+  </div>
+  <div id="complete-msg" class="msg msg-ok">🎉 クリア！すべての地雷を回避しました。</div>
+  <div id="fail-msg"     class="msg msg-err">💥 爆発！地雷を踏んでしまいました。</div>
+  <div class="ms-wrap">
+    <table class="ms-table" id="ms-grid"></table>
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yu's website</span>
+    <p style="font-size:11px;margin-top:6px;">
+      <a href="https://haruka21yu.github.io//terms/" style="color:var(--accent);">利用規約</a>　
+      <a href="https://haruka21yu.github.io//privacy/" style="color:var(--accent);">プライバシーポリシー</a>
+    </p>
+  </footer>
+  <script>
+    var G = {
+      rows: 9, cols: 8, mines: 10,
+      board: [],
+      state: [],
+      started: false,
+      over: false,
+      mode: 'open', // 'open' / 'flag'
+      timerStart: null,
+      timerInterval: null,
+      longPressTimer: null,
+    };
+
+    var PRESETS = {
+      beginner: { rows: 9,  cols: 8,  mines: 10 },
+      inter:    { rows: 16, cols: 16, mines: 40 },
+      expert:   { rows: 16, cols: 30, mines: 99 },
+    };
+
+    function pickPreset(btn) {
+      document.querySelectorAll('[data-preset]').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var preset = btn.dataset.preset;
+      document.getElementById('custom-area').style.display = preset === 'custom' ? '' : 'none';
+      if (preset !== 'custom') {
+        var p = PRESETS[preset];
+        G.rows = p.rows; G.cols = p.cols; G.mines = p.mines;
+        initGame();
+      }
+    }
+
+    function applyCustom() {
+      var cols  = clamp(parseInt(document.getElementById('c-cols').value)  || 10, 5, 50);
+      var rows  = clamp(parseInt(document.getElementById('c-rows').value)  || 10, 5, 30);
+      var mines = clamp(parseInt(document.getElementById('c-mines').value) || 15, 1, rows * cols - 9);
+      document.getElementById('c-cols').value  = cols;
+      document.getElementById('c-rows').value  = rows;
+      document.getElementById('c-mines').value = mines;
+      G.rows = rows; G.cols = cols; G.mines = mines;
+      initGame();
+    }
+
+    function initGame() {
+      G.board   = mk2d(G.rows, G.cols, 0);
+      G.state   = mk2d(G.rows, G.cols, 'hidden');
+      G.started = false;
+      G.over    = false;
+      clearInterval(G.timerInterval);
+      G.timerStart = null;
+      document.getElementById('timer').textContent = '0:00';
+      document.getElementById('mine-count').textContent = G.mines;
+      hide('complete-msg'); hide('fail-msg');
+      renderGrid();
+    }
+
+    function placeMines(safeR, safeC) {
+      var safe = new Set();
+      for (var dr = -1; dr <= 1; dr++)
+        for (var dc = -1; dc <= 1; dc++) {
+          var nr = safeR + dr, nc = safeC + dc;
+          if (nr >= 0 && nr < G.rows && nc >= 0 && nc < G.cols)
+            safe.add(nr + ',' + nc);
+        }
+
+      var cells = [];
+      for (var r = 0; r < G.rows; r++)
+        for (var c = 0; c < G.cols; c++)
+          if (!safe.has(r + ',' + c)) cells.push([r, c]);
+
+      shuffle(cells);
+      var count = Math.min(G.mines, cells.length);
+      for (var i = 0; i < count; i++)
+        G.board[cells[i][0]][cells[i][1]] = -1;
+
+      for (var r2 = 0; r2 < G.rows; r2++) {
+        for (var c2 = 0; c2 < G.cols; c2++) {
+          if (G.board[r2][c2] === -1) continue;
+          var n = 0;
+          forNeighbors(r2, c2, function(nr2, nc2) { if (G.board[nr2][nc2] === -1) n++; });
+          G.board[r2][c2] = n;
+        }
+      }
+    }
+
+    function renderGrid() {
+      var table = document.getElementById('ms-grid');
+      table.innerHTML = '';
+      for (var r = 0; r < G.rows; r++) {
+        var tr = document.createElement('tr');
+        for (var c = 0; c < G.cols; c++) {
+          var td = document.createElement('td');
+          td.className = 'ms-cell';
+          td.dataset.r = r;
+          td.dataset.c = c;
+          td.addEventListener('click',       onCellClick);
+          td.addEventListener('contextmenu', onCellRightClick);
+          td.addEventListener('touchstart',  onTouchStart, { passive: true });
+          td.addEventListener('touchend',    onTouchEnd);
+          td.addEventListener('touchmove',   onTouchMove);
+          tr.appendChild(td);
+        }
+        table.appendChild(tr);
+      }
+      updateAllCells();
+    }
+
+    function updateAllCells() {
+      for (var r = 0; r < G.rows; r++)
+        for (var c = 0; c < G.cols; c++)
+          updateCell(r, c);
+      updateMineCount();
+    }
+
+    function updateCell(r, c) {
+      var td = getCellEl(r, c);
+      if (!td) return;
+      var st = G.state[r][c];
+      td.className = 'ms-cell';
+      td.textContent = '';
+
+      if (st === 'flagged') {
+        td.classList.add('flagged');
+        td.textContent = '🚩';
+      } else if (st === 'opened') {
+        td.classList.add('opened');
+        var v = G.board[r][c];
+        if (v === -1) {
+          td.classList.add('mine-hit');
+          td.textContent = '💣';
+        } else if (v > 0) {
+          td.classList.add('n' + v);
+          td.textContent = v;
+        }
+      } else if (st === 'mine-show') {
+        td.classList.add('mine-show');
+        td.textContent = '💣';
+      }
+    }
+
+    function updateMineCount() {
+      var flags = 0;
+      for (var r = 0; r < G.rows; r++)
+        for (var c = 0; c < G.cols; c++)
+          if (G.state[r][c] === 'flagged') flags++;
+      document.getElementById('mine-count').textContent = G.mines - flags;
+    }
+
+    function onCellClick(e) {
+      var r = parseInt(this.dataset.r), c = parseInt(this.dataset.c);
+      if (G.mode === 'flag') { toggleFlag(r, c); return; }
+      openCell(r, c);
+    }
+
+    function onCellRightClick(e) {
+      e.preventDefault();
+      var r = parseInt(this.dataset.r), c = parseInt(this.dataset.c);
+      toggleFlag(r, c);
+    }
+
+    function onTouchStart(e) {
+      var td = this;
+      G.longPressTimer = setTimeout(function() {
+        var r = parseInt(td.dataset.r), c = parseInt(td.dataset.c);
+        toggleFlag(r, c);
+        G.longPressTimer = null;
+      }, 500);
+    }
+    function onTouchEnd(e) {
+      if (G.longPressTimer) {
+        clearTimeout(G.longPressTimer);
+        G.longPressTimer = null;
+      }
+    }
+    function onTouchMove(e) {
+      if (G.longPressTimer) {
+        clearTimeout(G.longPressTimer);
+        G.longPressTimer = null;
+      }
+    }
+
+    function openCell(r, c) {
+      if (G.over) return;
+      if (G.state[r][c] !== 'hidden') return;
+
+      if (!G.started) {
+        G.started = true;
+        placeMines(r, c);
+        startTimer();
+      }
+
+      G.state[r][c] = 'opened';
+      updateCell(r, c);
+
+      if (G.board[r][c] === -1) {
+        gameover(r, c);
+        return;
+      }
+
+      if (G.board[r][c] === 0) {
+        forNeighbors(r, c, function(nr, nc) {
+          if (G.state[nr][nc] === 'hidden') openCell(nr, nc);
+        });
+      }
+
+      checkWin();
+    }
+
+    function toggleFlag(r, c) {
+      if (G.over) return;
+      if (G.state[r][c] === 'opened') return;
+      if (!G.started) return;
+      G.state[r][c] = G.state[r][c] === 'flagged' ? 'hidden' : 'flagged';
+      updateCell(r, c);
+      updateMineCount();
+    }
+
+    function gameover(hitR, hitC) {
+      G.over = true;
+      clearInterval(G.timerInterval);
+      G.state[hitR][hitC] = 'opened';
+      for (var r = 0; r < G.rows; r++)
+        for (var c = 0; c < G.cols; c++)
+          if (G.board[r][c] === -1 && G.state[r][c] !== 'flagged' && !(r === hitR && c === hitC))
+            G.state[r][c] = 'mine-show';
+      updateAllCells();
+      show('fail-msg');
+    }
+
+    function checkWin() {
+      for (var r = 0; r < G.rows; r++)
+        for (var c = 0; c < G.cols; c++)
+          if (G.board[r][c] !== -1 && G.state[r][c] !== 'opened') return;
+      G.over = true;
+      clearInterval(G.timerInterval);
+      for (var r2 = 0; r2 < G.rows; r2++)
+        for (var c2 = 0; c2 < G.cols; c2++)
+          if (G.board[r2][c2] === -1) G.state[r2][c2] = 'flagged';
+      updateAllCells();
+      show('complete-msg');
+    }
+
+    function startTimer() {
+      G.timerStart = Date.now();
+      G.timerInterval = setInterval(function() {
+        var s = Math.floor((Date.now() - G.timerStart) / 1000);
+        var m = Math.floor(s / 60); s = s % 60;
+        document.getElementById('timer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      }, 1000);
+    }
+
+    function setMode(m) {
+      G.mode = m;
+      document.getElementById('tool-open').className = 'tool' + (m === 'open' ? ' on' : '');
+      document.getElementById('tool-flag').className = 'tool' + (m === 'flag' ? ' on' : '');
+    }
+
+    function resetGame() {
+      initGame();
+    }
+
+    function getCellEl(r, c) {
+      return document.querySelector('.ms-cell[data-r="' + r + '"][data-c="' + c + '"]');
+    }
+    function forNeighbors(r, c, fn) {
+      for (var dr = -1; dr <= 1; dr++)
+        for (var dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          var nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < G.rows && nc >= 0 && nc < G.cols) fn(nr, nc);
+        }
+    }
+    function mk2d(r, c, v) { return Array.from({length:r}, function(){ return Array(c).fill(v); }); }
+    function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+    function shuffle(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+      }
+    }
+    function show(id) { document.getElementById(id).classList.add('show'); }
+    function hide(id) { document.getElementById(id).classList.remove('show'); }
+
+    initGame();
+  </script>
+</body>
+</html>
