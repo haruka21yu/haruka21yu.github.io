@@ -6,12 +6,40 @@
   --paper: #ede8dc;
   --line: #d4c9b4;
   --danger: #aa5555;
+  
   --ok-bg: #d4edda;
   --ok-color: #2d5a3d;
   --ok-border: #b8dcc4;
+  
   --err-bg: #f8d7da;
   --err-color: #6b1f26;
   --err-border: #f0b8bc;
+  
+  --pccs-1: #ce0456;
+  --pccs-2: #e50045;
+  --pccs-3: #e7322f;
+  --pccs-4: #e95406;
+  --pccs-5: #ef7e00;
+  --pccs-6: #f4a000;
+  --pccs-7: #fbc300;
+  --pccs-8: #ffe002;
+  --pccs-9: #e3dc00;
+  --pccs-10: #c2d500;
+  --pccs-11: #7fbe46;
+  --pccs-12: #03a162;
+  --pccs-13: #049b7d;
+  --pccs-14: #049b7d;
+  --pccs-15: #018f8c;
+  --pccs-16: #0287a8;
+  --pccs-17: #027bb1;
+  --pccs-18: #005ba9;
+  --pccs-19: #1d50a0;
+  --pccs-20: #4e4398;
+  --pccs-21: #673a91;
+  --pccs-22: #7f2e8b;
+  --pccs-23: #9d227c;
+  --pccs-24: #b60969;
+
   --average-accentpaper: #d9a48b;
   --average-paperline: #e1d9c8;
 }
@@ -1697,21 +1725,21 @@ input.invalid, select.invalid, textarea.invalid {
 
 .ms-cell.mine-show { background: var(--paper); }
 
-.n1 { color: #2a6db5; }
+.n1 { color: var(--pccs-1); }
 
-.n2 { color: #3a8a3a; }
+.n2 { color: var(--pccs-4); }
 
-.n3 { color: #c44; }
+.n3 { color: var(--pccs-7); }
 
-.n4 { color: #4a2a8a; }
+.n4 { color: var(--pccs-10); }
 
-.n5 { color: #8a2a2a; }
+.n5 { color: var(--pccs-13); }
 
-.n6 { color: #2a8a8a; }
+.n6 { color: var(--pccs-16); }
 
-.n7 { color: #2a2a2a; }
+.n7 { color: var(--pccs-19); }
 
-.n8 { color: #888; }
+.n8 { color: var(--pccs-22); }
 
 .ms-status {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
