@@ -1725,77 +1725,21 @@ input.invalid, select.invalid, textarea.invalid {
 
 .ms-cell.mine-show { background: var(--paper); }
 
-.n1 {
-  color: var(--pccs-1);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n1 { color: var(--pccs-1); }
 
-.n2 {
-  color: var(--pccs-4);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n2 { color: var(--pccs-4); }
 
-.n3 {
-  color: var(--pccs-7);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n3 { color: var(--pccs-7); }
 
-.n4 {
-  color: var(--pccs-10);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n4 { color: var(--pccs-10); }
 
-.n5 {
-  color: var(--pccs-13);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n5 { color: var(--pccs-13); }
 
-.n6 {
-  color: var(--pccs-16);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n6 { color: var(--pccs-16); }
 
-.n7 {
-  color: var(--pccs-19);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n7 { color: var(--pccs-19); }
 
-.n8 {
-  color: var(--pccs-22);
-  text-shadow:
-    -1px -1px 0 var(--ink),
-     1px -1px 0 var(--ink),
-    -1px  1px 0 var(--ink),
-     1px  1px 0 var(--ink);
-}
+.n8 { color: var(--pccs-22); }
 
 .ms-status {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
