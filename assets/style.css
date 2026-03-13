@@ -1725,21 +1725,21 @@ input.invalid, select.invalid, textarea.invalid {
 
 .ms-cell.mine-show { background: var(--paper); }
 
-.n1 { color: var(--pccs-1); }
+.n1 { color: var(--pccs-1); -webkit-text-stroke:1px var(--ink); }
 
-.n2 { color: var(--pccs-4); }
+.n2 { color: var(--pccs-4); -webkit-text-stroke:1px var(--ink) }
 
-.n3 { color: var(--pccs-7); }
+.n3 { color: var(--pccs-7); -webkit-text-stroke:1px var(--ink) }
 
-.n4 { color: var(--pccs-10); }
+.n4 { color: var(--pccs-10); -webkit-text-stroke:1px var(--ink) }
 
-.n5 { color: var(--pccs-13); }
+.n5 { color: var(--pccs-13); -webkit-text-stroke:1px var(--ink) }
 
-.n6 { color: var(--pccs-16); }
+.n6 { color: var(--pccs-16); -webkit-text-stroke:1px var(--ink) }
 
-.n7 { color: var(--pccs-19); }
+.n7 { color: var(--pccs-19); -webkit-text-stroke:1px var(--ink) }
 
-.n8 { color: var(--pccs-22); }
+.n8 { color: var(--pccs-22); -webkit-text-stroke:1px var(--ink) }
 
 .ms-status {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
