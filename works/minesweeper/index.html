@@ -73,7 +73,7 @@
     <span style="font-size:12px;color:var(--muted);">モード：</span>
     <button class="tool on" id="tool-open"  onclick="setMode('open')">🔲 開く</button>
     <button class="tool"    id="tool-flag"  onclick="setMode('flag')">🚩 旗</button>
-    <p class="section-note" style="margin:0;margin-left:4px;">右クリック・長押しでも旗を立てられます</p>
+    <p class="section-note" style="margin:0;margin-left:4px;">右クリックでも旗を立てられます</p>
   </div>
   <div id="complete-msg" class="msg msg-ok">🎉 クリア！すべての地雷を回避しました。</div>
   <div id="fail-msg"     class="msg msg-err">💥 爆発！地雷を踏んでしまいました。</div>
@@ -98,7 +98,6 @@
       mode: 'open', // 'open' / 'flag'
       timerStart: null,
       timerInterval: null,
-      longPressTimer: null,
     };
 
     var PRESETS = {
@@ -173,6 +172,12 @@
     }
 
     function renderGrid() {
+      var maxW = Math.min(window.innerWidth - 32, 700);
+      var size = Math.max(20, Math.min(36, Math.floor(maxW / G.cols)));
+      var font = Math.max(10, Math.floor(size * 0.55));
+      document.documentElement.style.setProperty('--cell-size', size + 'px');
+      document.documentElement.style.setProperty('--cell-font', font + 'px');
+    
       var table = document.getElementById('ms-grid');
       table.innerHTML = '';
       for (var r = 0; r < G.rows; r++) {
@@ -184,9 +189,6 @@
           td.dataset.c = c;
           td.addEventListener('click',       onCellClick);
           td.addEventListener('contextmenu', onCellRightClick);
-          td.addEventListener('touchstart',  onTouchStart, { passive: true });
-          td.addEventListener('touchend',    onTouchEnd);
-          td.addEventListener('touchmove',   onTouchMove);
           tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -207,7 +209,12 @@
       var st = G.state[r][c];
       td.className = 'ms-cell';
       td.textContent = '';
-
+      
+      if (st === 'hidden') {
+        // 明示的に何もしない（クラスはms-cellのみ）
+        return;
+      }
+      
       if (st === 'flagged') {
         td.classList.add('flagged');
         td.textContent = '🚩';
