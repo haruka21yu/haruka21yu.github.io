@@ -1696,24 +1696,31 @@ input.invalid, select.invalid, textarea.invalid {
 }
 
 .ms-table {
-  border-collapse: collapse;
   margin: 0;
-  table-layout: fixed;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
 }
 
 .ms-cell {
   border: 1px solid var(--line);
-  text-align: center; vertical-align: middle;
+  vertical-align: middle;
   cursor: pointer;
   user-select: none;
   background: var(--paper);
   transition: background .07s;
   -webkit-tap-highlight-color: transparent;
-  width: var(--cell-size);
-  height: var(--cell-size);
-  font-size: var(--cell-font);
-  line-height: var(--cell-size);
-  box-sizing: border-box;
+  width: var(--cell-size) !important;
+  height: var(--cell-size) !important;
+  min-width: var(--cell-size) !important;
+  min-height: var(--cell-size) !important;
+  max-width: var(--cell-size) !important;
+  max-height: var(--cell-size) !important;
+  font-size: var(--cell-font) !important;
+  line-height: var(--cell-size) !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  overflow: hidden !important;
 }
 
 .ms-cell:hover { background: var(--bg); }
