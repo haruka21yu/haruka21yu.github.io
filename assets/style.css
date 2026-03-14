@@ -1691,8 +1691,9 @@ input.invalid, select.invalid, textarea.invalid {
 
 .ms-wrap {
   overflow-x: auto;
-  padding-bottom: 8px;
   padding: 0rem 6vw 0rem;
+  padding-top: var(--cell-size);
+  padding-bottom: var(--cell-size);
 }
 
 .ms-table {
