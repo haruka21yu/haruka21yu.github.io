@@ -1724,8 +1724,6 @@ input.invalid, select.invalid, textarea.invalid {
   overflow: hidden !important;
 }
 
-.ms-cell:hover { background: var(--bg); }
-
 .ms-cell.opened {
   background: var(--bg);
   cursor: default;
