@@ -1816,3 +1816,112 @@ input.invalid, select.invalid, textarea.invalid {
 }
 
 #timer { font-variant-numeric: tabular-nums; }
+
+#setup-area { margin-bottom: 18px; }
+
+.setup-block { margin-bottom: 14px; }
+
+.setup-block label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 6px; }
+
+.free-images {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.free-img-item {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 2px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  transition: border-color 0.15s;
+}
+
+.free-img-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+
+.free-img-item.selected { border-color: var(--accent); }
+
+.tab-btns { display: flex; gap: 6px; margin-bottom: 10px; }
+
+.tab-btn {
+  padding: 5px 14px;
+  font-size: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 2px;
+  font-family: inherit;
+}
+
+.tab-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+.tab-panel { display: none; }
+
+.tab-panel.active { display: block; }
+
+#upload-input { font-size: 12px; }
+
+.size-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+#start-btn {
+  margin-top: 10px;
+}
+
+#game-area { display: none; }
+
+.js-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.js-status strong { color: var(--accent); }
+
+#canvas-wrap {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  touch-action: none;
+  cursor: default;
+}
+
+#puzzle-canvas { display: block; }
+
+#complete-msg {
+  display: none;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 14px;
+  text-align: center;
+}
+
+#complete-msg.show { display: block; }
+
+#preview-wrap {
+  margin-top: 14px;
+}
+
+#preview-wrap summary {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+#preview-img {
+  max-width: 200px;
+  border: 1px solid var(--line);
+  display: block;
+}
