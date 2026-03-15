@@ -562,28 +562,42 @@
       var mx = pw / 2;
       var my = ph / 2;
       var r  = Math.min(kx, ky) * 0.52;
+    
       ctx.beginPath();
+    
       ctx.moveTo(0, 0);
-      ctx.lineTo(mx - r, 0);
       if (top !== 0) {
+        ctx.lineTo(mx - r, 0);
         ctx.arc(mx, top > 0 ? -r : r, r, Math.PI, 0, top < 0);
+        ctx.lineTo(pw, 0);
+      } else {
+        ctx.lineTo(pw, 0);
       }
-      ctx.lineTo(pw, 0);
-      ctx.lineTo(pw, my - r);
+    
       if (right !== 0) {
-        ctx.arc(right > 0 ? pw + r : pw - r, my, r, -Math.PI/2, Math.PI/2, right < 0);
+        ctx.lineTo(pw, my - r);
+        ctx.arc(right > 0 ? pw + r : pw - r, my, r, -Math.PI / 2, Math.PI / 2, right < 0);
+        ctx.lineTo(pw, ph);
+      } else {
+        ctx.lineTo(pw, ph);
       }
-      ctx.lineTo(pw, ph);
-      ctx.lineTo(mx + r, ph);
+    
       if (bottom !== 0) {
+        ctx.lineTo(mx + r, ph);
         ctx.arc(mx, bottom > 0 ? ph + r : ph - r, r, 0, Math.PI, bottom < 0);
+        ctx.lineTo(0, ph);
+      } else {
+        ctx.lineTo(0, ph);
       }
-      ctx.lineTo(0, ph);
-      ctx.lineTo(0, my + r);
+    
       if (left !== 0) {
-        ctx.arc(left > 0 ? -r : r, my, r, Math.PI/2, -Math.PI/2, left < 0);
+        ctx.lineTo(0, my + r);
+        ctx.arc(left > 0 ? -r : r, my, r, Math.PI / 2, -Math.PI / 2, left < 0);
+        ctx.lineTo(0, 0);
+      } else {
+        ctx.lineTo(0, 0);
       }
-      ctx.lineTo(0, 0);
+    
       ctx.closePath();
     }
   
