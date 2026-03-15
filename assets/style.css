@@ -1681,6 +1681,23 @@ input.invalid, select.invalid, textarea.invalid {
   padding-bottom: var(--cell-size);
 }
 
+.ms-wrap::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ms-wrap::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+.ms-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 0;
+}
+
+.ms-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
 .ms-table {
   margin: 0;
   table-layout: fixed !important;
