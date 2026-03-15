@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yuの物置小屋">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yuの物置小屋">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://haruka21yu.github.io/assets/img/haruka21yu-s_storage-shed.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <title>jigsaw - works - haruka21yuの物置小屋</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K1T7J74YJK');
+  </script>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yuの<br><em>物置小屋</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/" class="active">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+    <a href="https://haruka21yu.github.io/bbs/">bbs</a>
+    <a href="https://haruka21yu.github.io/contact/">contact</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      <a href="https://haruka21yu.github.io/works/">works</a>
+      <span>/</span>
+      jigsaw
+    </p>
+    <h1>jigsaw</h1>
+  </div>
+  <div id="setup-area">
+    <div class="setup-block">
+      <label>画像を選んでください</label>
+      <div class="tab-btns">
+        <button class="tab-btn active" onclick="switchTab('free')">フリー画像</button>
+        <button class="tab-btn" onclick="switchTab('upload')">アップロード</button>
+      </div>
+      <div id="tab-free" class="tab-panel active">
+        <div class="free-images" id="free-images"></div>
+      </div>
+      <div id="tab-upload" class="tab-panel">
+        <input type="file" id="upload-input" accept="image/*">
+      </div>
+    </div>
+    <div class="setup-block">
+      <label>ピース数を選んでください</label>
+      <div id="size-groups"></div>
+    </div>
+    <button class="primary" id="start-btn" onclick="startGame()">スタート</button>
+    <div id="setup-msg" style="font-size:12px;color:var(--accent);margin-top:6px;display:none;">画像を選んでください。</div>
+  </div>
+  <div id="game-area">
+    <div class="js-status">
+      <span>残り: <strong id="remain-count">0</strong> ピース</span>
+      <button onclick="resetToSetup()">🔄 最初から</button>
+    </div>
+    <div id="canvas-wrap">
+      <canvas id="puzzle-canvas"></canvas>
+    </div>
+    <details id="preview-wrap">
+      <summary>完成図を見る</summary>
+      <img id="preview-img" src="" alt="完成図">
+    </details>
+    <div id="complete-msg">🎉 完成！おめでとうございます！</div>
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yuの物置小屋</span>
+    <p style="font-size:11px;margin-top:6px;">
+      <a href="https://haruka21yu.github.io/terms/" style="color:var(--accent);">利用規約</a>　
+      <a href="https://haruka21yu.github.io/privacy/" style="color:var(--accent);">プライバシーポリシー</a>
+    </p>
+  </footer>
+  <script>
+    var FREE_IMAGES = [
+      { id: 1, title: '山と湖',       url: 'https://picsum.photos/id/29/800/600'  },
+      { id: 2, title: '砂漠',         url: 'https://picsum.photos/id/39/800/600'  },
+      { id: 3, title: '海岸',         url: 'https://picsum.photos/id/83/800/600'  },
+      { id: 4, title: '森の小道',     url: 'https://picsum.photos/id/10/800/600'  },
+      { id: 5, title: '夕焼け',       url: 'https://picsum.photos/id/99/800/600'  },
+      { id: 6, title: '雪山',         url: 'https://picsum.photos/id/117/800/600' },
+      { id: 7, title: '草原',         url: 'https://picsum.photos/id/133/800/600' },
+      { id: 8, title: '滝',           url: 'https://picsum.photos/id/137/800/600' },
+      { id: 9, title: '峡谷',         url: 'https://picsum.photos/id/145/800/600' },
+      { id:10, title: '湖と山',       url: 'https://picsum.photos/id/167/800/600' },
+      { id:11, title: '秋の森',       url: 'https://picsum.photos/id/175/800/600' },
+      { id:12, title: '朝霧の山',     url: 'https://picsum.photos/id/214/800/600' },
+      { id:13, title: '海と岩',       url: 'https://picsum.photos/id/232/800/600' },
+      { id:14, title: '雪原',         url: 'https://picsum.photos/id/247/800/600' },
+      { id:15, title: '棚田',         url: 'https://picsum.photos/id/258/800/600' },
+      { id:16, title: '砂丘',         url: 'https://picsum.photos/id/274/800/600' },
+      { id:17, title: '湾と崖',       url: 'https://picsum.photos/id/312/800/600' },
+      { id:18, title: '川と橋',       url: 'https://picsum.photos/id/338/800/600' },
+      { id:19, title: '雲海',         url: 'https://picsum.photos/id/390/800/600' },
+      { id:20, title: '氷河',         url: 'https://picsum.photos/id/403/800/600' },
+    ];
+  
+    var G = {
+      cols: 3, rows: 3,
+      pieces: [],
+      dragging: null,
+      dragOffX: 0, dragOffY: 0,
+      image: null,
+      canvasW: 0, canvasH: 0,
+      pieceW: 0, pieceH: 0,
+      tab: 'knob',  // knob size fraction
+      selectedFreeUrl: null,
+      uploadDataUrl: null,
+    };
+  
+    var SNAP_DIST = 28;
+    var KNOB = 0.22;
+
+    var SIZE_PRESETS = [
+      { label: '70ピース',   sizes: [{c:5,r:14},{c:14,r:5},{c:7,r:10},{c:10,r:7}] },
+      { label: '100ピース',  sizes: [{c:10,r:10}] },
+      { label: '108ピース',  sizes: [{c:6,r:18},{c:18,r:6},{c:9,r:12},{c:12,r:9}] },
+      { label: '216ピース',  sizes: [{c:9,r:24},{c:24,r:9},{c:12,r:18},{c:18,r:12}] },
+      { label: '300ピース',  sizes: [{c:10,r:30},{c:30,r:10},{c:12,r:25},{c:25,r:12},{c:15,r:20},{c:20,r:15}] },
+      { label: '450ピース',  sizes: [{c:15,r:30},{c:30,r:15},{c:18,r:25},{c:25,r:18}] },
+      { label: '500ピース',  sizes: [{c:20,r:25},{c:25,r:20}] },
+      { label: '1000ピース', sizes: [{c:20,r:50},{c:50,r:20},{c:25,r:40},{c:40,r:25}] },
+      { label: '1053ピース', sizes: [{c:27,r:39},{c:39,r:27}] },
+      { label: '1500ピース', sizes: [{c:25,r:60},{c:60,r:25},{c:30,r:50},{c:50,r:30}] },
+      { label: '2000ピース', sizes: [{c:40,r:50},{c:50,r:40}] },
+      { label: '2016ピース', sizes: [{c:28,r:72},{c:72,r:28},{c:32,r:63},{c:63,r:32},{c:36,r:56},{c:56,r:36},{c:42,r:48},{c:48,r:42}] },
+      { label: '3000ピース', sizes: [{c:40,r:75},{c:75,r:40},{c:50,r:60},{c:60,r:50}] },
+    ];
+    
+    function renderSizeGroups() {
+      var wrap = document.getElementById('size-groups');
+      wrap.innerHTML = '';
+      SIZE_PRESETS.forEach(function(group) {
+        var groupDiv = document.createElement('div');
+        groupDiv.style.cssText = 'margin-bottom:10px;';
+    
+        var lbl = document.createElement('div');
+        lbl.style.cssText = 'font-size:11px;color:var(--muted);margin-bottom:4px;';
+        lbl.textContent = group.label;
+        groupDiv.appendChild(lbl);
+    
+        var btns = document.createElement('div');
+        btns.className = 'size-btns';
+        group.sizes.forEach(function(s, i) {
+          var btn = document.createElement('div');
+          btn.className = 'pill';
+          btn.dataset.cols = s.c;
+          btn.dataset.rows = s.r;
+          btn.textContent = s.c + '×' + s.r;
+          btn.onclick = function() { pickSize(btn); };
+          if (group === SIZE_PRESETS[0] && i === 0) {
+            btn.classList.add('active');
+            G.cols = s.c; G.rows = s.r;
+          }
+          btns.appendChild(btn);
+        });
+        groupDiv.appendChild(btns);
+        wrap.appendChild(groupDiv);
+      });
+    }
+    
+    function renderFreeImages() {
+      var wrap = document.getElementById('free-images');
+      wrap.innerHTML = '';
+      FREE_IMAGES.forEach(function(img) {
+        var div = document.createElement('div');
+        div.className = 'free-img-item';
+        div.title = img.title;
+        div.onclick = function() {
+          document.querySelectorAll('.free-img-item').forEach(function(d){ d.classList.remove('selected'); });
+          div.classList.add('selected');
+          G.selectedFreeUrl = img.url;
+          G.uploadDataUrl = null;
+        };
+        var el = document.createElement('img');
+        el.src = img.url;
+        el.alt = img.title;
+        el.crossOrigin = 'anonymous';
+        div.appendChild(el);
+        wrap.appendChild(div);
+      });
+    }
+  
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(function(b,i){
+        b.classList.toggle('active', (i===0 && name==='free') || (i===1 && name==='upload'));
+      });
+      document.getElementById('tab-free').classList.toggle('active', name==='free');
+      document.getElementById('tab-upload').classList.toggle('active', name==='upload');
+    }
+  
+    function pickSize(btn) {
+      document.querySelectorAll('.size-btns .pill').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      G.cols = parseInt(btn.dataset.cols);
+      G.rows = parseInt(btn.dataset.rows);
+    }
+  
+    function startGame() {
+      var uploadInput = document.getElementById('upload-input');
+      if (uploadInput.files && uploadInput.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          G.uploadDataUrl = e.target.result;
+          G.selectedFreeUrl = null;
+          loadImageAndStart(G.uploadDataUrl);
+        };
+        reader.readAsDataURL(uploadInput.files[0]);
+        return;
+      }
+      if (G.selectedFreeUrl) {
+        loadImageAndStart(G.selectedFreeUrl);
+        return;
+      }
+      var msg = document.getElementById('setup-msg');
+      msg.style.display = 'block';
+      setTimeout(function(){ msg.style.display = 'none'; }, 2000);
+    }
+  
+    function loadImageAndStart(src) {
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function() {
+        G.image = img;
+        document.getElementById('preview-img').src = src;
+        initPuzzle();
+        document.getElementById('setup-area').style.display = 'none';
+        document.getElementById('game-area').style.display = 'block';
+        document.getElementById('complete-msg').classList.remove('show');
+      };
+      img.onerror = function() {
+        alert('画像の読み込みに失敗しました。');
+      };
+      img.src = src;
+    }
+  
+    function initPuzzle() {
+      var maxW = Math.min(window.innerWidth - 32, 700);
+      var aspect = G.image.naturalWidth / G.image.naturalHeight;
+      var canvasW = maxW;
+      var canvasH = Math.round(maxW / aspect);
+  
+      G.canvasW = canvasW;
+      G.canvasH = canvasH;
+      G.pieceW  = canvasW / G.cols;
+      G.pieceH  = canvasH / G.rows;
+  
+      var canvas = document.getElementById('puzzle-canvas');
+      var wrap   = document.getElementById('canvas-wrap');
+      canvas.width  = canvasW;
+      canvas.height = canvasH;
+      wrap.style.width  = canvasW + 'px';
+      wrap.style.height = canvasH + 'px';
+  
+      var hEdge = [];
+      var vEdge = [];
+      for (var r = 0; r < G.rows - 1; r++) {
+        hEdge[r] = [];
+        for (var c = 0; c < G.cols; c++) {
+          hEdge[r][c] = Math.random() < 0.5 ? 1 : -1;
+        }
+      }
+      for (var r2 = 0; r2 < G.rows; r2++) {
+        vEdge[r2] = [];
+        for (var c2 = 0; c2 < G.cols - 1; c2++) {
+          vEdge[r2][c2] = Math.random() < 0.5 ? 1 : -1;
+        }
+      }
+  
+      G.pieces = [];
+      for (var row = 0; row < G.rows; row++) {
+        for (var col = 0; col < G.cols; col++) {
+          var px = G.pieceW * col;
+          var py = G.pieceH * row;
+  
+          var top    = row > 0          ? -hEdge[row-1][col] : 0;
+          var bottom = row < G.rows - 1 ?  hEdge[row][col]   : 0;
+          var left   = col > 0          ? -vEdge[row][col-1] : 0;
+          var right  = col < G.cols - 1 ?  vEdge[row][col]   : 0;
+  
+          var scatterX = Math.random() * (canvasW - G.pieceW);
+          var scatterY = Math.random() * (canvasH - G.pieceH);
+  
+          G.pieces.push({
+            row: row, col: col,
+            x: scatterX, y: scatterY,
+            targetX: px, targetY: py,
+            top: top, bottom: bottom, left: left, right: right,
+            placed: false,
+          });
+        }
+      }
+  
+      shuffleArr(G.pieces);
+  
+      setupCanvas();
+      drawAll();
+      updateRemain();
+    }
+  
+    function setupCanvas() {
+      var canvas = document.getElementById('puzzle-canvas');
+      canvas.onmousedown  = onDown;
+      canvas.onmousemove  = onMove;
+      canvas.onmouseup    = onUp;
+      canvas.ontouchstart = function(e){ e.preventDefault(); onDown(e.touches[0]); };
+      canvas.ontouchmove  = function(e){ e.preventDefault(); onMove(e.touches[0]); };
+      canvas.ontouchend   = function(e){ e.preventDefault(); onUp(); };
+    }
+  
+    function getPos(e) {
+      var canvas = document.getElementById('puzzle-canvas');
+      var rect = canvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+  
+    function onDown(e) {
+      var pos = getPos(e);
+      for (var i = G.pieces.length - 1; i >= 0; i--) {
+        var p = G.pieces[i];
+        if (p.placed) continue;
+        if (hitTest(p, pos.x, pos.y)) {
+          G.dragging = p;
+          G.dragOffX = pos.x - p.x;
+          G.dragOffY = pos.y - p.y;
+          G.pieces.splice(i, 1);
+          G.pieces.push(p);
+          drawAll();
+          return;
+        }
+      }
+    }
+  
+    function onMove(e) {
+      if (!G.dragging) return;
+      var pos = getPos(e);
+      G.dragging.x = pos.x - G.dragOffX;
+      G.dragging.y = pos.y - G.dragOffY;
+      drawAll();
+    }
+  
+    function onUp() {
+      if (!G.dragging) return;
+      var p = G.dragging;
+      G.dragging = null;
+  
+      var dx = Math.abs(p.x - p.targetX);
+      var dy = Math.abs(p.y - p.targetY);
+      if (dx < SNAP_DIST && dy < SNAP_DIST) {
+        p.x = p.targetX;
+        p.y = p.targetY;
+        p.placed = true;
+      }
+  
+      drawAll();
+      updateRemain();
+      checkComplete();
+    }
+  
+    function hitTest(p, mx, my) {
+      var kx = G.pieceW * KNOB;
+      var ky = G.pieceH * KNOB;
+      var x1 = p.x - (p.left < 0 ? kx : 0);
+      var y1 = p.y - (p.top  < 0 ? ky : 0);
+      var x2 = p.x + G.pieceW + (p.right  > 0 ? kx : 0);
+      var y2 = p.y + G.pieceH + (p.bottom > 0 ? ky : 0);
+      return mx >= x1 && mx <= x2 && my >= y1 && my <= y2;
+    }
+  
+    function drawAll() {
+      var canvas = document.getElementById('puzzle-canvas');
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, G.canvasW, G.canvasH);
+  
+      G.pieces.forEach(function(p) {
+        if (p.placed) drawPiece(ctx, p);
+      });
+      G.pieces.forEach(function(p) {
+        if (!p.placed) drawPiece(ctx, p);
+      });
+    }
+  
+    function drawPiece(ctx, p) {
+      var pw = G.pieceW;
+      var ph = G.pieceH;
+      var kx = pw * KNOB;
+      var ky = ph * KNOB;
+  
+      ctx.save();
+      ctx.translate(p.x, p.y);
+  
+      ctx.beginPath();
+      buildPiecePath(ctx, pw, ph, kx, ky, p.top, p.bottom, p.left, p.right);
+      ctx.clip();
+  
+      ctx.drawImage(
+        G.image,
+        p.col * pw / G.canvasW * G.image.naturalWidth,
+        p.row * ph / G.canvasH * G.image.naturalHeight,
+        pw / G.canvasW * G.image.naturalWidth,
+        ph / G.canvasH * G.image.naturalHeight,
+        0, 0, pw, ph
+      );
+  
+      ctx.restore();
+  
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.beginPath();
+      buildPiecePath(ctx, pw, ph, kx, ky, p.top, p.bottom, p.left, p.right);
+      ctx.strokeStyle = p.placed ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.4)';
+      ctx.lineWidth = p === G.dragging ? 2.5 : 1.2;
+      ctx.stroke();
+      ctx.restore();
+  
+      if (p === G.dragging) {
+        ctx.save();
+        ctx.translate(p.x + 4, p.y + 4);
+        ctx.beginPath();
+        buildPiecePath(ctx, pw, ph, kx, ky, p.top, p.bottom, p.left, p.right);
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+  
+    function buildPiecePath(ctx, pw, ph, kx, ky, top, bottom, left, right) {
+      var mx = pw / 2;
+      var my = ph / 2;
+      var r  = Math.min(kx, ky) * 0.85;
+  
+      ctx.moveTo(0, 0);
+  
+      ctx.lineTo(mx - r, 0);
+      if (top !== 0) {
+        ctx.arc(mx, top * (-ky * 0.5), r, Math.PI, 0, top > 0);
+      } else {
+        ctx.lineTo(mx + r, 0);
+      }
+      ctx.lineTo(pw, 0);
+  
+      ctx.lineTo(pw, my - r);
+      if (right !== 0) {
+        ctx.arc(pw + right * kx * 0.5, my, r, -Math.PI/2 + Math.PI * (right<0?1:0), -Math.PI/2 + Math.PI * (right<0?0:1), right < 0);
+      } else {
+        ctx.lineTo(pw, my + r);
+      }
+      ctx.lineTo(pw, ph);
+  
+      ctx.lineTo(mx + r, ph);
+      if (bottom !== 0) {
+        ctx.arc(mx, ph + bottom * ky * 0.5, r, 0, Math.PI, bottom > 0);
+      } else {
+        ctx.lineTo(mx - r, ph);
+      }
+      ctx.lineTo(0, ph);
+  
+      ctx.lineTo(0, my + r);
+      if (left !== 0) {
+        ctx.arc(left * (-kx * 0.5), my, r, Math.PI/2 + Math.PI*(left<0?0:1), Math.PI/2 + Math.PI*(left<0?1:0), left > 0);
+      } else {
+        ctx.lineTo(0, my - r);
+      }
+      ctx.lineTo(0, 0);
+  
+      ctx.closePath();
+    }
+  
+    function updateRemain() {
+      var n = G.pieces.filter(function(p){ return !p.placed; }).length;
+      document.getElementById('remain-count').textContent = n;
+    }
+  
+    function checkComplete() {
+      if (G.pieces.every(function(p){ return p.placed; })) {
+        document.getElementById('complete-msg').classList.add('show');
+      }
+    }
+  
+    function resetToSetup() {
+      document.getElementById('setup-area').style.display = '';
+      document.getElementById('game-area').style.display = 'none';
+      document.getElementById('complete-msg').classList.remove('show');
+    }
+  
+    function shuffleArr(arr) {
+      for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+      }
+    }
+  
+    renderFreeImages();
+    renderSizeGroups();
+  </script>
+</body>
+</html>
