@@ -1925,3 +1925,21 @@ input.invalid, select.invalid, textarea.invalid {
   border: 1px solid var(--line);
   display: block;
 }
+
+#tray-canvas-wrap::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+#tray-canvas-wrap::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+#tray-canvas-wrap::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 0;
+}
+
+#tray-canvas-wrap::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
