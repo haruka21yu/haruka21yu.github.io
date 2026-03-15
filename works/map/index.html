@@ -63,6 +63,8 @@
           <option value="">都道府県を選択</option>
         </select>
       </div>
+      <button class="tool-btn" onclick="undo()" id="btn-undo">↩ Undo</button>
+      <button class="tool-btn" onclick="redo()" id="btn-redo">↪ Redo</button>
     </div>
     <div class="tool-group">
       <label>ツール</label>
@@ -148,13 +150,13 @@
     var MAP_H = 600;
     
     var S = {
-      tool: 'fill',         // pan / fill / visited / draw / text / erase-draw
-      mapMode: 'pref',      // pref / muni / city / pref-detail
+      tool: 'fill',
+      mapMode: 'pref',
       geoData: null,
-      fillMap: {},          // regionId -> color
-      visitedMap: {},       // regionId -> bool
-      labels: [],           // [{id, x, y, text}]
-      drawStrokes: [],      // [{color, width, style, points:[{x,y}]}]
+      fillMap: {},
+      visitedMap: {},
+      labels: [],
+      drawStrokes: [],
       currentStroke: null,
       pan: { x: 0, y: 0 },
       scale: 1,
@@ -164,7 +166,9 @@
       labelDragging: null,
       labelDragOff: { x: 0, y: 0 },
       selectedLabel: null,
-      projection: null,     // {minLon, maxLon, minLat, maxLat, scaleX, scaleY}
+      projection: null,
+      history: [],
+      future:  [],
     };
     
     window.onload = function() {
@@ -412,6 +416,7 @@
     function onRegionClick(e) {
       if (S.isDragging) return;
       if (S.tool !== 'fill' && S.tool !== 'visited') return;
+      snapshot();
       var id   = e.target.getAttribute('data-id');
       var name = e.target.getAttribute('data-name');
     
@@ -524,6 +529,7 @@
     function onMapUp(e) {
       document.getElementById('map-wrap').classList.remove('panning');
       if (S._drawing && S.currentStroke && S.currentStroke.points.length > 1) {
+        snapshot();
         S.drawStrokes.push(S.currentStroke);
       }
       S.currentStroke = null;
@@ -659,6 +665,8 @@
     });
     
     document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); return; }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); return; }
       if ((e.key === 'Delete' || e.key === 'Backspace') && S.selectedLabel) {
         var el = document.getElementById(S.selectedLabel.id);
         if (el) el.parentNode.removeChild(el);
@@ -733,6 +741,7 @@
     
     function clearAll() {
       if (!confirm('すべての編集内容を消去しますか？')) return;
+      snapshot();
       S.fillMap    = {};
       S.visitedMap = {};
       S.labels     = [];
@@ -742,6 +751,53 @@
         el.setAttribute('fill', '#e8e0d4');
       });
       redrawCanvas();
+    }
+
+    function snapshot() {
+      S.history.push({
+        fillMap:     JSON.parse(JSON.stringify(S.fillMap)),
+        visitedMap:  JSON.parse(JSON.stringify(S.visitedMap)),
+        drawStrokes: JSON.parse(JSON.stringify(S.drawStrokes)),
+      });
+      S.future = [];
+      if (S.history.length > 50) S.history.shift();
+    }
+    
+    function applySnapshot(snap) {
+      S.fillMap    = snap.fillMap;
+      S.visitedMap = snap.visitedMap;
+      S.drawStrokes = snap.drawStrokes;
+      document.querySelectorAll('.region').forEach(function(el) {
+        var id = el.getAttribute('data-id');
+        if (S.visitedMap[id] !== undefined) {
+          el.setAttribute('fill', S.visitedMap[id] ? '#6aaa64' : '#e8e0d4');
+        } else if (S.fillMap[id]) {
+          el.setAttribute('fill', S.fillMap[id]);
+        } else {
+          el.setAttribute('fill', '#e8e0d4');
+        }
+      });
+      redrawCanvas();
+    }
+    
+    function undo() {
+      if (!S.history.length) return;
+      S.future.push({
+        fillMap:     JSON.parse(JSON.stringify(S.fillMap)),
+        visitedMap:  JSON.parse(JSON.stringify(S.visitedMap)),
+        drawStrokes: JSON.parse(JSON.stringify(S.drawStrokes)),
+      });
+      applySnapshot(S.history.pop());
+    }
+    
+    function redo() {
+      if (!S.future.length) return;
+      S.history.push({
+        fillMap:     JSON.parse(JSON.stringify(S.fillMap)),
+        visitedMap:  JSON.parse(JSON.stringify(S.visitedMap)),
+        drawStrokes: JSON.parse(JSON.stringify(S.drawStrokes)),
+      });
+      applySnapshot(S.future.pop());
     }
     
     function showLoading(show) {
