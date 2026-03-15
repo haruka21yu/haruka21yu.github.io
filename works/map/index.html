@@ -965,8 +965,8 @@
     }
     
     function updateGeoLabels() {
-      var svg = document.getElementById('geo-svg');
-      svg.querySelectorAll('text.geo-label').forEach(function(el){ el.parentNode.removeChild(el); });
+      var layer = document.getElementById('geo-layer');
+      layer.querySelectorAll('text.geo-label').forEach(function(el){ el.parentNode.removeChild(el); });
       if (S.labelType === 'none' || !S.geoData) return;
     
       var features = S.geoData.features || [];
@@ -1000,7 +1000,7 @@
         text.setAttribute('y', xy[1].toFixed(1));
         text.setAttribute('font-size', fontSize.toFixed(1));
         text.textContent = name;
-        svg.appendChild(text);
+        layer.appendChild(text);
       });
     }
     
