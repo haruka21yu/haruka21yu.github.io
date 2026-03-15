@@ -331,7 +331,10 @@
     }
     
     function getRegionId(props, idx) {
-      return props.N03_007 || props.N03_001 || props.id || String(idx);
+      if (props.N03_007 && props.N03_007 !== '') return props.N03_007;
+      var name = (props.N03_001 || '') + '_' + (props.N03_003 || '') + '_' + (props.N03_004 || '');
+      if (name !== '__') return name;
+      return String(idx);
     }
     
     function getRegionName(props) {
