@@ -265,6 +265,9 @@
         });
       });
     
+      var midLat = (minLat + maxLat) / 2;
+      var lonLatRatio = 1 / Math.cos(midLat * Math.PI / 180);
+      
       var pad = 20;
       var rangeX = maxLon - minLon;
       var rangeY = (maxLat - minLat) * lonLatRatio;
@@ -273,8 +276,12 @@
       var sc = Math.min(scaleX, scaleY);
       var offX = pad + ((MAP_W - pad*2) - rangeX * sc) / 2;
       var offY = pad + ((MAP_H - pad*2) - rangeY * sc) / 2;
-    
-      S.projection = { minLon: minLon, minLat: minLat, sc: sc, offX: offX, offY: offY, maxLat: maxLat };
+      
+      S.projection = {
+        minLon: minLon, minLat: minLat,
+        sc: sc, offX: offX, offY: offY,
+        maxLat: maxLat, lonLatRatio: lonLatRatio
+      };
     
       svg.setAttribute('width',  MAP_W);
       svg.setAttribute('height', MAP_H);
