@@ -1992,8 +1992,6 @@ select {
   transition: filter 0.1s;
 }
 
-.region:hover { filter: brightness(0.92); }
-
 #draw-canvas {
   position: absolute; top: 0; left: 0;
   pointer-events: none;
