@@ -118,8 +118,10 @@
   </div>
   <div id="map-outer">
     <div id="map-wrap">
-      <svg id="geo-svg" xmlns="http://www.w3.org/2000/svg"></svg>
-      <canvas id="draw-canvas"></canvas>
+      <svg id="geo-svg" xmlns="http://www.w3.org/2000/svg">
+        <g id="geo-layer"></g>
+        <g id="draw-layer"></g>
+      </svg>
       <div id="label-layer"></div>
       <div id="loading-overlay">
         <div class="loading-spinner"></div>
@@ -199,9 +201,6 @@
       wrap.style.width  = w + 'px';
       wrap.style.height = h + 'px';
       MAP_W = w; MAP_H = h;
-      var canvas = document.getElementById('draw-canvas');
-      canvas.width  = w;
-      canvas.height = h;
       document.getElementById('label-layer').style.width  = w + 'px';
       document.getElementById('label-layer').style.height = h + 'px';
     }
@@ -259,8 +258,9 @@
     }
     
     function renderMap() {
-      var svg = document.getElementById('geo-svg');
-      svg.innerHTML = '';
+      var svg   = document.getElementById('geo-svg');
+      var layer = document.getElementById('geo-layer');
+      layer.innerHTML = '';
     
       var features = S.geoData.features || [];
       if (!features.length) return;
@@ -419,9 +419,6 @@
       var svg = document.getElementById('geo-svg');
       svg.style.transformOrigin = '0 0';
       svg.style.transform = 'translate(' + S.pan.x + 'px,' + S.pan.y + 'px) scale(' + S.scale + ')';
-      var canvas = document.getElementById('draw-canvas');
-      canvas.style.transformOrigin = '0 0';
-      canvas.style.transform = 'translate(' + S.pan.x + 'px,' + S.pan.y + 'px) scale(' + S.scale + ')';
     }
     
     function resetView() {
@@ -635,60 +632,84 @@
     }
     
     function redrawCanvas() {
-      var canvas = document.getElementById('draw-canvas');
-      var ctx    = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var layer = document.getElementById('draw-layer');
+      layer.innerHTML = '';
     
       var allStrokes = S.drawStrokes.slice();
       if (S.currentStroke) allStrokes.push(S.currentStroke);
     
       allStrokes.forEach(function(stroke) {
         if (stroke.points.length < 2) return;
-        ctx.beginPath();
-        ctx.strokeStyle = stroke.color;
-        ctx.lineWidth   = stroke.width;
-        ctx.lineCap     = 'round';
-        ctx.lineJoin    = 'round';
-        setLineDash(ctx, stroke);
-        if (stroke.type === 'curve') {
-          drawCurve(ctx, stroke.points);
-        } else {
-          ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-          for (var i = 1; i < stroke.points.length; i++)
-            ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
+        var el = buildStrokeSVG(stroke, false);
+        if (el) layer.appendChild(el);
       });
     
       if ((S.tool === 'draw-line' || S.tool === 'draw-curve') &&
           S.linePoints.length > 0 && S._lineMousePos) {
+        var previewPts = S.linePoints.concat([S._lineMousePos]);
         var color = document.getElementById('draw-color').value;
         var width = parseInt(document.getElementById('draw-width').value);
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth   = width;
-        ctx.lineCap     = 'round';
-        ctx.lineJoin    = 'round';
-        ctx.setLineDash([4, 4]);
-        var previewPts = S.linePoints.concat([S._lineMousePos]);
-        if (S.tool === 'draw-curve' && previewPts.length >= 2) {
-          drawCurve(ctx, previewPts);
-        } else {
-          ctx.moveTo(previewPts[0].x, previewPts[0].y);
-          for (var j = 1; j < previewPts.length; j++)
-            ctx.lineTo(previewPts[j].x, previewPts[j].y);
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
+        var style = document.getElementById('draw-style').value;
+        var preview = buildStrokeSVG(
+          { color: color, width: width, style: style,
+            type: S.tool === 'draw-line' ? 'line' : 'curve',
+            points: previewPts }, true);
+        if (preview) layer.appendChild(preview);
     
         S.linePoints.forEach(function(pt) {
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 4 / S.scale, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.fill();
+          var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          circle.setAttribute('cx', pt.x);
+          circle.setAttribute('cy', pt.y);
+          circle.setAttribute('r', 4 / S.scale);
+          circle.setAttribute('fill', color);
+          layer.appendChild(circle);
         });
       }
+    }
+    
+    function buildStrokeSVG(stroke, isPreview) {
+      if (stroke.points.length < 2) return null;
+      var pts = stroke.points;
+      var d = '';
+    
+      if (stroke.type === 'curve' && pts.length >= 2) {
+        d = 'M' + pts[0].x + ',' + pts[0].y;
+        if (pts.length === 2) {
+          d += ' L' + pts[1].x + ',' + pts[1].y;
+        } else {
+          for (var i = 0; i < pts.length - 1; i++) {
+            var p0 = pts[i === 0 ? 0 : i - 1];
+            var p1 = pts[i];
+            var p2 = pts[i + 1];
+            var p3 = pts[i + 2 < pts.length ? i + 2 : pts.length - 1];
+            var cp1x = p1.x + (p2.x - p0.x) / 6;
+            var cp1y = p1.y + (p2.y - p0.y) / 6;
+            var cp2x = p2.x - (p3.x - p1.x) / 6;
+            var cp2y = p2.y - (p3.y - p1.y) / 6;
+            d += ' C' + cp1x + ',' + cp1y + ' ' + cp2x + ',' + cp2y + ' ' + p2.x + ',' + p2.y;
+          }
+        }
+      } else {
+        d = 'M' + pts[0].x + ',' + pts[0].y;
+        for (var j = 1; j < pts.length; j++)
+          d += ' L' + pts[j].x + ',' + pts[j].y;
+      }
+    
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', d);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', stroke.color);
+      path.setAttribute('stroke-width', stroke.width / S.scale);
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
+    
+      if (isPreview) path.setAttribute('stroke-dasharray', '4,' + 4 / S.scale);
+      else if (stroke.style === 'dashed')
+        path.setAttribute('stroke-dasharray', stroke.width * 4 / S.scale + ',' + stroke.width * 2 / S.scale);
+      else if (stroke.style === 'dotted')
+        path.setAttribute('stroke-dasharray', stroke.width / S.scale + ',' + stroke.width * 2 / S.scale);
+    
+      return path;
     }
     
     function setLineDash(ctx, stroke) {
