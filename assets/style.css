@@ -2069,3 +2069,12 @@ select {
   width: 14px; height: 14px; display: inline-block;
   border: 1px solid var(--line); vertical-align: middle; margin-right: 3px;
 }
+
+.geo-label {
+  font-size: 9px;
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  pointer-events: none;
+  user-select: none;
+}
