@@ -809,6 +809,7 @@
     applyTransform = function() {
       _origApplyTransform();
       updateLabelPositions();
+      updateGeoLabels();
     };
     
     function saveData() {
@@ -950,10 +951,12 @@
         if (!centroid) return;
         var xy = project(centroid[0], centroid[1]);
     
+        var fontSize = Math.max(6, Math.min(14, 9 / S.scale));
         var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('class', 'geo-label');
         text.setAttribute('x', xy[0].toFixed(1));
         text.setAttribute('y', xy[1].toFixed(1));
+        text.setAttribute('font-size', fontSize.toFixed(1));
         text.textContent = name;
         svg.appendChild(text);
       });
