@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="作ったものを置いておく場所">
+  <meta property="og:title" content="haruka21yuの物置小屋">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="haruka21yuの物置小屋">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://haruka21yu.github.io/assets/img/haruka21yu-s_storage-shed.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <title>map - works - haruka21yuの物置小屋</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=Zen+Kaku+Gothic+New:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://haruka21yu.github.io/assets/style.css">
+  <link rel="icon" type="image/png" href="https://haruka21yu.github.io/assets/img/haruka21yu.png">
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K1T7J74YJK');
+  </script>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="https://haruka21yu.github.io/" class="site-title">haruka21yuの<br><em>物置小屋</em></a>
+    </div>
+    <p class="site-sub">作ったものを置いておく場所</p>
+  </header>
+  <nav>
+    <a href="https://haruka21yu.github.io/">home</a>
+    <a href="https://haruka21yu.github.io/works/" class="active">works</a>
+    <a href="https://haruka21yu.github.io/log/">log</a>
+    <a href="https://haruka21yu.github.io/about/">about</a>
+    <a href="https://haruka21yu.github.io/bbs/">bbs</a>
+    <a href="https://haruka21yu.github.io/contact/">contact</a>
+  </nav>
+  <div class="page-header">
+    <p class="breadcrumb">
+      <a href="https://haruka21yu.github.io/">home</a>
+      <span>/</span>
+      <a href="https://haruka21yu.github.io/works/">works</a>
+      <span>/</span>
+      map
+    </p>
+    <h1>map</h1>
+  </div>
+  <div id="toolbar">
+    <div class="tool-group">
+      <label>地図</label>
+      <select id="map-mode-select" onchange="changeMapMode()">
+        <option value="pref">全国（都道府県）</option>
+        <option value="muni">全国（市区町村）</option>
+        <option value="city">全国（市町村）</option>
+        <option value="pref-detail">都道府県別（市区町村）</option>
+      </select>
+      <div id="pref-select-wrap">
+        <select id="pref-select" onchange="loadPrefDetail()">
+          <option value="">都道府県を選択</option>
+        </select>
+      </div>
+    </div>
+    <div class="tool-group">
+      <label>ツール</label>
+      <button class="tool-btn" id="btn-pan"   onclick="setTool('pan')">✋ 移動</button>
+      <button class="tool-btn active" id="btn-fill"  onclick="setTool('fill')">🪣 塗り</button>
+      <button class="tool-btn" id="btn-visited" onclick="setTool('visited')">📍 訪問</button>
+      <button class="tool-btn" id="btn-draw"  onclick="setTool('draw')">✏️ 線</button>
+      <button class="tool-btn" id="btn-text"  onclick="setTool('text')">💬 文字</button>
+      <button class="tool-btn" id="btn-erase-draw" onclick="setTool('erase-draw')">🧹 線消</button>
+    </div>
+    <div class="tool-group" id="fill-color-group">
+      <label>塗り色</label>
+      <input type="color" id="fill-color" value="#c4603a">
+      <button class="tool-btn" onclick="clearSelectedFill()">消去</button>
+    </div>
+    <div class="tool-group" id="draw-settings" style="display:none;">
+      <label>線色</label>
+      <input type="color" id="draw-color" value="#c4603a">
+      <label>太さ</label>
+      <input type="range" id="draw-width" min="1" max="20" value="3">
+      <label>種類</label>
+      <select id="draw-style">
+        <option value="solid">実線</option>
+        <option value="dashed">破線</option>
+        <option value="dotted">点線</option>
+      </select>
+    </div>
+    <div class="tool-group">
+      <button class="tool-btn" onclick="zoom(1.25)">＋</button>
+      <button class="tool-btn" onclick="zoom(0.8)">－</button>
+      <button class="tool-btn" onclick="resetView()">全体</button>
+    </div>
+    <div class="tool-group">
+      <button class="tool-btn" onclick="saveData()">💾 保存</button>
+      <button class="tool-btn" onclick="document.getElementById('load-input').click()">📂 読込</button>
+      <input type="file" id="load-input" accept=".json" style="display:none;" onchange="loadData(event)">
+      <button class="tool-btn" onclick="clearAll()">🗑 全消去</button>
+    </div>
+  </div>
+  <div id="visited-legend" style="display:none;">
+    <span><span class="legend-dot" style="background:#6aaa64;"></span>訪問済み</span>
+    <span><span class="legend-dot" style="background:#e8e0d4;"></span>未訪問</span>
+  </div>
+  <div id="map-outer">
+    <div id="map-wrap">
+      <svg id="geo-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <canvas id="draw-canvas"></canvas>
+      <div id="label-layer"></div>
+      <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div id="loading-msg">地図データを読み込んでいます…</div>
+      </div>
+    </div>
+  </div>
+  <div id="credit">
+    本地図データは国土交通省「国土数値情報（行政区域）」を加工して作成しました。
+    （<a href="https://github.com/smartnews-smri/japan-topography" target="_blank" rel="noopener">smartnews-smri/japan-topography</a> 経由）
+  </div>
+  <footer>
+    <p>Copyright © haruka21yu</p>
+    <span class="footer-mark">haruka21yuの物置小屋</span>
+    <p style="font-size:11px;margin-top:6px;">
+      <a href="https://haruka21yu.github.io/terms/" style="color:var(--accent);">利用規約</a>　
+      <a href="https://haruka21yu.github.io/privacy/" style="color:var(--accent);">プライバシーポリシー</a>
+    </p>
+  </footer>
+  <script>
+    var BASE_URL = 'https://raw.githubusercontent.com/smartnews-smri/japan-topography/main/data/municipality/geojson/';
+    var PREFS = [
+      ['01','北海道'],['02','青森県'],['03','岩手県'],['04','宮城県'],['05','秋田県'],
+      ['06','山形県'],['07','福島県'],['08','茨城県'],['09','栃木県'],['10','群馬県'],
+      ['11','埼玉県'],['12','千葉県'],['13','東京都'],['14','神奈川県'],['15','新潟県'],
+      ['16','富山県'],['17','石川県'],['18','福井県'],['19','山梨県'],['20','長野県'],
+      ['21','岐阜県'],['22','静岡県'],['23','愛知県'],['24','三重県'],['25','滋賀県'],
+      ['26','京都府'],['27','大阪府'],['28','兵庫県'],['29','奈良県'],['30','和歌山県'],
+      ['31','鳥取県'],['32','島根県'],['33','岡山県'],['34','広島県'],['35','山口県'],
+      ['36','徳島県'],['37','香川県'],['38','愛媛県'],['39','高知県'],['40','福岡県'],
+      ['41','佐賀県'],['42','長崎県'],['43','熊本県'],['44','大分県'],['45','宮崎県'],
+      ['46','鹿児島県'],['47','沖縄県'],
+    ];
+    
+    var MAP_W = 800;
+    var MAP_H = 600;
+    
+    var S = {
+      tool: 'fill',         // pan / fill / visited / draw / text / erase-draw
+      mapMode: 'pref',      // pref / muni / city / pref-detail
+      geoData: null,
+      fillMap: {},          // regionId -> color
+      visitedMap: {},       // regionId -> bool
+      labels: [],           // [{id, x, y, text}]
+      drawStrokes: [],      // [{color, width, style, points:[{x,y}]}]
+      currentStroke: null,
+      pan: { x: 0, y: 0 },
+      scale: 1,
+      isDragging: false,
+      dragStart: { x: 0, y: 0 },
+      panStart: { x: 0, y: 0 },
+      labelDragging: null,
+      labelDragOff: { x: 0, y: 0 },
+      selectedLabel: null,
+      projection: null,     // {minLon, maxLon, minLat, maxLat, scaleX, scaleY}
+    };
+    
+    window.onload = function() {
+      initPrefSelect();
+      resizeMapWrap();
+      loadMapMode('pref');
+    };
+    
+    window.onresize = function() {
+      resizeMapWrap();
+      redrawCanvas();
+    };
+    
+    function resizeMapWrap() {
+      var w = Math.min(window.innerWidth - 32, 900);
+      var h = Math.round(w * 0.65);
+      var wrap = document.getElementById('map-wrap');
+      wrap.style.width  = w + 'px';
+      wrap.style.height = h + 'px';
+      MAP_W = w; MAP_H = h;
+      var canvas = document.getElementById('draw-canvas');
+      canvas.width  = w;
+      canvas.height = h;
+      document.getElementById('label-layer').style.width  = w + 'px';
+      document.getElementById('label-layer').style.height = h + 'px';
+    }
+    
+    function initPrefSelect() {
+      var sel = document.getElementById('pref-select');
+      PREFS.forEach(function(p) {
+        var opt = document.createElement('option');
+        opt.value = p[0]; opt.textContent = p[1];
+        sel.appendChild(opt);
+      });
+    }
+    
+    function changeMapMode() {
+      var mode = document.getElementById('map-mode-select').value;
+      document.getElementById('pref-select-wrap').style.display = mode === 'pref-detail' ? '' : 'none';
+      if (mode !== 'pref-detail') loadMapMode(mode);
+    }
+    
+    function loadPrefDetail() {
+      var code = document.getElementById('pref-select').value;
+      if (!code) return;
+      loadMapMode('pref-detail', code);
+    }
+    
+    function loadMapMode(mode, prefCode) {
+      showLoading(true);
+      S.mapMode = mode;
+      var url;
+      if (mode === 'pref')        url = BASE_URL + 's0001/prefectures.json';
+      else if (mode === 'muni')   url = BASE_URL + 's0001/N03-21_210101.json';
+      else if (mode === 'city')   url = BASE_URL + 's0001/N03-21_210101_designated_city.json';
+      else if (mode === 'pref-detail') url = BASE_URL + 's0010/N03-21_' + prefCode + '_210101.json';
+    
+      fetch(url)
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(function(data) {
+          S.geoData = data;
+          renderMap();
+          showLoading(false);
+        })
+        .catch(function(err) {
+          document.getElementById('loading-msg').textContent = '読み込みに失敗しました: ' + err.message;
+        });
+    }
+    
+    function renderMap() {
+      var svg = document.getElementById('geo-svg');
+      svg.innerHTML = '';
+    
+      var features = S.geoData.features || [];
+      if (!features.length) return;
+    
+      var minLon =  999, maxLon = -999, minLat =  999, maxLat = -999;
+      features.forEach(function(f) {
+        eachCoord(f.geometry, function(lon, lat) {
+          if (lon < minLon) minLon = lon;
+          if (lon > maxLon) maxLon = lon;
+          if (lat < minLat) minLat = lat;
+          if (lat > maxLat) maxLat = lat;
+        });
+      });
+    
+      var pad = 20;
+      var rangeX = maxLon - minLon;
+      var rangeY = maxLat - minLat;
+      var scaleX = (MAP_W - pad * 2) / rangeX;
+      var scaleY = (MAP_H - pad * 2) / rangeY;
+      var sc = Math.min(scaleX, scaleY);
+      var offX = pad + ((MAP_W - pad*2) - rangeX * sc) / 2;
+      var offY = pad + ((MAP_H - pad*2) - rangeY * sc) / 2;
+    
+      S.projection = { minLon: minLon, minLat: minLat, sc: sc, offX: offX, offY: offY, maxLat: maxLat };
+    
+      svg.setAttribute('width',  MAP_W);
+      svg.setAttribute('height', MAP_H);
+      svg.setAttribute('viewBox', '0 0 ' + MAP_W + ' ' + MAP_H);
+    
+      applyTransform();
+    
+      features.forEach(function(f, idx) {
+        var props = f.properties || {};
+        var id = getRegionId(props, idx);
+        var name = getRegionName(props);
+        var paths = geomToPaths(f.geometry);
+        if (!paths.length) return;
+    
+        var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('data-id', id);
+        g.setAttribute('data-name', name);
+    
+        paths.forEach(function(d) {
+          var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', d);
+          path.setAttribute('class', 'region');
+          path.setAttribute('data-id', id);
+          path.setAttribute('data-name', name);
+          path.setAttribute('fill', getRegionFill(id));
+          path.setAttribute('stroke', '#a09080');
+          path.setAttribute('stroke-width', S.mapMode === 'pref' ? '0.8' : '0.4');
+          path.addEventListener('click', onRegionClick);
+          g.appendChild(path);
+        });
+    
+        svg.appendChild(g);
+      });
+    
+      resetView();
+    }
+    
+    function getRegionId(props, idx) {
+      return props.N03_007 || props.N03_001 || props.id || String(idx);
+    }
+    
+    function getRegionName(props) {
+      if (props.N03_004) return props.N03_004;
+      if (props.N03_003) return props.N03_003;
+      if (props.N03_001) return props.N03_001;
+      if (props.name)    return props.name;
+      return '';
+    }
+    
+    function getRegionFill(id) {
+      if (S.tool === 'visited' || S.visitedMap[id]) {
+        if (S.visitedMap[id] !== undefined) {
+          return S.visitedMap[id] ? '#6aaa64' : '#e8e0d4';
+        }
+      }
+      return S.fillMap[id] || '#e8e0d4';
+    }
+    
+    function geomToPaths(geom) {
+      if (!geom) return [];
+      var paths = [];
+      if (geom.type === 'Polygon') {
+        paths.push(ringsTod(geom.coordinates));
+      } else if (geom.type === 'MultiPolygon') {
+        geom.coordinates.forEach(function(poly) {
+          paths.push(ringsTod(poly));
+        });
+      }
+      return paths;
+    }
+    
+    function ringsTod(rings) {
+      var d = '';
+      rings.forEach(function(ring) {
+        var first = true;
+        ring.forEach(function(pt) {
+          var xy = project(pt[0], pt[1]);
+          d += (first ? 'M' : 'L') + xy[0].toFixed(2) + ',' + xy[1].toFixed(2);
+          first = false;
+        });
+        d += 'Z';
+      });
+      return d;
+    }
+    
+    function project(lon, lat) {
+      var p = S.projection;
+      var x = p.offX + (lon - p.minLon) * p.sc;
+      var y = p.offY + (p.maxLat - lat) * p.sc;
+      return [x, y];
+    }
+    
+    function eachCoord(geom, fn) {
+      if (!geom) return;
+      if (geom.type === 'Polygon') {
+        geom.coordinates.forEach(function(ring) {
+          ring.forEach(function(pt) { fn(pt[0], pt[1]); });
+        });
+      } else if (geom.type === 'MultiPolygon') {
+        geom.coordinates.forEach(function(poly) {
+          poly.forEach(function(ring) {
+            ring.forEach(function(pt) { fn(pt[0], pt[1]); });
+          });
+        });
+      }
+    }
+    
+    function applyTransform() {
+      var svg = document.getElementById('geo-svg');
+      svg.style.transformOrigin = '0 0';
+      svg.style.transform = 'translate(' + S.pan.x + 'px,' + S.pan.y + 'px) scale(' + S.scale + ')';
+      var canvas = document.getElementById('draw-canvas');
+      canvas.style.transformOrigin = '0 0';
+      canvas.style.transform = 'translate(' + S.pan.x + 'px,' + S.pan.y + 'px) scale(' + S.scale + ')';
+    }
+    
+    function resetView() {
+      S.pan   = { x: 0, y: 0 };
+      S.scale = 1;
+      applyTransform();
+      redrawCanvas();
+    }
+    
+    function zoom(factor) {
+      S.scale = Math.min(20, Math.max(0.3, S.scale * factor));
+      applyTransform();
+      redrawCanvas();
+    }
+    
+    function setTool(t) {
+      S.tool = t;
+      ['pan','fill','visited','draw','text','erase-draw'].forEach(function(name) {
+        var btn = document.getElementById('btn-' + name);
+        if (btn) btn.classList.toggle('active', name === t);
+      });
+      var wrap = document.getElementById('map-wrap');
+      wrap.className = 'mode-' + t;
+    
+      document.getElementById('draw-settings').style.display   = (t === 'draw') ? '' : 'none';
+      document.getElementById('fill-color-group').style.display = (t === 'fill') ? '' : 'none';
+      document.getElementById('visited-legend').style.display   = (t === 'visited') ? '' : 'none';
+    
+      deselectLabel();
+    }
+    
+    function onRegionClick(e) {
+      if (S.isDragging) return;
+      if (S.tool !== 'fill' && S.tool !== 'visited') return;
+      var id   = e.target.getAttribute('data-id');
+      var name = e.target.getAttribute('data-name');
+    
+      if (S.tool === 'fill') {
+        var color = document.getElementById('fill-color').value;
+        S.fillMap[id] = color;
+      } else if (S.tool === 'visited') {
+        S.visitedMap[id] = !S.visitedMap[id];
+      }
+    
+      document.querySelectorAll('[data-id="' + id + '"]').forEach(function(el) {
+        if (el.tagName === 'path') {
+          el.setAttribute('fill', S.tool === 'visited'
+            ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
+            : S.fillMap[id]);
+        }
+      });
+    }
+    
+    function clearSelectedFill() {
+      S.fillMap = {};
+      document.querySelectorAll('.region').forEach(function(el) {
+        el.setAttribute('fill', '#e8e0d4');
+      });
+    }
+    
+    var mapWrap = null;
+    window.addEventListener('DOMContentLoaded', function() {
+      mapWrap = document.getElementById('map-wrap');
+      mapWrap.addEventListener('mousedown',  onMapDown);
+      mapWrap.addEventListener('mousemove',  onMapMove);
+      mapWrap.addEventListener('mouseup',    onMapUp);
+      mapWrap.addEventListener('mouseleave', onMapUp);
+      mapWrap.addEventListener('touchstart', function(e){ e.preventDefault(); onMapDown(e.touches[0]); }, {passive:false});
+      mapWrap.addEventListener('touchmove',  function(e){ e.preventDefault(); onMapMove(e.touches[0]); }, {passive:false});
+      mapWrap.addEventListener('touchend',   function(e){ onMapUp(e.changedTouches[0]); });
+      mapWrap.addEventListener('wheel', onWheel, {passive:false});
+      mapWrap.addEventListener('click', onMapClick);
+    });
+    
+    function getMapXY(e) {
+      var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left - S.pan.x) / S.scale,
+        y: (e.clientY - rect.top  - S.pan.y) / S.scale,
+      };
+    }
+    
+    function getClientXY(e) {
+      var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+    
+    function onMapDown(e) {
+      S.isDragging = false;
+      var cl = getClientXY(e);
+      S.dragStart = { x: cl.x, y: cl.y };
+    
+      if (S.tool === 'pan') {
+        S.panStart = { x: S.pan.x, y: S.pan.y };
+        document.getElementById('map-wrap').classList.add('panning');
+        S._panning = true;
+        return;
+      }
+    
+      if (S.tool === 'draw') {
+        var xy = getMapXY(e);
+        var color = document.getElementById('draw-color').value;
+        var width = parseInt(document.getElementById('draw-width').value);
+        var style = document.getElementById('draw-style').value;
+        S.currentStroke = { color: color, width: width, style: style, points: [xy] };
+        S._drawing = true;
+        return;
+      }
+    
+      if (S.tool === 'erase-draw') {
+        S._erasing = true;
+        return;
+      }
+    }
+    
+    function onMapMove(e) {
+      var cl = getClientXY(e);
+      var dx = cl.x - S.dragStart.x;
+      var dy = cl.y - S.dragStart.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) S.isDragging = true;
+    
+      if (S._panning) {
+        S.pan.x = S.panStart.x + dx;
+        S.pan.y = S.panStart.y + dy;
+        applyTransform();
+        return;
+      }
+    
+      if (S._drawing && S.currentStroke) {
+        var xy = getMapXY(e);
+        S.currentStroke.points.push(xy);
+        redrawCanvas();
+        return;
+      }
+    
+      if (S._erasing) {
+        var exy = getMapXY(e);
+        eraseNearStrokes(exy.x, exy.y);
+        redrawCanvas();
+        return;
+      }
+    }
+    
+    function onMapUp(e) {
+      document.getElementById('map-wrap').classList.remove('panning');
+      if (S._drawing && S.currentStroke && S.currentStroke.points.length > 1) {
+        S.drawStrokes.push(S.currentStroke);
+      }
+      S.currentStroke = null;
+      S._panning = false;
+      S._drawing = false;
+      S._erasing = false;
+      redrawCanvas();
+    }
+    
+    function onMapClick(e) {
+      if (S.isDragging) return;
+      if (S.tool === 'text') {
+        var xy = getMapXY(e);
+        addLabel(xy.x, xy.y);
+      }
+    }
+    
+    function onWheel(e) {
+      e.preventDefault();
+      var factor = e.deltaY < 0 ? 1.12 : 0.88;
+      var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      var cx = e.clientX - rect.left;
+      var cy = e.clientY - rect.top;
+      var newScale = Math.min(20, Math.max(0.3, S.scale * factor));
+      S.pan.x = cx - (cx - S.pan.x) * (newScale / S.scale);
+      S.pan.y = cy - (cy - S.pan.y) * (newScale / S.scale);
+      S.scale = newScale;
+      applyTransform();
+    }
+    
+    function redrawCanvas() {
+      var canvas = document.getElementById('draw-canvas');
+      var ctx    = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+      var allStrokes = S.drawStrokes.slice();
+      if (S.currentStroke) allStrokes.push(S.currentStroke);
+    
+      allStrokes.forEach(function(stroke) {
+        if (stroke.points.length < 2) return;
+        ctx.beginPath();
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth   = stroke.width;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        if (stroke.style === 'dashed') ctx.setLineDash([stroke.width * 4, stroke.width * 2]);
+        else if (stroke.style === 'dotted') ctx.setLineDash([stroke.width, stroke.width * 2]);
+        else ctx.setLineDash([]);
+        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+        for (var i = 1; i < stroke.points.length; i++) {
+          ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+    }
+    
+    function eraseNearStrokes(x, y) {
+      var r = 15 / S.scale;
+      S.drawStrokes = S.drawStrokes.filter(function(stroke) {
+        return !stroke.points.some(function(pt) {
+          return Math.hypot(pt.x - x, pt.y - y) < r;
+        });
+      });
+    }
+    
+    function addLabel(x, y) {
+      var text = prompt('テキストを入力してください:');
+      if (text === null || text.trim() === '') return;
+      var id = 'label-' + Date.now();
+      var label = { id: id, x: x, y: y, text: text };
+      S.labels.push(label);
+      renderLabel(label);
+    }
+    
+    function renderLabel(label) {
+      var layer = document.getElementById('label-layer');
+      var div = document.createElement('div');
+      div.className = 'map-label';
+      div.id = label.id;
+      div.textContent = label.text;
+      div.style.left = (label.x * S.scale + S.pan.x) + 'px';
+      div.style.top  = (label.y * S.scale + S.pan.y) + 'px';
+    
+      div.addEventListener('mousedown', function(e) {
+        e.stopPropagation();
+        selectLabel(label);
+        S.labelDragging = label;
+        S.labelDragOff.x = e.clientX - parseFloat(div.style.left);
+        S.labelDragOff.y = e.clientY - parseFloat(div.style.top);
+      });
+      div.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        var newText = prompt('テキストを編集:', label.text);
+        if (newText !== null) {
+          label.text = newText;
+          div.textContent = newText;
+        }
+      });
+    
+      layer.appendChild(div);
+    }
+    
+    function selectLabel(label) {
+      deselectLabel();
+      S.selectedLabel = label;
+      var el = document.getElementById(label.id);
+      if (el) el.classList.add('selected');
+    }
+    
+    function deselectLabel() {
+      if (S.selectedLabel) {
+        var el = document.getElementById(S.selectedLabel.id);
+        if (el) el.classList.remove('selected');
+      }
+      S.selectedLabel = null;
+    }
+    
+    document.addEventListener('mousemove', function(e) {
+      if (!S.labelDragging) return;
+      var label = S.labelDragging;
+      var el = document.getElementById(label.id);
+      if (!el) return;
+      var nx = e.clientX - S.labelDragOff.x;
+      var ny = e.clientY - S.labelDragOff.y;
+      el.style.left = nx + 'px';
+      el.style.top  = ny + 'px';
+      label.x = (nx - S.pan.x) / S.scale;
+      label.y = (ny - S.pan.y) / S.scale;
+    });
+    document.addEventListener('mouseup', function() {
+      S.labelDragging = null;
+    });
+    
+    document.addEventListener('keydown', function(e) {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && S.selectedLabel) {
+        var el = document.getElementById(S.selectedLabel.id);
+        if (el) el.parentNode.removeChild(el);
+        S.labels = S.labels.filter(function(l){ return l.id !== S.selectedLabel.id; });
+        S.selectedLabel = null;
+      }
+    });
+    
+    function updateLabelPositions() {
+      S.labels.forEach(function(label) {
+        var el = document.getElementById(label.id);
+        if (!el) return;
+        el.style.left = (label.x * S.scale + S.pan.x) + 'px';
+        el.style.top  = (label.y * S.scale + S.pan.y) + 'px';
+      });
+    }
+    
+    var _origApplyTransform = applyTransform;
+    applyTransform = function() {
+      _origApplyTransform();
+      updateLabelPositions();
+    };
+    
+    function saveData() {
+      var data = {
+        version:    1,
+        mapMode:    S.mapMode,
+        fillMap:    S.fillMap,
+        visitedMap: S.visitedMap,
+        labels:     S.labels,
+        drawStrokes: S.drawStrokes,
+      };
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'map-data.json';
+      a.click();
+    }
+    
+    function loadData(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          var data = JSON.parse(ev.target.result);
+          S.fillMap    = data.fillMap    || {};
+          S.visitedMap = data.visitedMap || {};
+          S.labels     = data.labels     || [];
+          S.drawStrokes = data.drawStrokes || [];
+    
+          document.getElementById('label-layer').innerHTML = '';
+          S.labels.forEach(function(label) { renderLabel(label); });
+    
+          document.querySelectorAll('.region').forEach(function(el) {
+            var id = el.getAttribute('data-id');
+            if (S.visitedMap[id] !== undefined) {
+              el.setAttribute('fill', S.visitedMap[id] ? '#6aaa64' : '#e8e0d4');
+            } else if (S.fillMap[id]) {
+              el.setAttribute('fill', S.fillMap[id]);
+            }
+          });
+    
+          redrawCanvas();
+        } catch(err) {
+          alert('読み込みに失敗しました: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+    
+    function clearAll() {
+      if (!confirm('すべての編集内容を消去しますか？')) return;
+      S.fillMap    = {};
+      S.visitedMap = {};
+      S.labels     = [];
+      S.drawStrokes = [];
+      document.getElementById('label-layer').innerHTML = '';
+      document.querySelectorAll('.region').forEach(function(el) {
+        el.setAttribute('fill', '#e8e0d4');
+      });
+      redrawCanvas();
+    }
+    
+    function showLoading(show) {
+      var el = document.getElementById('loading-overlay');
+      if (show) {
+        el.classList.remove('hidden');
+        document.getElementById('loading-msg').textContent = '地図データを読み込んでいます…';
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
