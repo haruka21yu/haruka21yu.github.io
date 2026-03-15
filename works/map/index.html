@@ -118,10 +118,8 @@
   </div>
   <div id="map-outer">
     <div id="map-wrap">
-      <svg id="geo-svg" xmlns="http://www.w3.org/2000/svg">
-        <g id="geo-layer"></g>
-        <g id="draw-layer"></g>
-      </svg>
+      <svg id="geo-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      <canvas id="draw-canvas"></canvas>
       <div id="label-layer"></div>
       <div id="loading-overlay">
         <div class="loading-spinner"></div>
@@ -155,10 +153,10 @@
       ['41','佐賀県'],['42','長崎県'],['43','熊本県'],['44','大分県'],['45','宮崎県'],
       ['46','鹿児島県'],['47','沖縄県'],
     ];
-    
+
     var MAP_W = 800;
     var MAP_H = 600;
-    
+
     var S = {
       tool: 'fill',
       mapMode: 'pref',
@@ -182,18 +180,18 @@
       labelType: 'name',
       linePoints: [],
     };
-    
+
     window.onload = function() {
       initPrefSelect();
       resizeMapWrap();
       loadMapMode('pref');
     };
-    
+
     window.onresize = function() {
       resizeMapWrap();
       redrawCanvas();
     };
-    
+
     function resizeMapWrap() {
       var w = Math.min(window.innerWidth - 32, 900);
       var h = Math.round(w * 0.65);
@@ -201,10 +199,13 @@
       wrap.style.width  = w + 'px';
       wrap.style.height = h + 'px';
       MAP_W = w; MAP_H = h;
+      var canvas = document.getElementById('draw-canvas');
+      canvas.width  = w;
+      canvas.height = h;
       document.getElementById('label-layer').style.width  = w + 'px';
       document.getElementById('label-layer').style.height = h + 'px';
     }
-    
+
     function initPrefSelect() {
       var sel = document.getElementById('pref-select');
       PREFS.forEach(function(p) {
@@ -213,7 +214,7 @@
         sel.appendChild(opt);
       });
     }
-    
+
     function changeMapMode() {
       var mode = document.getElementById('map-mode-select').value;
       var prefWrap = document.getElementById('pref-select-wrap');
@@ -226,13 +227,13 @@
         if (code) loadMapMode('pref-detail', code);
       }
     }
-    
+
     function loadPrefDetail() {
       var code = document.getElementById('pref-select').value;
       if (!code) return;
       loadMapMode('pref-detail', code);
     }
-    
+
     function loadMapMode(mode, prefCode) {
       showLoading(true);
       S.mapMode = mode;
@@ -241,7 +242,7 @@
       else if (mode === 'muni')   url = BASE_URL + 's0001/N03-21_210101.json';
       else if (mode === 'city')   url = BASE_URL + 's0001/N03-21_210101_designated_city.json';
       else if (mode === 'pref-detail') url = BASE_URL + 's0010/N03-21_' + prefCode + '_210101.json';
-    
+
       fetch(url)
         .then(function(r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -256,15 +257,14 @@
           document.getElementById('loading-msg').textContent = '読み込みに失敗しました: ' + err.message;
         });
     }
-    
+
     function renderMap() {
-      var svg   = document.getElementById('geo-svg');
-      var layer = document.getElementById('geo-layer');
-      layer.innerHTML = '';
-    
+      var svg = document.getElementById('geo-svg');
+      svg.innerHTML = '';
+
       var features = S.geoData.features || [];
       if (!features.length) return;
-    
+
       var minLon =  999, maxLon = -999, minLat =  999, maxLat = -999;
       features.forEach(function(f) {
         eachCoord(f.geometry, function(lon, lat) {
@@ -274,10 +274,10 @@
           if (lat > maxLat) maxLat = lat;
         });
       });
-    
+
       var midLat = (minLat + maxLat) / 2;
       var lonLatRatio = 1 / Math.cos(midLat * Math.PI / 180);
-      
+
       var pad = 20;
       var rangeX = maxLon - minLon;
       var rangeY = (maxLat - minLat) * lonLatRatio;
@@ -286,30 +286,30 @@
       var sc = Math.min(scaleX, scaleY);
       var offX = pad + ((MAP_W - pad*2) - rangeX * sc) / 2;
       var offY = pad + ((MAP_H - pad*2) - rangeY * sc) / 2;
-      
+
       S.projection = {
         minLon: minLon, minLat: minLat,
         sc: sc, offX: offX, offY: offY,
         maxLat: maxLat, lonLatRatio: lonLatRatio
       };
-    
+
       svg.setAttribute('width',  MAP_W);
       svg.setAttribute('height', MAP_H);
       svg.setAttribute('viewBox', '0 0 ' + MAP_W + ' ' + MAP_H);
-    
+
       applyTransform();
-    
+
       features.forEach(function(f, idx) {
         var props = f.properties || {};
         var id = getRegionId(props, idx);
         var name = getRegionName(props);
         var paths = geomToPaths(f.geometry);
         if (!paths.length) return;
-    
+
         var g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         g.setAttribute('data-id', id);
         g.setAttribute('data-name', name);
-    
+
         paths.forEach(function(d) {
           var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
           path.setAttribute('d', d);
@@ -334,21 +334,21 @@
           });
           g.appendChild(path);
         });
-    
+
         svg.appendChild(g);
       });
-    
+
       resetView();
       updateGeoLabels();
     }
-    
+
     function getRegionId(props, idx) {
       if (props.N03_007 && props.N03_007 !== '') return props.N03_007;
       var name = (props.N03_001 || '') + '_' + (props.N03_003 || '') + '_' + (props.N03_004 || '');
       if (name !== '__') return name;
       return String(idx);
     }
-    
+
     function getRegionName(props) {
       if (props.N03_004) return props.N03_004;
       if (props.N03_003) return props.N03_003;
@@ -356,7 +356,7 @@
       if (props.name)    return props.name;
       return '';
     }
-    
+
     function getRegionFill(id) {
       if (S.tool === 'visited' || S.visitedMap[id]) {
         if (S.visitedMap[id] !== undefined) {
@@ -365,7 +365,7 @@
       }
       return S.fillMap[id] || '#e8e0d4';
     }
-    
+
     function geomToPaths(geom) {
       if (!geom) return [];
       var paths = [];
@@ -378,7 +378,7 @@
       }
       return paths;
     }
-    
+
     function ringsTod(rings) {
       var d = '';
       rings.forEach(function(ring) {
@@ -392,14 +392,14 @@
       });
       return d;
     }
-    
+
     function project(lon, lat) {
       var p = S.projection;
       var x = p.offX + (lon - p.minLon) * p.sc;
       var y = p.offY + (p.maxLat - lat) * p.sc * p.lonLatRatio;
       return [x, y];
     }
-    
+
     function eachCoord(geom, fn) {
       if (!geom) return;
       if (geom.type === 'Polygon') {
@@ -414,26 +414,29 @@
         });
       }
     }
-    
+
     function applyTransform() {
       var svg = document.getElementById('geo-svg');
       svg.style.transformOrigin = '0 0';
       svg.style.transform = 'translate(' + S.pan.x + 'px,' + S.pan.y + 'px) scale(' + S.scale + ')';
+      var canvas = document.getElementById('draw-canvas');
+      canvas.style.transformOrigin = '0 0';
+      canvas.style.transform = 'translate(' + S.pan.x + 'px,' + S.pan.y + 'px) scale(' + S.scale + ')';
     }
-    
+
     function resetView() {
       S.pan   = { x: 0, y: 0 };
       S.scale = 1;
       applyTransform();
       redrawCanvas();
     }
-    
+
     function zoom(factor) {
       S.scale = Math.min(100, Math.max(0.3, S.scale * factor));
       applyTransform();
       redrawCanvas();
     }
-    
+
     function setTool(t) {
       if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
         S.linePoints = [];
@@ -446,41 +449,41 @@
       });
       var wrap = document.getElementById('map-wrap');
       wrap.className = 'mode-' + (t.startsWith('draw') ? 'draw' : t);
-    
+
       var isAnyDraw = t === 'draw' || t === 'draw-line' || t === 'draw-curve';
       document.getElementById('draw-settings').style.display    = isAnyDraw ? '' : 'none';
       document.getElementById('fill-color-group').style.display = t === 'fill' ? '' : 'none';
       document.getElementById('visited-legend').style.display   = t === 'visited' ? '' : 'none';
       deselectLabel();
     }
-    
+
     function onRegionClick(e) {
       if (S.isDragging) return;
       if (S.tool !== 'fill' && S.tool !== 'visited') return;
       var id = e.target.getAttribute('data-id');
       snapshot();
-    
+
       if (S.tool === 'fill') {
         var color = document.getElementById('fill-color').value;
         S.fillMap[id] = color;
       } else if (S.tool === 'visited') {
         S.visitedMap[id] = !S.visitedMap[id];
       }
-    
+
       document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
         el.setAttribute('fill', S.tool === 'visited'
           ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
           : S.fillMap[id]);
       });
     }
-    
+
     function clearSelectedFill() {
       S.fillMap = {};
       document.querySelectorAll('.region').forEach(function(el) {
         el.setAttribute('fill', '#e8e0d4');
       });
     }
-    
+
     var mapWrap = null;
     window.addEventListener('DOMContentLoaded', function() {
       mapWrap = document.getElementById('map-wrap');
@@ -510,7 +513,7 @@
         redrawCanvas();
       });
     });
-    
+
     function getMapXY(e) {
       var rect = document.getElementById('map-wrap').getBoundingClientRect();
       return {
@@ -518,24 +521,24 @@
         y: (e.clientY - rect.top  - S.pan.y) / S.scale,
       };
     }
-    
+
     function getClientXY(e) {
       var rect = document.getElementById('map-wrap').getBoundingClientRect();
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
-    
+
     function onMapDown(e) {
       S.isDragging = false;
       var cl = getClientXY(e);
       S.dragStart = { x: cl.x, y: cl.y };
-    
+
       if (S.tool === 'pan') {
         S.panStart = { x: S.pan.x, y: S.pan.y };
         document.getElementById('map-wrap').classList.add('panning');
         S._panning = true;
         return;
       }
-      
+
       if (S.tool === 'draw') {
         var xy = getMapXY(e);
         var color = document.getElementById('draw-color').value;
@@ -550,26 +553,26 @@
         S._lineMousePos = xy2;
         return;
       }
-    
+
       if (S.tool === 'erase-draw') {
         S._erasing = true;
         return;
       }
     }
-    
+
     function onMapMove(e) {
       var cl = getClientXY(e);
       var dx = cl.x - S.dragStart.x;
       var dy = cl.y - S.dragStart.y;
       if (Math.abs(dx) > 3 || Math.abs(dy) > 3) S.isDragging = true;
-    
+
       if (S._panning) {
         S.pan.x = S.panStart.x + dx;
         S.pan.y = S.panStart.y + dy;
         applyTransform();
         return;
       }
-    
+
       if (S._drawing && S.currentStroke) {
         var xy = getMapXY(e);
         S.currentStroke.points.push(xy);
@@ -581,7 +584,7 @@
         redrawCanvas();
         return;
       }
-    
+
       if (S._erasing) {
         var exy = getMapXY(e);
         eraseNearStrokes(exy.x, exy.y);
@@ -589,7 +592,7 @@
         return;
       }
     }
-    
+
     function onMapUp(e) {
       document.getElementById('map-wrap').classList.remove('panning');
       if (S._drawing && S.currentStroke && S.currentStroke.points.length > 1) {
@@ -602,7 +605,7 @@
       S._erasing = false;
       redrawCanvas();
     }
-    
+
     function onMapClick(e) {
       if (S.isDragging) return;
       if (S.tool === 'text') {
@@ -617,7 +620,7 @@
         return;
       }
     }
-    
+
     function onWheel(e) {
       e.preventDefault();
       var factor = e.deltaY < 0 ? 1.12 : 0.88;
@@ -630,88 +633,64 @@
       S.scale = newScale;
       applyTransform();
     }
-    
+
     function redrawCanvas() {
-      var layer = document.getElementById('draw-layer');
-      layer.innerHTML = '';
-    
+      var canvas = document.getElementById('draw-canvas');
+      var ctx    = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       var allStrokes = S.drawStrokes.slice();
       if (S.currentStroke) allStrokes.push(S.currentStroke);
-    
+
       allStrokes.forEach(function(stroke) {
         if (stroke.points.length < 2) return;
-        var el = buildStrokeSVG(stroke, false);
-        if (el) layer.appendChild(el);
+        ctx.beginPath();
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth   = stroke.width;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        setLineDash(ctx, stroke);
+        if (stroke.type === 'curve') {
+          drawCurve(ctx, stroke.points);
+        } else {
+          ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+          for (var i = 1; i < stroke.points.length; i++)
+            ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
       });
-    
+
       if ((S.tool === 'draw-line' || S.tool === 'draw-curve') &&
           S.linePoints.length > 0 && S._lineMousePos) {
-        var previewPts = S.linePoints.concat([S._lineMousePos]);
         var color = document.getElementById('draw-color').value;
         var width = parseInt(document.getElementById('draw-width').value);
-        var style = document.getElementById('draw-style').value;
-        var preview = buildStrokeSVG(
-          { color: color, width: width, style: style,
-            type: S.tool === 'draw-line' ? 'line' : 'curve',
-            points: previewPts }, true);
-        if (preview) layer.appendChild(preview);
-    
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = width;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        ctx.setLineDash([4, 4]);
+        var previewPts = S.linePoints.concat([S._lineMousePos]);
+        if (S.tool === 'draw-curve' && previewPts.length >= 2) {
+          drawCurve(ctx, previewPts);
+        } else {
+          ctx.moveTo(previewPts[0].x, previewPts[0].y);
+          for (var j = 1; j < previewPts.length; j++)
+            ctx.lineTo(previewPts[j].x, previewPts[j].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
         S.linePoints.forEach(function(pt) {
-          var circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-          circle.setAttribute('cx', pt.x);
-          circle.setAttribute('cy', pt.y);
-          circle.setAttribute('r', 4 / S.scale);
-          circle.setAttribute('fill', color);
-          layer.appendChild(circle);
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 4 / S.scale, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
         });
       }
     }
-    
-    function buildStrokeSVG(stroke, isPreview) {
-      if (stroke.points.length < 2) return null;
-      var pts = stroke.points;
-      var d = '';
-    
-      if (stroke.type === 'curve' && pts.length >= 2) {
-        d = 'M' + pts[0].x + ',' + pts[0].y;
-        if (pts.length === 2) {
-          d += ' L' + pts[1].x + ',' + pts[1].y;
-        } else {
-          for (var i = 0; i < pts.length - 1; i++) {
-            var p0 = pts[i === 0 ? 0 : i - 1];
-            var p1 = pts[i];
-            var p2 = pts[i + 1];
-            var p3 = pts[i + 2 < pts.length ? i + 2 : pts.length - 1];
-            var cp1x = p1.x + (p2.x - p0.x) / 6;
-            var cp1y = p1.y + (p2.y - p0.y) / 6;
-            var cp2x = p2.x - (p3.x - p1.x) / 6;
-            var cp2y = p2.y - (p3.y - p1.y) / 6;
-            d += ' C' + cp1x + ',' + cp1y + ' ' + cp2x + ',' + cp2y + ' ' + p2.x + ',' + p2.y;
-          }
-        }
-      } else {
-        d = 'M' + pts[0].x + ',' + pts[0].y;
-        for (var j = 1; j < pts.length; j++)
-          d += ' L' + pts[j].x + ',' + pts[j].y;
-      }
-    
-      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('d', d);
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', stroke.color);
-      path.setAttribute('stroke-width', stroke.width / S.scale);
-      path.setAttribute('stroke-linecap', 'round');
-      path.setAttribute('stroke-linejoin', 'round');
-    
-      if (isPreview) path.setAttribute('stroke-dasharray', '4,' + 4 / S.scale);
-      else if (stroke.style === 'dashed')
-        path.setAttribute('stroke-dasharray', stroke.width * 4 / S.scale + ',' + stroke.width * 2 / S.scale);
-      else if (stroke.style === 'dotted')
-        path.setAttribute('stroke-dasharray', stroke.width / S.scale + ',' + stroke.width * 2 / S.scale);
-    
-      return path;
-    }
-    
+
     function setLineDash(ctx, stroke) {
       if (stroke.style === 'dashed')
         ctx.setLineDash([stroke.width * 4, stroke.width * 2]);
@@ -720,7 +699,7 @@
       else
         ctx.setLineDash([]);
     }
-    
+
     function drawCurve(ctx, pts) {
       if (pts.length < 2) return;
       ctx.moveTo(pts[0].x, pts[0].y);
@@ -740,7 +719,7 @@
         ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
       }
     }
-    
+
     function eraseNearStrokes(x, y) {
       var r = 15 / S.scale;
       S.drawStrokes = S.drawStrokes.filter(function(stroke) {
@@ -749,7 +728,7 @@
         });
       });
     }
-    
+
     function addLabel(x, y) {
       var text = prompt('テキストを入力してください:');
       if (text === null || text.trim() === '') return;
@@ -758,7 +737,7 @@
       S.labels.push(label);
       renderLabel(label);
     }
-    
+
     function renderLabel(label) {
       var layer = document.getElementById('label-layer');
       var div = document.createElement('div');
@@ -767,7 +746,7 @@
       div.textContent = label.text;
       div.style.left = (label.x * S.scale + S.pan.x) + 'px';
       div.style.top  = (label.y * S.scale + S.pan.y) + 'px';
-    
+
       div.addEventListener('mousedown', function(e) {
         e.stopPropagation();
         selectLabel(label);
@@ -783,17 +762,17 @@
           div.textContent = newText;
         }
       });
-    
+
       layer.appendChild(div);
     }
-    
+
     function selectLabel(label) {
       deselectLabel();
       S.selectedLabel = label;
       var el = document.getElementById(label.id);
       if (el) el.classList.add('selected');
     }
-    
+
     function deselectLabel() {
       if (S.selectedLabel) {
         var el = document.getElementById(S.selectedLabel.id);
@@ -801,7 +780,7 @@
       }
       S.selectedLabel = null;
     }
-    
+
     document.addEventListener('mousemove', function(e) {
       if (!S.labelDragging) return;
       var label = S.labelDragging;
@@ -817,7 +796,7 @@
     document.addEventListener('mouseup', function() {
       S.labelDragging = null;
     });
-    
+
     document.addEventListener('keydown', function(e) {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); return; }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); return; }
@@ -828,7 +807,7 @@
         S.selectedLabel = null;
       }
     });
-    
+
     function updateLabelPositions() {
       S.labels.forEach(function(label) {
         var el = document.getElementById(label.id);
@@ -837,14 +816,14 @@
         el.style.top  = (label.y * S.scale + S.pan.y) + 'px';
       });
     }
-    
+
     var _origApplyTransform = applyTransform;
     applyTransform = function() {
       _origApplyTransform();
       updateLabelPositions();
       updateGeoLabels();
     };
-    
+
     function saveData() {
       var data = {
         version:    1,
@@ -860,7 +839,7 @@
       a.download = 'map-data.json';
       a.click();
     }
-    
+
     function loadData(e) {
       var file = e.target.files[0];
       if (!file) return;
@@ -872,10 +851,10 @@
           S.visitedMap = data.visitedMap || {};
           S.labels     = data.labels     || [];
           S.drawStrokes = data.drawStrokes || [];
-    
+
           document.getElementById('label-layer').innerHTML = '';
           S.labels.forEach(function(label) { renderLabel(label); });
-    
+
           document.querySelectorAll('.region').forEach(function(el) {
             var id = el.getAttribute('data-id');
             if (S.visitedMap[id] !== undefined) {
@@ -884,7 +863,7 @@
               el.setAttribute('fill', S.fillMap[id]);
             }
           });
-    
+
           redrawCanvas();
         } catch(err) {
           alert('読み込みに失敗しました: ' + err.message);
@@ -893,7 +872,7 @@
       reader.readAsText(file);
       e.target.value = '';
     }
-    
+
     function clearAll() {
       if (!confirm('すべての編集内容を消去しますか？')) return;
       snapshot();
@@ -917,7 +896,7 @@
       S.future = [];
       if (S.history.length > 50) S.history.shift();
     }
-    
+
     function applySnapshot(snap) {
       S.fillMap    = snap.fillMap;
       S.visitedMap = snap.visitedMap;
@@ -934,7 +913,7 @@
       });
       redrawCanvas();
     }
-    
+
     function undo() {
       if (!S.history.length) return;
       S.future.push({
@@ -944,7 +923,7 @@
       });
       applySnapshot(S.history.pop());
     }
-    
+
     function redo() {
       if (!S.future.length) return;
       S.history.push({
@@ -963,12 +942,12 @@
       });
       updateGeoLabels();
     }
-    
+
     function updateGeoLabels() {
-      var layer = document.getElementById('geo-layer');
-      layer.querySelectorAll('text.geo-label').forEach(function(el){ el.parentNode.removeChild(el); });
+      var svg = document.getElementById('geo-svg');
+      svg.querySelectorAll('text.geo-label').forEach(function(el){ el.parentNode.removeChild(el); });
       if (S.labelType === 'none' || !S.geoData) return;
-    
+
       var features = S.geoData.features || [];
       features.forEach(function(f) {
         var props = f.properties || {};
@@ -979,7 +958,7 @@
           name = props.N03_003 || props.N03_001 || '';
         }
         if (!name) return;
-    
+
         var centroid = getCentroid(f.geometry);
         if (!centroid) return;
         var xy = project(centroid[0], centroid[1]);
@@ -988,7 +967,7 @@
         var screenY = xy[1] * S.scale + S.pan.y;
         if (screenX < -50 || screenX > MAP_W + 50 ||
             screenY < -50 || screenY > MAP_H + 50) return;
-    
+
         var fontSize;
         if (S.scale < 2)       fontSize = 18;
         else if (S.scale < 8)  fontSize = 16;
@@ -1000,10 +979,10 @@
         text.setAttribute('y', xy[1].toFixed(1));
         text.setAttribute('font-size', fontSize.toFixed(1));
         text.textContent = name;
-        layer.appendChild(text);
+        svg.appendChild(text);
       });
     }
-    
+
     function getCentroid(geom) {
       if (!geom) return null;
       var sumX = 0, sumY = 0, count = 0;
@@ -1022,7 +1001,7 @@
       if (!count) return null;
       return [sumX / count, sumY / count];
     }
-    
+
     function showLoading(show) {
       var el = document.getElementById('loading-overlay');
       if (show) {
