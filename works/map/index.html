@@ -445,9 +445,8 @@
     function onRegionClick(e) {
       if (S.isDragging) return;
       if (S.tool !== 'fill' && S.tool !== 'visited') return;
+      var id = e.target.getAttribute('data-id');
       snapshot();
-      var id   = e.target.getAttribute('data-id');
-      var name = e.target.getAttribute('data-name');
     
       if (S.tool === 'fill') {
         var color = document.getElementById('fill-color').value;
@@ -456,12 +455,10 @@
         S.visitedMap[id] = !S.visitedMap[id];
       }
     
-      document.querySelectorAll('[data-id="' + id + '"]').forEach(function(el) {
-        if (el.tagName === 'path') {
-          el.setAttribute('fill', S.tool === 'visited'
-            ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
-            : S.fillMap[id]);
-        }
+      document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
+        el.setAttribute('fill', S.tool === 'visited'
+          ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
+          : S.fillMap[id]);
       });
     }
     
