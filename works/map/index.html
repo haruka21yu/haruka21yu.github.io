@@ -956,7 +956,7 @@
         if (screenX < -50 || screenX > MAP_W + 50 ||
             screenY < -50 || screenY > MAP_H + 50) return;
     
-        var fontSize = Math.max(1.5, Math.min(8, 4 / Math.pow(S.scale, 0.4)));
+        var fontSize = Math.max(1.5, Math.min(9, 9 / S.scale));
         var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('class', 'geo-label');
         text.setAttribute('x', xy[0].toFixed(1));
