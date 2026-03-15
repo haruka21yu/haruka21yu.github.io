@@ -2040,7 +2040,7 @@ select {
   padding: 0rem 6vw 0rem;
 }
 
-#pref-select-wrap { display: none; }
+#pref-select-wrap { display: none; align-items: center; gap: 4px; }
 
 #visited-legend {
   display: flex; gap: 10px; align-items: center;
