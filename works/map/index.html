@@ -957,11 +957,10 @@
             screenY < -50 || screenY > MAP_H + 50) return;
     
         var fontSize;
-        if (S.scale < 2)        fontSize = 18;
-        else if (S.scale < 8)   fontSize = 14;
-        else if (S.scale < 16)  fontSize = 10;
-        else if (S.scale < 100)  fontSize = 7;
-        else                    fontSize = 5;
+        if (S.scale < 2)       fontSize = 18;
+        else if (S.scale < 8)  fontSize = 14;
+        else if (S.scale < 16) fontSize = 10;
+        else                   fontSize = 7;
         fontSize = fontSize / S.scale;
         var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('class', 'geo-label');
