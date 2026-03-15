@@ -1932,6 +1932,7 @@ input.invalid, select.invalid, textarea.invalid {
 .tool-group {
   display: flex; gap: 4px; align-items: center;
   padding-right: 10px; border-right: 1px solid var(--line);
+  padding: 0rem 6vw 0rem;
 }
 
 .tool-group:last-child { border-right: none; padding-right: 0; }
@@ -1960,7 +1961,7 @@ select {
   border: 1px solid var(--line); background: var(--bg); color: var(--ink);
 }
 
-#map-outer { position: relative; }
+#map-outer { position: relative; padding: 0rem 6vw 0rem; }
 
 #map-wrap {
   position: relative; overflow: hidden;
@@ -2036,6 +2037,7 @@ select {
 #credit {
   font-size: 10px; color: var(--muted); margin-top: 6px;
   line-height: 1.6;
+  padding: 0rem 6vw 0rem;
 }
 
 #pref-select-wrap { display: none; }
