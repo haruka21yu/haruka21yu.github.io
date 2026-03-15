@@ -71,7 +71,9 @@
       <button class="tool-btn" id="btn-pan"   onclick="setTool('pan')">✋ 移動</button>
       <button class="tool-btn active" id="btn-fill"  onclick="setTool('fill')">🪣 塗り</button>
       <button class="tool-btn" id="btn-visited" onclick="setTool('visited')">📍 訪問</button>
-      <button class="tool-btn" id="btn-draw"  onclick="setTool('draw')">✏️ 線</button>
+      <button class="tool-btn" id="btn-draw" onclick="setTool('draw')">✏️ 手書き</button>
+      <button class="tool-btn" id="btn-draw-line" onclick="setTool('draw-line')">📏 直線</button>
+      <button class="tool-btn" id="btn-draw-curve" onclick="setTool('draw-curve')">〜 曲線</button>
       <button class="tool-btn" id="btn-text"  onclick="setTool('text')">💬 文字</button>
       <button class="tool-btn" id="btn-erase-draw" onclick="setTool('erase-draw')">🧹 線消</button>
     </div>
@@ -96,6 +98,12 @@
       <button class="tool-btn" onclick="zoom(1.25)">＋</button>
       <button class="tool-btn" onclick="zoom(0.8)">－</button>
       <button class="tool-btn" onclick="resetView()">全体</button>
+    </div>
+    <div class="tool-group">
+      <label>地名表示</label>
+      <button class="tool-btn active" id="btn-label-name" onclick="toggleLabelType('name')">名前</button>
+      <button class="tool-btn" id="btn-label-gun" onclick="toggleLabelType('gun')">郡名</button>
+      <button class="tool-btn" id="btn-label-none" onclick="toggleLabelType('none')">非表示</button>
     </div>
     <div class="tool-group">
       <button class="tool-btn" onclick="saveData()">💾 保存</button>
@@ -169,6 +177,8 @@
       projection: null,
       history: [],
       future:  [],
+      labelType: 'name',
+      linePoints: [],
     };
     
     window.onload = function() {
@@ -317,6 +327,7 @@
       });
     
       resetView();
+      updateGeoLabels();
     }
     
     function getRegionId(props, idx) {
@@ -412,18 +423,22 @@
     }
     
     function setTool(t) {
+      if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+        S.linePoints = [];
+        redrawCanvas();
+      }
       S.tool = t;
-      ['pan','fill','visited','draw','text','erase-draw'].forEach(function(name) {
+      ['pan','fill','visited','draw','draw-line','draw-curve','text','erase-draw'].forEach(function(name) {
         var btn = document.getElementById('btn-' + name);
         if (btn) btn.classList.toggle('active', name === t);
       });
       var wrap = document.getElementById('map-wrap');
-      wrap.className = 'mode-' + t;
+      wrap.className = 'mode-' + (t.startsWith('draw') ? 'draw' : t);
     
-      document.getElementById('draw-settings').style.display   = (t === 'draw') ? '' : 'none';
-      document.getElementById('fill-color-group').style.display = (t === 'fill') ? '' : 'none';
-      document.getElementById('visited-legend').style.display   = (t === 'visited') ? '' : 'none';
-    
+      var isAnyDraw = t === 'draw' || t === 'draw-line' || t === 'draw-curve';
+      document.getElementById('draw-settings').style.display    = isAnyDraw ? '' : 'none';
+      document.getElementById('fill-color-group').style.display = t === 'fill' ? '' : 'none';
+      document.getElementById('visited-legend').style.display   = t === 'visited' ? '' : 'none';
       deselectLabel();
     }
     
@@ -469,6 +484,22 @@
       mapWrap.addEventListener('touchend',   function(e){ onMapUp(e.changedTouches[0]); });
       mapWrap.addEventListener('wheel', onWheel, {passive:false});
       mapWrap.addEventListener('click', onMapClick);
+      mapWrap.addEventListener('dblclick', function(e) {
+        if (S.tool !== 'draw-line' && S.tool !== 'draw-curve') return;
+        if (S.linePoints.length < 2) { S.linePoints = []; redrawCanvas(); return; }
+        var color = document.getElementById('draw-color').value;
+        var width = parseInt(document.getElementById('draw-width').value);
+        var style = document.getElementById('draw-style').value;
+        snapshot();
+        S.drawStrokes.push({
+          color: color, width: width, style: style,
+          type: S.tool === 'draw-line' ? 'line' : 'curve',
+          points: S.linePoints.slice(),
+        });
+        S.linePoints = [];
+        S._lineMousePos = null;
+        redrawCanvas();
+      });
     });
     
     function getMapXY(e) {
@@ -495,14 +526,19 @@
         S._panning = true;
         return;
       }
-    
+      
       if (S.tool === 'draw') {
         var xy = getMapXY(e);
         var color = document.getElementById('draw-color').value;
         var width = parseInt(document.getElementById('draw-width').value);
         var style = document.getElementById('draw-style').value;
-        S.currentStroke = { color: color, width: width, style: style, points: [xy] };
+        S.currentStroke = { color: color, width: width, style: style, type: 'free', points: [xy] };
         S._drawing = true;
+        return;
+      }
+      if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+        var xy2 = getMapXY(e);
+        S._lineMousePos = xy2;
         return;
       }
     
@@ -528,6 +564,11 @@
       if (S._drawing && S.currentStroke) {
         var xy = getMapXY(e);
         S.currentStroke.points.push(xy);
+        redrawCanvas();
+        return;
+      }
+      if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+        S._lineMousePos = getMapXY(e);
         redrawCanvas();
         return;
       }
@@ -558,6 +599,13 @@
       if (S.tool === 'text') {
         var xy = getMapXY(e);
         addLabel(xy.x, xy.y);
+        return;
+      }
+      if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+        var xy2 = getMapXY(e);
+        S.linePoints.push(xy2);
+        redrawCanvas();
+        return;
       }
     }
     
@@ -589,16 +637,75 @@
         ctx.lineWidth   = stroke.width;
         ctx.lineCap     = 'round';
         ctx.lineJoin    = 'round';
-        if (stroke.style === 'dashed') ctx.setLineDash([stroke.width * 4, stroke.width * 2]);
-        else if (stroke.style === 'dotted') ctx.setLineDash([stroke.width, stroke.width * 2]);
-        else ctx.setLineDash([]);
-        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-        for (var i = 1; i < stroke.points.length; i++) {
-          ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+        setLineDash(ctx, stroke);
+        if (stroke.type === 'curve') {
+          drawCurve(ctx, stroke.points);
+        } else {
+          ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+          for (var i = 1; i < stroke.points.length; i++)
+            ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
         }
         ctx.stroke();
         ctx.setLineDash([]);
       });
+    
+      if ((S.tool === 'draw-line' || S.tool === 'draw-curve') &&
+          S.linePoints.length > 0 && S._lineMousePos) {
+        var color = document.getElementById('draw-color').value;
+        var width = parseInt(document.getElementById('draw-width').value);
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth   = width;
+        ctx.lineCap     = 'round';
+        ctx.lineJoin    = 'round';
+        ctx.setLineDash([4, 4]);
+        var previewPts = S.linePoints.concat([S._lineMousePos]);
+        if (S.tool === 'draw-curve' && previewPts.length >= 2) {
+          drawCurve(ctx, previewPts);
+        } else {
+          ctx.moveTo(previewPts[0].x, previewPts[0].y);
+          for (var j = 1; j < previewPts.length; j++)
+            ctx.lineTo(previewPts[j].x, previewPts[j].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    
+        S.linePoints.forEach(function(pt) {
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, 4 / S.scale, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+        });
+      }
+    }
+    
+    function setLineDash(ctx, stroke) {
+      if (stroke.style === 'dashed')
+        ctx.setLineDash([stroke.width * 4, stroke.width * 2]);
+      else if (stroke.style === 'dotted')
+        ctx.setLineDash([stroke.width, stroke.width * 2]);
+      else
+        ctx.setLineDash([]);
+    }
+    
+    function drawCurve(ctx, pts) {
+      if (pts.length < 2) return;
+      ctx.moveTo(pts[0].x, pts[0].y);
+      if (pts.length === 2) {
+        ctx.lineTo(pts[1].x, pts[1].y);
+        return;
+      }
+      for (var i = 0; i < pts.length - 1; i++) {
+        var p0 = pts[i === 0 ? 0 : i - 1];
+        var p1 = pts[i];
+        var p2 = pts[i + 1];
+        var p3 = pts[i + 2 < pts.length ? i + 2 : pts.length - 1];
+        var cp1x = p1.x + (p2.x - p0.x) / 6;
+        var cp1y = p1.y + (p2.y - p0.y) / 6;
+        var cp2x = p2.x - (p3.x - p1.x) / 6;
+        var cp2y = p2.y - (p3.y - p1.y) / 6;
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y);
+      }
     }
     
     function eraseNearStrokes(x, y) {
@@ -812,6 +919,63 @@
         drawStrokes: JSON.parse(JSON.stringify(S.drawStrokes)),
       });
       applySnapshot(S.future.pop());
+    }
+
+    function toggleLabelType(type) {
+      S.labelType = type;
+      ['name','gun','none'].forEach(function(t) {
+        var btn = document.getElementById('btn-label-' + t);
+        if (btn) btn.classList.toggle('active', t === type);
+      });
+      updateGeoLabels();
+    }
+    
+    function updateGeoLabels() {
+      var svg = document.getElementById('geo-svg');
+      svg.querySelectorAll('text.geo-label').forEach(function(el){ el.parentNode.removeChild(el); });
+      if (S.labelType === 'none' || !S.geoData) return;
+    
+      var features = S.geoData.features || [];
+      features.forEach(function(f) {
+        var props = f.properties || {};
+        var name = '';
+        if (S.labelType === 'name') {
+          name = props.N03_004 || props.N03_003 || props.N03_001 || props.name || '';
+        } else if (S.labelType === 'gun') {
+          name = props.N03_003 || props.N03_001 || '';
+        }
+        if (!name) return;
+    
+        var centroid = getCentroid(f.geometry);
+        if (!centroid) return;
+        var xy = project(centroid[0], centroid[1]);
+    
+        var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('class', 'geo-label');
+        text.setAttribute('x', xy[0].toFixed(1));
+        text.setAttribute('y', xy[1].toFixed(1));
+        text.textContent = name;
+        svg.appendChild(text);
+      });
+    }
+    
+    function getCentroid(geom) {
+      if (!geom) return null;
+      var sumX = 0, sumY = 0, count = 0;
+      var addRing = function(ring) {
+        ring.forEach(function(pt){ sumX += pt[0]; sumY += pt[1]; count++; });
+      };
+      if (geom.type === 'Polygon') {
+        addRing(geom.coordinates[0]);
+      } else if (geom.type === 'MultiPolygon') {
+        var maxLen = 0, best = null;
+        geom.coordinates.forEach(function(poly){
+          if (poly[0].length > maxLen) { maxLen = poly[0].length; best = poly[0]; }
+        });
+        if (best) addRing(best);
+      }
+      if (!count) return null;
+      return [sumX / count, sumY / count];
     }
     
     function showLoading(show) {
