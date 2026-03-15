@@ -207,8 +207,15 @@
     
     function changeMapMode() {
       var mode = document.getElementById('map-mode-select').value;
-      document.getElementById('pref-select-wrap').style.display = mode === 'pref-detail' ? '' : 'none';
-      if (mode !== 'pref-detail') loadMapMode(mode);
+      var prefWrap = document.getElementById('pref-select-wrap');
+      prefWrap.style.display = mode === 'pref-detail' ? 'flex' : 'none';
+      S.mapMode = mode;
+      if (mode !== 'pref-detail') {
+        loadMapMode(mode);
+      } else {
+        var code = document.getElementById('pref-select').value;
+        if (code) loadMapMode('pref-detail', code);
+      }
     }
     
     function loadPrefDetail() {
@@ -260,7 +267,7 @@
     
       var pad = 20;
       var rangeX = maxLon - minLon;
-      var rangeY = maxLat - minLat;
+      var rangeY = (maxLat - minLat) * lonLatRatio;
       var scaleX = (MAP_W - pad * 2) / rangeX;
       var scaleY = (MAP_H - pad * 2) / rangeY;
       var sc = Math.min(scaleX, scaleY);
@@ -356,7 +363,7 @@
     function project(lon, lat) {
       var p = S.projection;
       var x = p.offX + (lon - p.minLon) * p.sc;
-      var y = p.offY + (p.maxLat - lat) * p.sc;
+      var y = p.offY + (p.maxLat - lat) * p.sc * p.lonLatRatio;
       return [x, y];
     }
     
