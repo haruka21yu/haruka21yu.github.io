@@ -417,7 +417,7 @@
     }
     
     function zoom(factor) {
-      S.scale = Math.min(20, Math.max(0.3, S.scale * factor));
+      S.scale = Math.min(100, Math.max(0.3, S.scale * factor));
       applyTransform();
       redrawCanvas();
     }
@@ -615,7 +615,7 @@
       var rect = document.getElementById('map-wrap').getBoundingClientRect();
       var cx = e.clientX - rect.left;
       var cy = e.clientY - rect.top;
-      var newScale = Math.min(20, Math.max(0.3, S.scale * factor));
+      var newScale = Math.min(100, Math.max(0.3, S.scale * factor));
       S.pan.x = cx - (cx - S.pan.x) * (newScale / S.scale);
       S.pan.y = cy - (cy - S.pan.y) * (newScale / S.scale);
       S.scale = newScale;
