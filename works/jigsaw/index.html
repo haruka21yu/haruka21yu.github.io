@@ -320,6 +320,15 @@
       tWrap.style.height = Math.min(G.trayH, G.trayPieceH * 3 + TRAY_PAD * 4) + 'px';
     }
 
+    function getTrayPos(idx) {
+      var col = idx % G.trayColCount;
+      var row = Math.floor(idx / G.trayColCount);
+      return {
+        x: TRAY_PAD + col * (G.trayPieceW + TRAY_PAD),
+        y: TRAY_PAD + row * (G.trayPieceH + TRAY_PAD),
+      };
+    }
+    
     function reindexTray() {
       var tPieces = G.pieces.filter(function(p){ return p.inTray; });
       tPieces.forEach(function(p, i){ p.trayIdx = i; });
