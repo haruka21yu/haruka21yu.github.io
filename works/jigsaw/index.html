@@ -317,7 +317,8 @@
       tCanvas.width  = G.trayW;
       tCanvas.height = G.trayH;
       tWrap.style.width  = visW + 'px';
-      tWrap.style.height = Math.min(G.trayH, G.trayPieceH * 3 + TRAY_PAD * 4) + 'px';
+      tWrap.style.height   = Math.min(G.trayH, G.trayPieceH * 3 + TRAY_PAD * 4) + 'px';
+      tWrap.style.overflowY = 'auto';
     }
 
     function getTrayPos(idx) {
