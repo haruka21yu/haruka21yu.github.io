@@ -951,7 +951,7 @@
         if (!centroid) return;
         var xy = project(centroid[0], centroid[1]);
     
-        var fontSize = Math.max(3, Math.min(20, 9 / S.scale));
+        var fontSize = Math.max(1.5, Math.min(8, 6 / Math.pow(S.scale, 0.4)));
         var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('class', 'geo-label');
         text.setAttribute('x', xy[0].toFixed(1));
