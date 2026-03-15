@@ -320,6 +320,18 @@
           path.setAttribute('stroke', '#a09080');
           path.setAttribute('stroke-width', S.mapMode === 'pref' ? '0.8' : '0.4');
           path.addEventListener('click', onRegionClick);
+          path.addEventListener('mouseenter', function() {
+            var id = this.getAttribute('data-id');
+            document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
+              el.style.filter = 'brightness(0.92)';
+            });
+          });
+          path.addEventListener('mouseleave', function() {
+            var id = this.getAttribute('data-id');
+            document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
+              el.style.filter = '';
+            });
+          });
           g.appendChild(path);
         });
     
