@@ -193,7 +193,7 @@
     };
 
     function resizeMapWrap() {
-      var w = Math.min(window.innerWidth - 16, 900);
+      var w = document.body.clientWidth - 32;
       var h = Math.round(w * 0.65);
       var wrap = document.getElementById('map-wrap');
       wrap.style.width  = w + 'px';
