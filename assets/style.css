@@ -1978,7 +1978,12 @@ select {
   border: 1px solid var(--line); background: var(--bg); color: var(--ink);
 }
 
-#map-outer { position: relative; padding: 0rem 6vw 0rem; }
+#map-outer {
+  position: relative;
+  padding: 0rem 6vw 0rem;
+  width: 100%;
+  overflow-x: hidden;
+}
 
 #map-wrap {
   position: relative; overflow: hidden;
