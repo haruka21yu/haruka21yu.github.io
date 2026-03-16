@@ -839,7 +839,10 @@
     
     function autoCheck(){
       var any=C.sGrid.reduce(function(s,row){return s+row.filter(function(v){return v==='filled';}).length;},0);
-      if(any>0&&isSolved()) setTimeout(function(){show('complete-msg');},200);
+      if(any>0&&isSolved()){
+        clearInterval(C.timerInterval);
+        setTimeout(function(){show('complete-msg');},200);
+      }
     }
     
     function isSolved(){
