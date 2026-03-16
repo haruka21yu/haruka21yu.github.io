@@ -1946,6 +1946,11 @@ input.invalid, select.invalid, textarea.invalid {
   background: var(--muted);
 }
 
+#toolbar {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .tool-group {
   display: flex; gap: 4px; align-items: center;
   padding-right: 10px; border-right: 1px solid var(--line);
@@ -1960,6 +1965,8 @@ input.invalid, select.invalid, textarea.invalid {
   padding: 4px 9px; font-size: 12px; font-family: inherit;
   border: 1px solid var(--line); background: var(--bg); color: var(--ink);
   cursor: pointer; white-space: nowrap; line-height: 1.4;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .tool-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
