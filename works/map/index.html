@@ -538,37 +538,23 @@
       }, {passive:false});
 
       mapWrap.addEventListener('touchend', function(e){
+        e.preventDefault();
         lastPinchDist = null;
-        if (e.touches.length === 0) onMapUp(e.changedTouches[0]);
         if (e.touches.length === 0) {
-          if (S.tool === 'fill' || S.tool === 'visited') {
-            var touch = e.changedTouches[0];
-            var element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (element && element.classList.contains('region')) {
-              var clickEvent = new MouseEvent('click', {
-                bubbles: true,
-                cancelable: true,
-                view: window,
-                clientX: touch.clientX,
-                clientY: touch.clientY
-              });
-              element.dispatchEvent(clickEvent);
-            }
-          }
-          else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
-            var rect = document.getElementById('map-wrap').getBoundingClientRect();
+          var touch = e.changedTouches[0];
+          
+          if (S.tool === 'fill' || S.tool === 'visited' || S.tool === 'draw-line' || S.tool === 'draw-curve') {
             var fakeEvent = {
               clientX: touch.clientX,
               clientY: touch.clientY,
               preventDefault: function() {}
             };
             onMapClick(fakeEvent);
-          }
-          else {
-            onMapUp(e.changedTouches[0]);
+          } else {
+            onMapUp(touch);
           }
         }
-      });
+      }, {passive:false});
 
       function getPinchDist(e) {
         var dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -711,35 +697,26 @@
         addLabel(xy.x, xy.y);
         return;
       }
+      if (S.tool === 'fill' || S.tool === 'visited') {
+        var element = document.elementFromPoint(e.clientX, e.clientY);
+        if (element && element.classList.contains('region')) {
+          var clickEvent = new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+            clientX: e.clientX,
+            clientY: e.clientY
+          });
+          element.dispatchEvent(clickEvent);
+        }
+        return;
+      }
       if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
         var xy2 = getMapXY(e);
         S.linePoints.push(xy2);
         redrawCanvas();
-
-        if (S.tool === 'draw-line' && S.linePoints.length === 2) {
-          finalizeLine();
-          return;
-        }
         
-        if (S.tool === 'draw-curve' && S.linePoints.length === 3) {
-          finalizeLine();
-          return;
-        }
-      }
-      if (S.tool === 'fill' || S.tool === 'visited') {
-        var svg = document.getElementById('geo-svg');
-        var rect = document.getElementById('map-wrap').getBoundingClientRect();
-        var clickX = e.clientX - rect.left;
-        var clickY = e.clientY - rect.top;
-        var element = document.elementFromPoint(e.clientX, e.clientY);
-        if (element && element.classList.contains('region')) {
-          var event = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-          });
-          element.dispatchEvent(event);
-        if (IS_TOUCH_DEVICE) {
+        if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) {
           if (S.tool === 'draw-line' && S.linePoints.length === 2) {
             finalizeLine();
             return;
