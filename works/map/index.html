@@ -561,9 +561,13 @@
 
     function getMapXY(e) {
       var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      
+      var clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+      var clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+      
       return {
-        x: (e.clientX - rect.left - S.pan.x) / S.scale,
-        y: (e.clientY - rect.top  - S.pan.y) / S.scale,
+        x: (clientX - rect.left - S.pan.x) / S.scale,
+        y: (clientY - rect.top  - S.pan.y) / S.scale,
       };
     }
 
@@ -654,18 +658,34 @@
     function onMapClick(e) {
       if (S.isDragging) return;
       if (S.tool === 'fill' || S.tool === 'visited') return;
+      
+      var xy = getMapXY(e);
+      
       if (S.tool === 'text') {
-        var xy = getMapXY(e);
         addLabel(xy.x, xy.y);
         return;
       }
       if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
-        var xy2 = getMapXY(e);
-        S.linePoints.push(xy2);
+        S.linePoints.push(xy);
         redrawCanvas();
         return;
       }
     }
+
+    mapWrap.addEventListener('touchend', function(e){
+      if (S.isDragging || e.touches.length !== 0) return;
+      
+      if (S.tool === 'text' || S.tool === 'draw-line' || S.tool === 'draw-curve') {
+        var xy = getMapXY(e.changedTouches[0]);
+        
+        if (S.tool === 'text') {
+          addLabel(xy.x, xy.y);
+        } else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+          S.linePoints.push(xy);
+          redrawCanvas();
+        }
+      }
+    });
 
     function onWheel(e) {
       e.preventDefault();
