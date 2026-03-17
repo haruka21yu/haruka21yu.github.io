@@ -565,7 +565,7 @@ about-label {
   gap: 0;
   margin-bottom: 28px;
   border-bottom: 1px solid var(--line);
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .tab {
@@ -586,7 +586,7 @@ about-label {
 .tab.active { color: var(--ink); border-bottom-color: var(--accent); }
 
 .page { display: none; }
-.page.active { display: block; padding: 0rem 6vw 0rem; }
+.page.active { display: block; padding: 0 6vw; }
 
 .settings {
   display: flex;
@@ -594,7 +594,7 @@ about-label {
   gap: 12px;
   margin-bottom: 10px;
   flex-wrap: wrap;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .settings label { font-size: 13px; color: var(--muted); }
@@ -671,7 +671,6 @@ button.danger:hover {
   margin-bottom: 12px;
   flex-wrap: wrap;
   align-items: center;
-  padding: 0rem 6vw 0rem;
   padding: 0 6vw;
 }
 
@@ -711,7 +710,7 @@ button.danger:hover {
 
 .tool-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; }
 
-.puzzle-table { border-collapse: collapse; padding: 0rem 6vw 0rem; }
+.puzzle-table { border-collapse: collapse; padding: 0 6vw; }
 .puzzle-table td, .puzzle-table th { padding: 0; }
 
 .td-corner {
@@ -809,7 +808,7 @@ input[type=checkbox] {
   border: 1px solid var(--line);
   border-radius: 2px;
   line-height: 2;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .legend strong { color: var(--ink); }
@@ -821,7 +820,7 @@ input[type=checkbox] {
   margin-top: 10px;
   font-size: 12px;
   border: 1px solid;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .msg.show { display: block; }
@@ -838,7 +837,7 @@ input[type=checkbox] {
   color: var(--danger);
 }
 
-.pill-group { display: flex; gap: 6px; flex-wrap: wrap; padding: 0rem 6vw 0rem; }
+.pill-group { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 6vw; }
 
 .pill {
   padding: 4px 12px;
@@ -894,7 +893,7 @@ input[type=checkbox] {
   font-size: 12px;
   color: var(--muted);
   margin: 4px 0 12px;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 hr {
@@ -979,7 +978,7 @@ hr {
 
 .board-field-err.show { display: block; }
 
-.sudoku-wrap { display: inline-block; margin-bottom: 16px; padding: 0rem 6vw 0rem; }
+.sudoku-wrap { display: inline-block; margin-bottom: 16px; padding: 0 6vw; }
 
 .sudoku-table {
   border-collapse: collapse;
@@ -1035,7 +1034,7 @@ hr {
 .numpad {
   display: flex; gap: 5px; flex-wrap: wrap;
   margin-bottom: 14px; align-items: center;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .numpad-label { font-size: 12px; color: var(--muted); letter-spacing: 0.04em; margin-right: 2px; }
@@ -1052,7 +1051,7 @@ hr {
 
 .numpad-btn.erase { font-size: 12px; width: auto; padding: 0 10px; color: var(--muted); }
 
-.toggle-row { padding: 0rem 6vw 0rem; }
+.toggle-row { padding: 0 6vw; }
 
 .memo-toggle {
   padding: 5px 13px; font-size: 12px; cursor: pointer;
@@ -1067,7 +1066,7 @@ hr {
 .top-bar {
   display: flex; align-items: center; gap: 10px;
   margin-bottom: 14px; flex-wrap: wrap;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .game-label { font-size: 12px; color: var(--muted); }
@@ -1076,7 +1075,7 @@ hr {
 
 .form-group {
   margin-bottom: 18px;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .form-group label {
@@ -1678,7 +1677,7 @@ input.invalid, select.invalid, textarea.invalid {
 
 .ms-wrap {
   overflow-x: auto;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
   padding-top: var(--cell-size);
   padding-bottom: var(--cell-size);
 }
@@ -1799,7 +1798,7 @@ input.invalid, select.invalid, textarea.invalid {
   display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
   font-size: 13px; color: var(--muted);
   margin-bottom: 10px;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .ms-status strong { color: var(--ink); }
@@ -1807,7 +1806,7 @@ input.invalid, select.invalid, textarea.invalid {
 .custom-inputs {
   display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
   margin-bottom: 12px;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .custom-inputs label { font-size: 12px; color: var(--muted); }
@@ -1821,7 +1820,7 @@ input.invalid, select.invalid, textarea.invalid {
 
 #timer { font-variant-numeric: tabular-nums; }
 
-#setup-area { margin-bottom: 18px; padding: 0rem 6vw 0rem; }
+#setup-area { margin-bottom: 18px; padding: 0 6vw; }
 
 .setup-block { margin-bottom: 14px; }
 
@@ -1876,7 +1875,7 @@ input.invalid, select.invalid, textarea.invalid {
   margin-top: 10px;
 }
 
-#game-area { display: none; padding: 0rem 6vw 0rem; }
+#game-area { display: none; padding: 0 6vw; }
 
 .js-status {
   display: flex;
@@ -2006,7 +2005,7 @@ select {
 
 #map-outer {
   position: relative;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
   width: 100%;
   overflow-x: hidden;
 }
@@ -2083,7 +2082,7 @@ select {
 #credit {
   font-size: 10px; color: var(--muted); margin-top: 6px;
   line-height: 1.6;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 #pref-select-wrap { display: none; align-items: center; gap: 4px; }
@@ -2108,7 +2107,7 @@ select {
 #visited-legend {
   display: flex; gap: 10px; align-items: center;
   font-size: 11px; color: var(--muted); margin-bottom: 6px; flex-wrap: wrap;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .legend-dot {
