@@ -530,14 +530,41 @@
       
       mapWrap.addEventListener('touchend', function(e){
         lastPinchDist = null;
-        if (e.touches.length === 0) onMapUp(e.changedTouches[0]);
+        if (e.touches.length === 0) {
+          var touch = e.changedTouches[0];
+          
+          if (!S.isDragging && (S.tool === 'fill' || S.tool === 'visited')) {
+            var el = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (el && el.classList && el.classList.contains('region')) {
+              var id = el.getAttribute('data-id');
+              snapshot();
+              if (S.tool === 'fill') {
+                var color = document.getElementById('fill-color').value;
+                S.fillMap[id] = color;
+              } else if (S.tool === 'visited') {
+                S.visitedMap[id] = !S.visitedMap[id];
+              }
+              document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
+                el.setAttribute('fill', S.tool === 'visited'
+                  ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
+                  : S.fillMap[id]);
+              });
+            }
+          }
+          
+          if (!S.isDragging && (S.tool === 'text' || S.tool === 'draw-line' || S.tool === 'draw-curve')) {
+            var xy = getMapXY(touch);
+            if (S.tool === 'text') {
+              addLabel(xy.x, xy.y);
+            } else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+              S.linePoints.push(xy);
+              redrawCanvas();
+            }
+          }
+          
+          onMapUp(touch);
+        }
       });
-      
-      function getPinchDist(e) {
-        var dx = e.touches[0].clientX - e.touches[1].clientX;
-        var dy = e.touches[0].clientY - e.touches[1].clientY;
-        return Math.sqrt(dx*dx + dy*dy);
-      }
       
       mapWrap.addEventListener('wheel', onWheel, {passive:false});
       mapWrap.addEventListener('click', onMapClick);
