@@ -321,7 +321,7 @@
           path.setAttribute('fill', getRegionFill(id));
           path.setAttribute('stroke', '#a09080');
           path.setAttribute('stroke-width', S.mapMode === 'pref' ? '0.8' : '0.4');
-          path.addEventListener('click', onRegionClick);
+          path.addEventListener('pointerup', onRegionClick);
           path.addEventListener('mouseenter', function() {
             var id = this.getAttribute('data-id');
             document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
@@ -653,6 +653,7 @@
 
     function onMapClick(e) {
       if (S.isDragging) return;
+      if (S.tool === 'fill' || S.tool === 'visited') return;
       if (S.tool === 'text') {
         var xy = getMapXY(e);
         addLabel(xy.x, xy.y);
