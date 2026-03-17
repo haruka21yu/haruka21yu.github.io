@@ -193,6 +193,7 @@
     };
 
     function resizeMapWrap() {
+      var w = document.body.clientWidth - 32;
       var maxW = 900;
       var padding = window.innerWidth < 600 ? 24 : 48;
       var w = Math.min(document.body.clientWidth - padding, maxW);
@@ -321,7 +322,7 @@
           path.setAttribute('fill', getRegionFill(id));
           path.setAttribute('stroke', '#a09080');
           path.setAttribute('stroke-width', S.mapMode === 'pref' ? '0.8' : '0.4');
-          path.addEventListener('pointerup', onRegionClick);
+          path.addEventListener('click', onRegionClick);
           path.addEventListener('mouseenter', function() {
             var id = this.getAttribute('data-id');
             document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
@@ -495,7 +496,7 @@
       mapWrap.addEventListener('mouseleave', onMapUp);
 
       var lastPinchDist = null;
-      
+
       mapWrap.addEventListener('touchstart', function(e){
         e.preventDefault();
         if (e.touches.length === 2) {
@@ -505,7 +506,7 @@
           onMapDown(e.touches[0]);
         }
       }, {passive:false});
-      
+
       mapWrap.addEventListener('touchmove', function(e){
         e.preventDefault();
         if (e.touches.length === 2) {
@@ -520,7 +521,6 @@
             S.pan.y = cy - (cy - S.pan.y) * (newScale / S.scale);
             S.scale = newScale;
             applyTransform();
-            redrawCanvas();
           }
           lastPinchDist = dist;
         } else {
@@ -528,59 +528,18 @@
           onMapMove(e.touches[0]);
         }
       }, {passive:false});
-      
+
       mapWrap.addEventListener('touchend', function(e){
         lastPinchDist = null;
-        if (e.touches.length === 0) {
-          var touch = e.changedTouches[0];
-          
-          if (!S.isDragging && (S.tool === 'fill' || S.tool === 'visited')) {
-            var el = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (el && el.classList && el.classList.contains('region')) {
-              var id = el.getAttribute('data-id');
-              snapshot();
-              if (S.tool === 'fill') {
-                var color = document.getElementById('fill-color').value;
-                S.fillMap[id] = color;
-              } else if (S.tool === 'visited') {
-                S.visitedMap[id] = !S.visitedMap[id];
-              }
-              document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
-                el.setAttribute('fill', S.tool === 'visited'
-                  ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
-                  : S.fillMap[id]);
-              });
-            }
-          }
-          
-          if (!S.isDragging && (S.tool === 'text' || S.tool === 'draw-line' || S.tool === 'draw-curve')) {
-            var xy = getMapXY(touch);
-            if (S.tool === 'text') {
-              addLabel(xy.x, xy.y);
-            } else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
-              S.linePoints.push(xy);
-              var minPoints = S.tool === 'draw-line' ? 2 : 3;
-              if (S.linePoints.length >= minPoints) {
-                var color = document.getElementById('draw-color').value;
-                var width = parseInt(document.getElementById('draw-width').value);
-                var style = document.getElementById('draw-style').value;
-                snapshot();
-                S.drawStrokes.push({
-                  color: color, width: width, style: style,
-                  type: S.tool === 'draw-line' ? 'line' : 'curve',
-                  points: S.linePoints.slice(),
-                });
-                S.linePoints = [];
-                S._lineMousePos = null;
-              }
-              redrawCanvas();
-            }
-          }
-          
-          onMapUp(touch);
-        }
+        if (e.touches.length === 0) onMapUp(e.changedTouches[0]);
       });
-      
+
+      function getPinchDist(e) {
+        var dx = e.touches[0].clientX - e.touches[1].clientX;
+        var dy = e.touches[0].clientY - e.touches[1].clientY;
+        return Math.sqrt(dx*dx + dy*dy);
+      }
+
       mapWrap.addEventListener('wheel', onWheel, {passive:false});
       mapWrap.addEventListener('click', onMapClick);
       mapWrap.addEventListener('dblclick', function(e) {
@@ -603,24 +562,12 @@
 
     function getMapXY(e) {
       var rect = document.getElementById('map-wrap').getBoundingClientRect();
-      var clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-      var clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
       return {
-        x: (clientX - rect.left - S.pan.x) / S.scale,
-        y: (clientY - rect.top  - S.pan.y) / S.scale,
+        x: (e.clientX - rect.left - S.pan.x) / S.scale,
+        y: (e.clientY - rect.top  - S.pan.y) / S.scale,
       };
     }
 
-    function getScreenXY(e) {
-      var rect = document.getElementById('map-wrap').getBoundingClientRect();
-      var clientX = e.clientX || (e.touches ? e.touches[0].clientX : 0);
-      var clientY = e.clientY || (e.touches ? e.touches[0].clientY : 0);
-      return {
-        x: clientX - rect.left,
-        y: clientY - rect.top,
-      };
-    }
-    
     function getClientXY(e) {
       var rect = document.getElementById('map-wrap').getBoundingClientRect();
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
@@ -707,7 +654,6 @@
 
     function onMapClick(e) {
       if (S.isDragging) return;
-      if (S.tool === 'fill' || S.tool === 'visited') return;
       if (S.tool === 'text') {
         var xy = getMapXY(e);
         addLabel(xy.x, xy.y);
@@ -716,40 +662,10 @@
       if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
         var xy2 = getMapXY(e);
         S.linePoints.push(xy2);
-        
-        var minPoints = S.tool === 'draw-line' ? 2 : 3;
-        if (S.linePoints.length >= minPoints) {
-          var color = document.getElementById('draw-color').value;
-          var width = parseInt(document.getElementById('draw-width').value);
-          var style = document.getElementById('draw-style').value;
-          snapshot();
-          S.drawStrokes.push({
-            color: color, width: width, style: style,
-            type: S.tool === 'draw-line' ? 'line' : 'curve',
-            points: S.linePoints.slice(),
-          });
-          S.linePoints = [];
-          S._lineMousePos = null;
-        }
         redrawCanvas();
         return;
       }
     }
-
-    mapWrap.addEventListener('touchend', function(e){
-      if (S.isDragging || e.touches.length !== 0) return;
-      
-      if (S.tool === 'text' || S.tool === 'draw-line' || S.tool === 'draw-curve') {
-        var xy = getMapXY(e.changedTouches[0]);
-        
-        if (S.tool === 'text') {
-          addLabel(xy.x, xy.y);
-        } else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
-          S.linePoints.push(xy);
-          redrawCanvas();
-        }
-      }
-    });
 
     function onWheel(e) {
       e.preventDefault();
@@ -863,16 +779,8 @@
       var text = prompt('テキストを入力してください:');
       if (text === null || text.trim() === '') return;
       var id = 'label-' + Date.now();
-      var label = {
-        id: id,
-        x: x,
-        y: y,
-        screenX: x * S.scale + S.pan.x,
-        screenY: y * S.scale + S.pan.y,
-        text: text
-      };
+      var label = { id: id, x: x, y: y, text: text };
       S.labels.push(label);
-      snapshot();
       renderLabel(label);
     }
 
@@ -882,18 +790,15 @@
       div.className = 'map-label';
       div.id = label.id;
       div.textContent = label.text;
-      
-      var screenXY = getMapXYToScreen(label.x, label.y);
-      div.style.position = 'fixed';
-      div.style.left = screenXY.x + 'px';
-      div.style.top = screenXY.y + 'px';
-    
-      div.addEventListener('pointerdown', function(e) {
+      div.style.left = (label.x * S.scale + S.pan.x) + 'px';
+      div.style.top  = (label.y * S.scale + S.pan.y) + 'px';
+
+      div.addEventListener('mousedown', function(e) {
         e.stopPropagation();
         selectLabel(label);
         S.labelDragging = label;
-        S.labelDragOff.x = e.clientX - screenXY.x;
-        S.labelDragOff.y = e.clientY - screenXY.y;
+        S.labelDragOff.x = e.clientX - parseFloat(div.style.left);
+        S.labelDragOff.y = e.clientY - parseFloat(div.style.top);
       });
       div.addEventListener('dblclick', function(e) {
         e.stopPropagation();
@@ -903,18 +808,10 @@
           div.textContent = newText;
         }
       });
-    
+
       layer.appendChild(div);
     }
-    
-    function getMapXYToScreen(mapX, mapY) {
-      var rect = document.getElementById('map-wrap').getBoundingClientRect();
-      return {
-        x: rect.left + mapX * S.scale + S.pan.x,
-        y: rect.top + mapY * S.scale + S.pan.y,
-      };
-    }
-    
+
     function selectLabel(label) {
       deselectLabel();
       S.selectedLabel = label;
@@ -930,7 +827,7 @@
       S.selectedLabel = null;
     }
 
-    document.addEventListener('pointermove', function(e) {
+    document.addEventListener('mousemove', function(e) {
       if (!S.labelDragging) return;
       var label = S.labelDragging;
       var el = document.getElementById(label.id);
@@ -938,13 +835,11 @@
       var nx = e.clientX - S.labelDragOff.x;
       var ny = e.clientY - S.labelDragOff.y;
       el.style.left = nx + 'px';
-      el.style.top = ny + 'px';
-      var rect = document.getElementById('map-wrap').getBoundingClientRect();
-      label.x = (nx - rect.left - S.pan.x) / S.scale;
-      label.y = (ny - rect.top - S.pan.y) / S.scale;
+      el.style.top  = ny + 'px';
+      label.x = (nx - S.pan.x) / S.scale;
+      label.y = (ny - S.pan.y) / S.scale;
     });
-    
-    document.addEventListener('pointerup', function() {
+    document.addEventListener('mouseup', function() {
       S.labelDragging = null;
     });
 
@@ -963,15 +858,15 @@
       S.labels.forEach(function(label) {
         var el = document.getElementById(label.id);
         if (!el) return;
-        var screenXY = getMapXYToScreen(label.x, label.y);
-        el.style.left = screenXY.x + 'px';
-        el.style.top = screenXY.y + 'px';
+        el.style.left = (label.x * S.scale + S.pan.x) + 'px';
+        el.style.top  = (label.y * S.scale + S.pan.y) + 'px';
       });
     }
 
     var _origApplyTransform = applyTransform;
     applyTransform = function() {
       _origApplyTransform();
+      updateLabelPositions();
       updateGeoLabels();
     };
 
