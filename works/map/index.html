@@ -67,9 +67,12 @@
       <button class="tool-btn" onclick="redo()" id="btn-redo">↪ Redo</button>
     </div>
     <div class="tool-group">
+      <label>市区町村の密度が高い都道府県では、市区町村の境界が分かりづらいことがあります。Google Chromeでは右上の三点リーダーから「PC版サイト」、SafariではURLの左のページ設定から右下の三点リーダー、「デスクトップ用Webサイトを表示」でより細かく表示できます。</label>
+    </div>
+    <div class="tool-group">
       <label>ツール</label>
-      <button class="tool-btn" id="btn-pan"   onclick="setTool('pan')">✋ 移動</button>
-      <button class="tool-btn active" id="btn-fill"  onclick="setTool('fill')">🪣 塗り</button>
+      <button class="tool-btn active" id="btn-pan"   onclick="setTool('pan')">✋ 移動</button>
+      <button class="tool-btn" id="btn-fill"  onclick="setTool('fill')">🪣 塗り</button>
       <button class="tool-btn" id="btn-visited" onclick="setTool('visited')">📍 訪問</button>
       <button class="tool-btn" id="btn-draw" onclick="setTool('draw')">✏️ 手書き</button>
       <button class="tool-btn" id="btn-draw-line" onclick="setTool('draw-line')">📏 直線</button>
@@ -95,15 +98,21 @@
       </select>
     </div>
     <div class="tool-group">
+      <label>「文字」ツールはスマホなどのデバイスでは使用できません。</label>
+    </div>
+    <div class="tool-group">
       <button class="tool-btn" onclick="zoom(1.25)">＋</button>
       <button class="tool-btn" onclick="zoom(0.8)">－</button>
       <button class="tool-btn" onclick="resetView()">全体</button>
     </div>
     <div class="tool-group">
       <label>地名表示</label>
-      <button class="tool-btn active" id="btn-label-name" onclick="toggleLabelType('name')">名前</button>
+      <button class="tool-btn active" id="btn-label-none" onclick="toggleLabelType('none')">非表示</button>
+      <button class="tool-btn" id="btn-label-name" onclick="toggleLabelType('name')">名前</button>
       <button class="tool-btn" id="btn-label-gun" onclick="toggleLabelType('gun')">郡名</button>
-      <button class="tool-btn" id="btn-label-none" onclick="toggleLabelType('none')">非表示</button>
+    </div>
+    <div class="tool-group">
+      <label>「全国（市区町村）」や「全国（市町村）」を表示している状態で「名前」や「郡名」を選択すると大量の文字が出て、処理能力の低いデバイスでは動作が遅くなったり停止する可能性があります。</label>
     </div>
     <div class="tool-group">
       <button class="tool-btn" onclick="saveData()">💾 保存</button>
