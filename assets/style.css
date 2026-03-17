@@ -666,11 +666,11 @@ button.danger:hover {
 
 .toolbar {
   display: flex;
-  gap: 6px;
+  gap: 10px;
   margin-bottom: 12px;
   flex-wrap: wrap;
   align-items: center;
-  padding: 0rem 6vw 0rem;
+  padding: 0 6vw;
 }
 
 .tool {
@@ -1952,14 +1952,26 @@ input.invalid, select.invalid, textarea.invalid {
 }
 
 .tool-group {
-  display: flex; gap: 4px; align-items: center;
-  padding-right: 10px; border-right: 1px solid var(--line);
-  padding: 0rem 6vw 0rem;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 8px 12px;  
+  border-right: 1px solid var(--line);
 }
 
 .tool-group:last-child { border-right: none; padding-right: 0; }
 
 .tool-group label { font-size: 11px; color: var(--muted); margin-right: 2px; white-space: nowrap; }
+
+@media (max-width: 600px) {
+  .tool-group {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    width: 100%;
+    padding: 10px 0;
+  }
+}
 
 .tool-btn {
   padding: 4px 9px; font-size: 12px; font-family: inherit;
