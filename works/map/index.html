@@ -520,6 +520,7 @@
             S.pan.y = cy - (cy - S.pan.y) * (newScale / S.scale);
             S.scale = newScale;
             applyTransform();
+            redrawCanvas();
           }
           lastPinchDist = dist;
         } else {
@@ -881,24 +882,39 @@
       div.className = 'map-label';
       div.id = label.id;
       div.textContent = label.text;
-      // 画面座標を直接使用（ズームに影響されない）
-      div.style.left = (label.screenX) + 'px';
-      div.style.top  = (label.screenY) + 'px';
+      
+      var screenXY = getMapXYToScreen(label.x, label.y);
+      div.style.position = 'fixed';
+      div.style.left = screenXY.x + 'px';
+      div.style.top = screenXY.y + 'px';
     
       div.addEventListener('pointerdown', function(e) {
         e.stopPropagation();
         selectLabel(label);
         S.labelDragging = label;
-        S.labelDragOff.x = e.clientX - parseFloat(div.style.left);
-        S.labelDragOff.y = e.clientY - parseFloat(div.style.top);
+        S.labelDragOff.x = e.clientX - screenXY.x;
+        S.labelDragOff.y = e.clientY - screenXY.y;
       });
-      mapWrap.addEventListener('dblclick', function(e) {
-        if (S.tool !== 'draw-line' && S.tool !== 'draw-curve') return;
+      div.addEventListener('dblclick', function(e) {
+        e.stopPropagation();
+        var newText = prompt('テキストを編集:', label.text);
+        if (newText !== null) {
+          label.text = newText;
+          div.textContent = newText;
+        }
       });
     
       layer.appendChild(div);
     }
-
+    
+    function getMapXYToScreen(mapX, mapY) {
+      var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      return {
+        x: rect.left + mapX * S.scale + S.pan.x,
+        y: rect.top + mapY * S.scale + S.pan.y,
+      };
+    }
+    
     function selectLabel(label) {
       deselectLabel();
       S.selectedLabel = label;
@@ -922,11 +938,10 @@
       var nx = e.clientX - S.labelDragOff.x;
       var ny = e.clientY - S.labelDragOff.y;
       el.style.left = nx + 'px';
-      el.style.top  = ny + 'px';
-      label.screenX = nx;
-      label.screenY = ny;
-      label.x = (nx - S.pan.x) / S.scale;
-      label.y = (ny - S.pan.y) / S.scale;
+      el.style.top = ny + 'px';
+      var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      label.x = (nx - rect.left - S.pan.x) / S.scale;
+      label.y = (ny - rect.top - S.pan.y) / S.scale;
     });
     
     document.addEventListener('pointerup', function() {
@@ -948,8 +963,9 @@
       S.labels.forEach(function(label) {
         var el = document.getElementById(label.id);
         if (!el) return;
-        el.style.left = label.screenX + 'px';
-        el.style.top  = label.screenY + 'px';
+        var screenXY = getMapXYToScreen(label.x, label.y);
+        el.style.left = screenXY.x + 'px';
+        el.style.top = screenXY.y + 'px';
       });
     }
 
