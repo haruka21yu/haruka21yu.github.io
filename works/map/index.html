@@ -157,6 +157,13 @@
     var MAP_W = 800;
     var MAP_H = 600;
 
+    function isTouchDevice() {
+      return (('ontouchstart' in window) ||
+              (navigator.maxTouchPoints > 0) ||
+              (navigator.msMaxTouchPoints > 0));
+    }
+    var IS_TOUCH_DEVICE = isTouchDevice();
+
     var S = {
       tool: 'fill',
       mapMode: 'pref',
@@ -532,7 +539,34 @@
 
       mapWrap.addEventListener('touchend', function(e){
         lastPinchDist = null;
-        if (e.touches.length === 0) onMapUp(e.changedTouches[0]);
+        if (e.touches.length === 0) {
+          if (S.tool === 'fill' || S.tool === 'visited') {
+            var touch = e.changedTouches[0];
+            var element = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (element && element.classList.contains('region')) {
+              var clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+                clientX: touch.clientX,
+                clientY: touch.clientY
+              });
+              element.dispatchEvent(clickEvent);
+            }
+          }
+          else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
+            var rect = document.getElementById('map-wrap').getBoundingClientRect();
+            var fakeEvent = {
+              clientX: touch.clientX,
+              clientY: touch.clientY,
+              preventDefault: function() {}
+            };
+            onMapClick(fakeEvent);
+          }
+          else {
+            onMapUp(e.changedTouches[0]);
+          }
+        }
       });
 
       function getPinchDist(e) {
@@ -681,34 +715,36 @@
         S.linePoints.push(xy2);
         redrawCanvas();
         
-        if (S.tool === 'draw-line' && S.linePoints.length === 2) {
-          finalizeLine();
-          return;
-        }
-        
-        if (S.tool === 'draw-curve' && S.linePoints.length === 3) {
-          finalizeLine();
-          return;
-        }
-      }
-      if (S.tool === 'fill' || S.tool === 'visited') {
-        var svg = document.getElementById('geo-svg');
-        var rect = document.getElementById('map-wrap').getBoundingClientRect();
-        var clickX = e.clientX - rect.left;
-        var clickY = e.clientY - rect.top;
-        var element = document.elementFromPoint(e.clientX, e.clientY);
-        if (element && element.classList.contains('region')) {
-          var event = new MouseEvent('click', {
-            bubbles: true,
-            cancelable: true,
-            view: window
-          });
-          element.dispatchEvent(event);
+        if (IS_TOUCH_DEVICE) {
+          if (S.tool === 'draw-line' && S.linePoints.length === 2) {
+            finalizeLine();
+            return;
+          }
+          if (S.tool === 'draw-curve' && S.linePoints.length === 3) {
+            finalizeLine();
+            return;
+          }
         }
         return;
       }
     }
 
+    function finalizeLine() {
+      if (S.linePoints.length < 2) return;
+      var color = document.getElementById('draw-color').value;
+      var width = parseInt(document.getElementById('draw-width').value);
+      var style = document.getElementById('draw-style').value;
+      snapshot();
+      S.drawStrokes.push({
+        color: color, width: width, style: style,
+        type: S.tool === 'draw-line' ? 'line' : 'curve',
+        points: S.linePoints.slice(),
+      });
+      S.linePoints = [];
+      S._lineMousePos = null;
+      redrawCanvas();
+    }
+    
     function onWheel(e) {
       e.preventDefault();
       var factor = e.deltaY < 0 ? 1.12 : 0.88;
