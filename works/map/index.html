@@ -328,7 +328,7 @@
           path.setAttribute('data-name', name);
           path.setAttribute('fill', getRegionFill(id));
           path.setAttribute('stroke', '#a09080');
-          path.setAttribute('stroke-width', S.mapMode === 'pref' ? '0.8' : '0.4');
+          path.setAttribute('stroke-width', (S.mapMode === 'pref' ? 0.8 : 0.4) / S.scale);
           path.addEventListener('click', onRegionClick);
           path.addEventListener('mouseenter', function() {
             var id = this.getAttribute('data-id');
