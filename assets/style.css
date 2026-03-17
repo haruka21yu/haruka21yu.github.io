@@ -1965,7 +1965,6 @@ input.invalid, select.invalid, textarea.invalid {
 @media (max-width: 600px) {
   .tool-group {
     border-right: none;
-    border-bottom: 1px solid var(--line);
     width: 100%;
     padding: 10px 0;
   }
