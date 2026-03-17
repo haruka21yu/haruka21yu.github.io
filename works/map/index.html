@@ -521,6 +521,7 @@
             S.pan.y = cy - (cy - S.pan.y) * (newScale / S.scale);
             S.scale = newScale;
             applyTransform();
+            redrawCanvas();
           }
           lastPinchDist = dist;
         } else {
@@ -775,6 +776,14 @@
       });
     }
 
+    function getMapXYToScreen(mapX, mapY) {
+      var rect = document.getElementById('map-wrap').getBoundingClientRect();
+      return {
+        x: rect.left + mapX * S.scale + S.pan.x,
+        y: rect.top + mapY * S.scale + S.pan.y,
+      };
+    }
+
     function addLabel(x, y) {
       var text = prompt('テキストを入力してください:');
       if (text === null || text.trim() === '') return;
@@ -790,15 +799,18 @@
       div.className = 'map-label';
       div.id = label.id;
       div.textContent = label.text;
-      div.style.left = (label.x * S.scale + S.pan.x) + 'px';
-      div.style.top  = (label.y * S.scale + S.pan.y) + 'px';
-
+      
+      var screenXY = getMapXYToScreen(label.x, label.y);
+      div.style.position = 'fixed';
+      div.style.left = screenXY.x + 'px';
+      div.style.top = screenXY.y + 'px';
+    
       div.addEventListener('mousedown', function(e) {
         e.stopPropagation();
         selectLabel(label);
         S.labelDragging = label;
-        S.labelDragOff.x = e.clientX - parseFloat(div.style.left);
-        S.labelDragOff.y = e.clientY - parseFloat(div.style.top);
+        S.labelDragOff.x = e.clientX - screenXY.x;
+        S.labelDragOff.y = e.clientY - screenXY.y;
       });
       div.addEventListener('dblclick', function(e) {
         e.stopPropagation();
@@ -808,7 +820,7 @@
           div.textContent = newText;
         }
       });
-
+    
       layer.appendChild(div);
     }
 
