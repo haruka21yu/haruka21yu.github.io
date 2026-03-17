@@ -1963,7 +1963,7 @@ input.invalid, select.invalid, textarea.invalid {
 
 .tool-group:last-child { border-right: none; padding-right: 0; }
 
-.tool-group label { font-size: 11px; color: var(--muted); margin-right: 2px; white-space: nowrap; }
+.tool-group label { font-size: 11px; color: var(--muted); margin-right: 2px; white-space: normal; }
 
 @media (min-width: 600px) {
   .tool-group {
