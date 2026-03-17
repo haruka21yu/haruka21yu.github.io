@@ -666,11 +666,9 @@ button.danger:hover {
 
 .toolbar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
   flex-wrap: wrap;
+  gap: 12px;
   align-items: center;
-  padding: 0 6vw;
 }
 
 .tool {
@@ -1953,11 +1951,11 @@ input.invalid, select.invalid, textarea.invalid {
 
 .tool-group {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  gap: 4px;
   align-items: center;
-  padding: 8px 12px;  
+  padding: 0rem 6vw 0rem;
   border-right: 1px solid var(--line);
+  flex-wrap: wrap; 
 }
 
 .tool-group:last-child { border-right: none; padding-right: 0; }
@@ -1974,9 +1972,15 @@ input.invalid, select.invalid, textarea.invalid {
 }
 
 .tool-btn {
-  padding: 4px 9px; font-size: 12px; font-family: inherit;
-  border: 1px solid var(--line); background: var(--bg); color: var(--ink);
-  cursor: pointer; white-space: nowrap; line-height: 1.4;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-family: inherit;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.4;
   flex-shrink: 1;
   min-width: 0;
 }
