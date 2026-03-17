@@ -503,17 +503,28 @@
       mapWrap.addEventListener('mouseleave', onMapUp);
 
       var lastPinchDist = null;
-
+      var touchStartPos = null;
+      
       mapWrap.addEventListener('touchstart', function(e){
         e.preventDefault();
         if (e.touches.length === 2) {
           lastPinchDist = getPinchDist(e);
-        } else {
+        } else if (e.touches.length === 1) {
           lastPinchDist = null;
-          onMapDown(e.touches[0]);
+          touchStartPos = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+            time: Date.now()
+          };
+          
+          if (S.tool !== 'pan') {
+            onMapDown(e.touches[0]);
+          } else {
+            onMapDown(e.touches[0]);
+          }
         }
       }, {passive:false});
-
+      
       mapWrap.addEventListener('touchmove', function(e){
         e.preventDefault();
         if (e.touches.length === 2) {
@@ -531,44 +542,36 @@
             redrawCanvas();
           }
           lastPinchDist = dist;
-        } else {
+        } else if (e.touches.length === 1) {
           lastPinchDist = null;
           onMapMove(e.touches[0]);
         }
       }, {passive:false});
-
+      
       mapWrap.addEventListener('touchend', function(e){
+        e.preventDefault();
         lastPinchDist = null;
         if (e.touches.length === 0) {
-          if (S.tool === 'fill' || S.tool === 'visited') {
-            var touch = e.changedTouches[0];
-            var element = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (element && element.classList.contains('region')) {
-              var clickEvent = new MouseEvent('click', {
-                bubbles: true,
-                cancelable: true,
-                view: window,
-                clientX: touch.clientX,
-                clientY: touch.clientY
-              });
-              element.dispatchEvent(clickEvent);
-            }
-          }
-          else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
-            var rect = document.getElementById('map-wrap').getBoundingClientRect();
+          var touch = e.changedTouches[0];
+          
+          var dx = Math.abs(touch.clientX - touchStartPos.x);
+          var dy = Math.abs(touch.clientY - touchStartPos.y);
+          var dt = Date.now() - touchStartPos.time;
+          var isClick = (dx < 10 && dy < 10 && dt < 300);
+          
+          if (isClick && (S.tool === 'fill' || S.tool === 'visited' || S.tool === 'draw-line' || S.tool === 'draw-curve')) {
             var fakeEvent = {
               clientX: touch.clientX,
               clientY: touch.clientY,
               preventDefault: function() {}
             };
             onMapClick(fakeEvent);
-          }
-          else {
-            onMapUp(e.changedTouches[0]);
+          } else {
+            onMapUp(touch);
           }
         }
-      });
-
+      }, {passive:false});
+      
       function getPinchDist(e) {
         var dx = e.touches[0].clientX - e.touches[1].clientX;
         var dy = e.touches[0].clientY - e.touches[1].clientY;
