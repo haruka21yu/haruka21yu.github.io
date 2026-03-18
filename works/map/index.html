@@ -122,8 +122,8 @@
     </div>
   </div>
   <div id="visited-legend" style="display:none;">
-    <span><span class="legend-dot" style="background:#6aaa64;"></span>訪問済み</span>
-    <span><span class="legend-dot" style="background:#e8e0d4;"></span>未訪問</span>
+    <span><span class="legend-dot" style="background:#2d5a3d;"></span>訪問済み</span>
+    <span><span class="legend-dot" style="background:#ede8dc;"></span>未訪問</span>
   </div>
   <div id="map-outer">
     <div id="map-wrap">
@@ -336,7 +336,7 @@
           path.setAttribute('data-id', id);
           path.setAttribute('data-name', name);
           path.setAttribute('fill', getRegionFill(id));
-          path.setAttribute('stroke', '#a09080');
+          path.setAttribute('stroke', '#7a6a55');
           path.setAttribute('stroke-width', S.mapMode === 'pref' ? '0.5' : '0.2');
           path.addEventListener('click', onRegionClick);
           path.addEventListener('mouseenter', function() {
@@ -379,10 +379,10 @@
     function getRegionFill(id) {
       if (S.tool === 'visited' || S.visitedMap[id]) {
         if (S.visitedMap[id] !== undefined) {
-          return S.visitedMap[id] ? '#6aaa64' : '#e8e0d4';
+          return S.visitedMap[id] ? '#2d5a3d' : '#ede8dc';
         }
       }
-      return S.fillMap[id] || '#e8e0d4';
+      return S.fillMap[id] || '#ede8dc';
     }
 
     function geomToPaths(geom) {
@@ -491,7 +491,7 @@
 
       document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
         el.setAttribute('fill', S.tool === 'visited'
-          ? (S.visitedMap[id] ? '#6aaa64' : '#e8e0d4')
+          ? (S.visitedMap[id] ? '#2d5a3d' : '#ede8dc')
           : S.fillMap[id]);
       });
     }
@@ -499,7 +499,7 @@
     function clearSelectedFill() {
       S.fillMap = {};
       document.querySelectorAll('.region').forEach(function(el) {
-        el.setAttribute('fill', '#e8e0d4');
+        el.setAttribute('fill', '#ede8dc');
       });
     }
 
@@ -996,7 +996,7 @@
           document.querySelectorAll('.region').forEach(function(el) {
             var id = el.getAttribute('data-id');
             if (S.visitedMap[id] !== undefined) {
-              el.setAttribute('fill', S.visitedMap[id] ? '#6aaa64' : '#e8e0d4');
+              el.setAttribute('fill', S.visitedMap[id] ? '#2d5a3d' : '#ede8dc');
             } else if (S.fillMap[id]) {
               el.setAttribute('fill', S.fillMap[id]);
             }
@@ -1020,7 +1020,7 @@
       S.drawStrokes = [];
       document.getElementById('label-layer').innerHTML = '';
       document.querySelectorAll('.region').forEach(function(el) {
-        el.setAttribute('fill', '#e8e0d4');
+        el.setAttribute('fill', '#ede8dc');
       });
       redrawCanvas();
     }
@@ -1042,11 +1042,11 @@
       document.querySelectorAll('.region').forEach(function(el) {
         var id = el.getAttribute('data-id');
         if (S.visitedMap[id] !== undefined) {
-          el.setAttribute('fill', S.visitedMap[id] ? '#6aaa64' : '#e8e0d4');
+          el.setAttribute('fill', S.visitedMap[id] ? '#2d5a3d' : '#ede8dc');
         } else if (S.fillMap[id]) {
           el.setAttribute('fill', S.fillMap[id]);
         } else {
-          el.setAttribute('fill', '#e8e0d4');
+          el.setAttribute('fill', '#ede8dc');
         }
       });
       redrawCanvas();
