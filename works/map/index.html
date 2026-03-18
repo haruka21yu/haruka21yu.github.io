@@ -732,22 +732,6 @@
         return;
       }
     }
-
-    function finalizeLine() {
-      if (S.linePoints.length < 2) return;
-      var color = document.getElementById('draw-color').value;
-      var width = parseInt(document.getElementById('draw-width').value);
-      var style = document.getElementById('draw-style').value;
-      snapshot();
-      S.drawStrokes.push({
-        color: color, width: width, style: style,
-        type: S.tool === 'draw-line' ? 'line' : 'curve',
-        points: S.linePoints.slice(),
-      });
-      S.linePoints = [];
-      S._lineMousePos = null;
-      redrawCanvas();
-    }
     
     function onWheel(e) {
       e.preventDefault();
