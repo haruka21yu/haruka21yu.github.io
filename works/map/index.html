@@ -83,7 +83,8 @@
     <div class="tool-group" id="fill-color-group">
       <label>塗り色</label>
       <div id="color-palette"></div>
-      <input type="color" id="fill-color" value="#c4603a">
+      <input type="color" id="fill-color" value="#c4603a" title="カスタム色">
+      <button class="tool-btn" onclick="clearSelectedFill()">消去</button>
     </div>
     <div class="tool-group" id="draw-settings" style="display:none;">
       <label>線色</label>
@@ -173,6 +174,32 @@
     }
     var IS_TOUCH_DEVICE = isTouchDevice();
 
+    var PALETTE_COLORS = [
+      '#ce0456','#e50045','#e7322f','#e95406',
+      '#ef7e00','#f4a000','#fbc300','#ffe002',
+      '#e3dc00','#c2d500','#7fbe46','#03a162',
+      '#018d72','#049b7d','#018f8c','#0287a8',
+      '#027bb1','#005ba9','#1d50a0','#4e4398',
+      '#673a91','#7f2e8b','#9d227c','#b60969',
+      '#ffffff','#808080','#000000',
+    ];
+    
+    function initPalette() {
+      var wrap = document.getElementById('color-palette');
+      PALETTE_COLORS.forEach(function(color) {
+        var sw = document.createElement('div');
+        sw.className = 'palette-swatch';
+        sw.style.background = color;
+        sw.title = color;
+        sw.onclick = function() {
+          document.querySelectorAll('.palette-swatch').forEach(function(s){ s.classList.remove('active'); });
+          sw.classList.add('active');
+          document.getElementById('fill-color').value = color;
+        };
+        wrap.appendChild(sw);
+      });
+    }
+    
     var S = {
       tool: 'pan',
       mapMode: 'pref',
