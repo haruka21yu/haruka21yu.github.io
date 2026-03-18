@@ -971,7 +971,7 @@ hr {
 
 .board-field-err {
   font-size: 11px;
-  color: #a55;
+  color: var(--danger);
   margin-top: 4px;
   display: none;
 }
@@ -1216,7 +1216,7 @@ input[type=file] { display: none; }
 }
 
 .file-name .file-remove {
-  color: #a55;
+  color: var(--danger);
   cursor: pointer;
   margin-left: 8px;
   font-size: 11px;
@@ -1230,13 +1230,13 @@ input[type=file] { display: none; }
 
 .field-err {
   font-size: 11px;
-  color: #a55;
+  color: var(--danger);
   margin-top: 4px;
   display: none;
 }
 .field-err.show { display: block; }
 input.invalid, select.invalid, textarea.invalid {
-  border-color: #a55 !important;
+  border-color: var(--danger) !important;
 }
 
 .bbs-container {
@@ -1671,7 +1671,7 @@ input.invalid, select.invalid, textarea.invalid {
 
 .msg-ok  { background: rgba(196,96,58,0.07); border-color: var(--accent); color: var(--accent); }
 
-.msg-err { background: rgba(180,100,100,0.07); border-color: #a55; color: #a55; }
+.msg-err { background: rgba(180,100,100,0.07); border-color: var(--danger); color: var(--danger); }
 
 .section-note { font-size: 12px; color: var(--muted); margin: 4px 0 12px; }
 
@@ -1734,7 +1734,7 @@ input.invalid, select.invalid, textarea.invalid {
 
 .ms-cell.flagged { background: var(--paper); }
 
-.ms-cell.mine-hit { background: #c44; }
+.ms-cell.mine-hit { background: var(--accent); }
 
 .ms-cell.mine-show { background: var(--paper); }
 
