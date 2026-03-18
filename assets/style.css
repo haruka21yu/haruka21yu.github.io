@@ -2012,7 +2012,7 @@ select {
 
 #map-wrap {
   position: relative; overflow: hidden;
-  border: 1px solid var(--line); background: #f0ece4;
+  border: 1px solid var(--line); background: var(--paper);
   user-select: none; touch-action: none;
 }
 
