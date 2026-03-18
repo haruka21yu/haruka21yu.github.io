@@ -545,14 +545,21 @@
           onMapMove(e.touches[0]);
         }
       }, {passive:false});
-
+      
       mapWrap.addEventListener('touchend', function(e){
         e.preventDefault();
         lastPinchDist = null;
         if (e.touches.length === 0) {
           var touch = e.changedTouches[0];
-          
-          if (S.tool === 'fill' || S.tool === 'visited' || S.tool === 'draw-line' || S.tool === 'draw-curve') {
+          if (S.tool === 'fill' || S.tool === 'visited') {
+            if (!S.isDragging) {
+              var element = document.elementFromPoint(touch.clientX, touch.clientY);
+              if (element && element.classList.contains('region')) {
+                onRegionClick({ target: element });
+              }
+            }
+            onMapUp(touch);
+          } else if (S.tool === 'draw-line' || S.tool === 'draw-curve') {
             var fakeEvent = {
               clientX: touch.clientX,
               clientY: touch.clientY,
