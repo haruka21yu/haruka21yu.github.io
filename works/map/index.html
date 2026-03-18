@@ -83,8 +83,7 @@
     <div class="tool-group" id="fill-color-group">
       <label>塗り色</label>
       <div id="color-palette"></div>
-      <input type="color" id="fill-color" value="#c4603a" title="カスタム色">
-      <button class="tool-btn" onclick="clearSelectedFill()">消去</button>
+      <input type="color" id="fill-color" value="#c4603a">
     </div>
     <div class="tool-group" id="draw-settings" style="display:none;">
       <label>線色</label>
@@ -164,15 +163,6 @@
       ['46','鹿児島県'],['47','沖縄県'],
     ];
 
-    var PALETTE_COLORS = [
-      '#e63946','#f4845f','#f4a261','#e9c46a',
-      '#2a9d8f','#57cc99','#80b918','#3a86ff',
-      '#4361ee','#7209b7','#f72585','#ff006e',
-      '#ffffff','#f8f9fa','#dee2e6','#adb5bd',
-      '#6c757d','#495057','#343a40','#212529',
-      '#c4603a','#8b4513','#2c6e49','#1d3557',
-    ];
-    
     var MAP_W = 800;
     var MAP_H = 600;
 
@@ -206,22 +196,6 @@
       labelType: 'none',
       linePoints: [],
     };
-
-    function initPalette() {
-      var wrap = document.getElementById('color-palette');
-      PALETTE_COLORS.forEach(function(color) {
-        var sw = document.createElement('div');
-        sw.className = 'palette-swatch';
-        sw.style.background = color;
-        sw.title = color;
-        sw.onclick = function() {
-          document.querySelectorAll('.palette-swatch').forEach(function(s){ s.classList.remove('active'); });
-          sw.classList.add('active');
-          document.getElementById('fill-color').value = color;
-        };
-        wrap.appendChild(sw);
-      });
-    }
     
     window.onload = function() {
       initPrefSelect();
