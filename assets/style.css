@@ -2122,3 +2122,23 @@ select {
   pointer-events: none;
   user-select: none;
 }
+
+#color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  max-width: 160px;
+}
+
+.palette-swatch {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.palette-swatch.active {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
