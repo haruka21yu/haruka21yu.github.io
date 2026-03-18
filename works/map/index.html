@@ -123,7 +123,7 @@
     </div>
   </div>
   <div id="visited-legend" style="display:none;">
-    <span><span class="legend-dot" style="background:#018d72;"></span>訪問済み</span>
+    <span><span class="legend-dot" style="background:#6aaa64;"></span>訪問済み</span>
     <span><span class="legend-dot" style="background:#ede8dc;"></span>未訪問</span>
   </div>
   <div id="map-outer">
@@ -408,7 +408,7 @@
     function getRegionFill(id) {
       if (S.tool === 'visited' || S.visitedMap[id]) {
         if (S.visitedMap[id] !== undefined) {
-          return S.visitedMap[id] ? '#018d72' : '#ede8dc';
+          return S.visitedMap[id] ? '#6aaa64' : '#ede8dc';
         }
       }
       return S.fillMap[id] || '#ede8dc';
@@ -520,7 +520,7 @@
 
       document.querySelectorAll('path[data-id="' + id + '"]').forEach(function(el) {
         el.setAttribute('fill', S.tool === 'visited'
-          ? (S.visitedMap[id] ? '#018d72' : '#ede8dc')
+          ? (S.visitedMap[id] ? '#6aaa64' : '#ede8dc')
           : S.fillMap[id]);
       });
     }
@@ -1009,7 +1009,7 @@
           document.querySelectorAll('.region').forEach(function(el) {
             var id = el.getAttribute('data-id');
             if (S.visitedMap[id] !== undefined) {
-              el.setAttribute('fill', S.visitedMap[id] ? '#018d72' : '#ede8dc');
+              el.setAttribute('fill', S.visitedMap[id] ? '#6aaa64' : '#ede8dc');
             } else if (S.fillMap[id]) {
               el.setAttribute('fill', S.fillMap[id]);
             }
@@ -1055,7 +1055,7 @@
       document.querySelectorAll('.region').forEach(function(el) {
         var id = el.getAttribute('data-id');
         if (S.visitedMap[id] !== undefined) {
-          el.setAttribute('fill', S.visitedMap[id] ? '#018d72' : '#ede8dc');
+          el.setAttribute('fill', S.visitedMap[id] ? '#6aaa64' : '#ede8dc');
         } else if (S.fillMap[id]) {
           el.setAttribute('fill', S.fillMap[id]);
         } else {
