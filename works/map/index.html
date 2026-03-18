@@ -1074,7 +1074,7 @@
 
     function toggleLabelType(type) {
       S.labelType = type;
-      ['name','gun','none'].forEach(function(t) {
+      ['none','name','gun'].forEach(function(t) {
         var btn = document.getElementById('btn-label-' + t);
         if (btn) btn.classList.toggle('active', t === type);
       });
